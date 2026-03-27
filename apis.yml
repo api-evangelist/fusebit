@@ -1,0 +1,39 @@
+aid: fusebit
+name: Fusebit
+description: >-
+  Fusebit is a developer-first embedded integration platform for adding
+  third-party integrations to SaaS products.
+type: Index
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+tags:
+  - Embedded iPaaS
+  - Developer Tools
+  - Integration
+url: >-
+  https://raw.githubusercontent.com/api-evangelist/fusebit/refs/heads/main/apis.yml
+created: '2026-03-27'
+modified: '2026-03-27'
+specificationVersion: '0.19'
+apis:
+  - aid: fusebit:apis
+    name: Fusebit API
+    description: >-
+      Fusebit provides a code-first integration platform that enables developers
+      to build, deploy, and manage integrations within their SaaS products.
+    humanURL: https://fusebit.io
+    tags:
+      - Embedded iPaaS
+      - Developer Tools
+    properties:
+      - type: Documentation
+        url: https://developer.fusebit.io
+common:
+  - type: Website
+    url: https://fusebit.io
+  - type: Documentation
+    url: https://developer.fusebit.io
+  - type: GitHub Organization
+    url: https://github.com/fusebit
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
