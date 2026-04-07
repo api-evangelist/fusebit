@@ -6,8 +6,8 @@ description: >-
 type: Index
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 tags:
-  - Embedded iPaaS
   - Developer Tools
+  - Embedded iPaaS
   - Integration
 url: >-
   https://raw.githubusercontent.com/api-evangelist/fusebit/refs/heads/main/apis.yml
@@ -22,8 +22,8 @@ apis:
       to build, deploy, and manage integrations within their SaaS products.
     humanURL: https://fusebit.io
     tags:
-      - Embedded iPaaS
       - Developer Tools
+      - Embedded iPaaS
     properties:
       - type: Documentation
         url: https://developer.fusebit.io
