@@ -41,7 +41,7 @@ common:
     url: https://fusebit.io
   - type: Documentation
     url: https://developer.fusebit.io
-  - type: GitHub Organization
+  - type: GitHubOrganization
     url: https://github.com/fusebit
 maintainers:
   - FN: Kin Lane
