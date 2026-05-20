@@ -37,6 +37,8 @@ apis:
       - type: Documentation
         url: https://developer.fusebit.io
 common:
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/fusebit
   - type: Website
     url: https://fusebit.io
   - type: Documentation
