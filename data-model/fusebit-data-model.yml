@@ -1,0 +1,276 @@
+generated: '2026-09-10'
+method: derived
+source: >-
+  openapi/fusebit-http-api-core-openapi.yml (48 component schemas, 49 operations) and
+  openapi/fusebit-http-api-integrations-openapi.yml (46 component schemas, 40 operations) — derived
+  from $ref links, id-typed schemas (AccountId, SubscriptionId, BoundaryId, FunctionId, IssuerId,
+  UserId, ClientId, StorageId, EntityId, IdentityId, InstallId, SessionId, ParentId) and the path
+  hierarchy, which encodes containment explicitly.
+provider: Fusebit
+providerId: fusebit
+note: >-
+  Fusebit's model is a strict containment tree rooted at Account, with two parallel branches: the v1
+  compute branch (Subscription -> Boundary -> Function) and the v2 integrations branch (Subscription ->
+  Integration/Connector -> Install/Identity). The URL path IS the entity graph — every id-reference
+  below appears as a path segment, which is also how authorization resources are addressed
+  (AccessStatement.resource is a prefix of one of these paths).
+id_prefixes:
+  - prefix: acc-
+    entity: Account
+    example: acc-5555555555555555
+  - prefix: sub-
+    entity: Subscription
+    example: sub-5555555555555555
+  - prefix: usr-
+    entity: User
+    example: usr-5555555555555555
+  - prefix: cli-
+    entity: Client
+    example: cli-5555555555555555
+  - prefix: bld-
+    entity: Build
+    example: bld-5555555555555555
+id_prefix_note: >-
+  Boundary, Function, Integration, Connector, Install and Identity ids are caller-chosen strings,
+  not prefixed. v2 additionally exposes an `idPrefix` search parameter that matches on these
+  caller-chosen ids.
+entities:
+  - name: Account
+    version: v1
+    schema: Account
+    root: true
+    key: accountId
+    description: The top-level tenant. Everything else hangs off exactly one account.
+    operations: [getAccount, patchAccount, getAccountAudit, resolveInit]
+  - name: Subscription
+    version: v1
+    schema: Subscription
+    key: subscriptionId
+    description: An isolation and billing boundary within an account; the parent of all runtime entities.
+    operations: [getAccountSubscriptionList, getSubscription]
+  - name: Boundary
+    version: v1
+    schema: BoundaryId
+    key: boundaryId
+    description: A caller-defined namespace grouping functions within a subscription.
+    operations: [getFunctionList, getBoundaryLogs, newBoundaryLogQuery, getBoundaryLogQueryResults]
+  - name: Function
+    version: v1
+    schema: Function
+    key: functionId
+    description: The deployable unit of compute — code, runtime, security, routes and schedule.
+    operations: [getFunction, putFunction, deleteFunction, getSubscriptionFunctionList, getFunctionLocation, getFunctionLog, newFunctionLogQuery]
+  - name: Build
+    version: v1
+    schema: Build
+    key: buildId
+    description: An asynchronous build of a function's module dependencies.
+    operations: [postFunctionBuild, getFunctionBuild]
+  - name: User
+    version: v1
+    schema: User
+    key: userId
+    description: A human principal on the account, holding access grants and one or more identities.
+    operations: [getUserList, getUser, postUser, patchUser, deleteUser, initUser]
+  - name: Client
+    version: v1
+    schema: Client
+    key: clientId
+    description: A machine principal, structurally parallel to User.
+    operations: [getAccountClientList, getAccountClient, postClient, putAccountClient, deleteClient, initClient]
+  - name: Issuer
+    version: v1
+    schema: Issuer
+    key: issuerId
+    description: A trusted JWT issuer and its public keys; the root of trust for every access token.
+    operations: [getAccountIssuerList, getAccountIssuer, postAccountIssuer, putAccountIssuer, deleteIssuer]
+  - name: Identity
+    version: v1
+    schema: Identity
+    key: 'issuerId + subject'
+    description: >-
+      The binding of an external token subject to a Fusebit User or Client. Composite key of
+      issuerId plus the `sub` claim.
+  - name: AccessStatement
+    version: v1
+    schema: AccessStatement
+    key: 'action + resource'
+    description: A single permission grant embedded in a User or Client, not an addressable entity.
+  - name: Storage
+    version: v1
+    schema: StorageData
+    key: storageId
+    description: Subscription-scoped key/value storage with ETag optimistic concurrency and a recursive path namespace.
+    operations: [getStorageList, getStorage, putStorage, deleteStorage, getStorageListRecursive, deleteStorageRecusive]
+  - name: Registry
+    version: v1
+    schema: RegistryGet
+    key: default
+    description: The account's private npm registry scope configuration. Singleton per account.
+    operations: [getRegistry, putRegistry]
+  - name: Integration
+    version: v2
+    schema: IntegrationEntity
+    key: integrationId
+    description: The logic that integrates two services — code files, configuration and component bindings.
+    operations: [listIntegrations, getIntegration, postIntegration, putIntegration, deleteIntegration]
+  - name: Connector
+    version: v2
+    schema: ConnectorEntity
+    key: connectorId
+    description: Management for external credentials against one third-party service.
+    operations: [listConnectors, getConnector, postConnector, putConnector, deleteConnector]
+  - name: Install
+    version: v2
+    schema: InstallEntity
+    key: installId
+    description: A fully configured instance of an Integration for one end customer.
+    operations: [listInstalls, searchInstalls, getInstall, putInstall, deleteInstall]
+  - name: 'Identity (v2)'
+    version: v2
+    schema: IdentityEntity
+    key: identityId
+    description: A managed credential held by a Connector on behalf of one end customer.
+    operations: [listIdentities, searchIdentities, getIdentity, putIdentity, deleteIdentity]
+  - name: Session
+    version: v2
+    schema: Session
+    key: sessionId
+    description: >-
+      A time-boxed configuration phase in which an end customer authorizes connectors and supplies
+      configuration; committing a session produces the Install and its Identities.
+    operations: [createSession, getSession, putSession, postSession]
+  - name: Tag
+    version: v2
+    schema: EntityTags
+    key: 'tagKey (+ tagValue)'
+    description: Caller-supplied key/value metadata attached to any v2 entity, with its own sub-resource.
+    operations: [getIntegrationTags, getIntegrationTag, putIntegrationTag, deleteIntegrationTag, getConnectorTags, getConnectorTag, putConnectorTag, deleteConnectorTag, getInstallTags, getInstallTag, putInstallTag, deleteInstallTag, getIdentityTags, getIdentityTag, putIdentityTag, deleteIdentityTag]
+relationships:
+  - from: Account
+    to: Subscription
+    type: has_many
+    via: subscriptionId
+    evidence: /v1/account/{accountId}/subscription
+  - from: Account
+    to: User
+    type: has_many
+    via: userId
+    evidence: /v1/account/{accountId}/user
+  - from: Account
+    to: Client
+    type: has_many
+    via: clientId
+    evidence: /v1/account/{accountId}/client
+  - from: Account
+    to: Issuer
+    type: has_many
+    via: issuerId
+    evidence: /v1/account/{accountId}/issuer
+  - from: Account
+    to: Registry
+    type: has_one
+    via: default
+    evidence: /v1/account/{accountId}/registry/default
+  - from: Subscription
+    to: Boundary
+    type: has_many
+    via: boundaryId
+    evidence: /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}
+  - from: Boundary
+    to: Function
+    type: has_many
+    via: functionId
+    evidence: /v1/.../boundary/{boundaryId}/function/{functionId}
+  - from: Function
+    to: Build
+    type: has_many
+    via: buildId
+    evidence: /v1/.../function/{functionId}/build/{buildId}
+  - from: Subscription
+    to: Storage
+    type: has_many
+    via: storageId
+    evidence: /v1/account/{accountId}/subscription/{subscriptionId}/storage/{storageId}
+  - from: User
+    to: Identity
+    type: has_many
+    via: 'issuerId + subject'
+    evidence: User.identities[] -> Identity { issuerId, subject }
+  - from: Client
+    to: Identity
+    type: has_many
+    via: 'issuerId + subject'
+    evidence: Client.identities[] -> Identity { issuerId, subject }
+  - from: Identity
+    to: Issuer
+    type: belongs_to
+    via: issuerId
+    evidence: Identity.issuerId -> IssuerId
+  - from: User
+    to: AccessStatement
+    type: has_many
+    via: 'action + resource'
+    evidence: User.access.allow[] -> AccessStatement
+  - from: Client
+    to: AccessStatement
+    type: has_many
+    via: 'action + resource'
+    evidence: Client.access.allow[] -> AccessStatement
+  - from: Issuer
+    to: PublicKey
+    type: has_many
+    via: keyId
+    evidence: Issuer.publicKeys[] -> PublicKey
+  - from: Subscription
+    to: Integration
+    type: has_many
+    via: integrationId
+    evidence: /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}
+  - from: Subscription
+    to: Connector
+    type: has_many
+    via: connectorId
+    evidence: /v2/account/{accountId}/subscription/{subscriptionId}/connector/{connectorId}
+  - from: Integration
+    to: Install
+    type: has_many
+    via: installId
+    evidence: /v2/.../integration/{integrationId}/install/{installId}
+  - from: Connector
+    to: 'Identity (v2)'
+    type: has_many
+    via: identityId
+    evidence: /v2/.../connector/{connectorId}/identity/{identityId}
+  - from: Integration
+    to: Connector
+    type: has_many
+    via: 'components[].entityId'
+    evidence: IntegrationEntityData.components[] -> ComponentsEntityId (an Integration declares the Connectors it binds)
+  - from: Install
+    to: 'Identity (v2)'
+    type: has_many
+    via: 'per-component identity binding'
+    evidence: >-
+      An Install resolves each of its Integration's declared components to a concrete Identity held
+      by the matching Connector; committing a Session is what creates both.
+  - from: Session
+    to: Install
+    type: has_one
+    via: installId
+    evidence: SessionInstallIdResponse returned from postSession (commit)
+  - from: Session
+    to: 'Integration | Connector'
+    type: belongs_to
+    via: 'entityType + entityId'
+    evidence: /v2/.../{entityType}/{entityId}/session
+  - from: Session
+    to: Session
+    type: has_many
+    via: parentId
+    evidence: Session.parentId -> ParentId (a parent session fans out to one child session per component)
+  - from: 'Integration | Connector | Install | Identity (v2)'
+    to: Tag
+    type: has_many
+    via: tagKey
+    evidence: '.../{entity}/{entityId}/tag/{tagKey}/{tagValue}'

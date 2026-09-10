@@ -1,143 +1,44 @@
-specification: API Commons Plans
-specificationVersion: '0.1'
-schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+generated: '2026-09-10'
+method: probed
+source: >-
+  Live DNS/HTTP probes of https://fusebit.io/pricing, https://fusebit.io and every Fusebit host,
+  2026-09-10; corroborated against the surviving first-party record
+  (https://fivequarters.github.io/q5/release-notes/, https://github.com/fivequarters/q5,
+  https://www.npmjs.com/org/fusebit), none of which states a price.
 provider: Fusebit
 providerId: fusebit
-created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
-tags:
-  - Developer Tools
-  - Embedded iPaaS
-  - Integration
-  - Acquired
-description: Machine-readable plans and pricing scaffold for this API provider. Conforms to the API Commons
-  Plans schema. Tier limits and prices are scaffold defaults; replace with provider-published values.
-plans:
-  - id: fusebit-free
-    name: Free
-    type: freemium
-    description: Free entry tier for the Fusebit API surface. Intended for evaluation, prototyping, and
-      low-volume integrations. Real limits and pricing must be reconciled with the provider's published
-      plan documentation.
-    entries:
-      - label: API Requests
-        description: Monthly API request quota across all included endpoints
-        name: api_requests
-        type: quota
-        metric: requests
-        limit: 1000
-        timeFrame: month
-        geo: global
-        domains: []
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-      - label: Rate Limit
-        description: Maximum requests per minute on the free tier
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 10
-        timeFrame: minute
-        geo: global
-        domains: []
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-    elements:
-      - name: Public Documentation
-      - name: Community Support
-      - name: Sandbox Access
-      - name: Fusebit API
-  - id: fusebit-pro
-    name: Professional
-    type: paid
-    description: Production tier for Fusebit. Provides higher quotas, priority support, and access to
-      the broader API portfolio. Pricing placeholder; align with the provider's pricing page.
-    entries:
-      - label: API Requests
-        description: Monthly API request quota
-        name: api_requests
-        type: quota
-        metric: requests
-        limit: 100000
-        timeFrame: month
-        geo: global
-        domains: []
-        unit: 1
-        price: TBD
-        userMultiplied: false
-      - label: Rate Limit
-        description: Maximum requests per minute on the professional tier
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 100
-        timeFrame: minute
-        geo: global
-        domains: []
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-      - label: Overage
-        description: Per-request price after monthly quota is exceeded
-        name: overage
-        type: metered
-        metric: requests
-        limit: -1
-        timeFrame: month
-        geo: global
-        domains: []
-        unit: 1000
-        price: TBD
-        userMultiplied: false
-    elements:
-      - name: All Production Endpoints
-      - name: Email Support
-      - name: SLA Targets
-      - name: Webhook Subscriptions
-      - name: Fusebit API
-  - id: fusebit-enterprise
-    name: Enterprise
-    type: enterprise
-    description: Custom-negotiated tier for Fusebit. Includes dedicated capacity, contractual SLAs, security
-      review, data residency options, and named technical account management.
-    entries:
-      - label: API Requests
-        description: Negotiated request volume; -1 indicates uncapped subject to fair use
-        name: api_requests
-        type: quota
-        metric: requests
-        limit: -1
-        timeFrame: month
-        geo: configurable
-        domains: []
-        unit: 1
-        price: custom
-        userMultiplied: false
-      - label: Rate Limit
-        description: Negotiated burst and steady-state rate
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 1000
-        timeFrame: minute
-        geo: configurable
-        domains: []
-        unit: 1
-        price: custom
-        userMultiplied: false
-    elements:
-      - name: Unlimited / Negotiated Volume
-      - name: 24/7 Dedicated Support
-      - name: Contractual SLA
-      - name: Security & Compliance Review
-      - name: Dedicated Account Manager
-      - name: Custom Data Residency
-      - name: Fusebit API
-maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+checked: '2026-09-10'
+summary: >-
+  Fusebit publishes no plans and no prices, because Fusebit no longer publishes anything. The
+  pricing page cannot be fetched: fusebit.io serves no DNS A record, so every pricing, sign-up and
+  terms URL fails to resolve. No price, tier, quota or overage rate survives in any reachable
+  first-party document. This is an honest zero on a retired provider, not an unmeasured gap.
+supersedes_note: >-
+  This file replaces an API Evangelist scaffold dated 2026-05-04 that asserted three tiers
+  (Free / Professional / Enterprise) with invented request quotas, per-minute limits and TBD
+  prices. None of it came from Fusebit. It has been removed rather than carried forward, because a
+  fabricated plan set is worse than a measured absence.
+plan_count: 0
+prices_published: false
+currency: null
+billing_period: null
+public_signup_pricing: false
+plans: []
+evidence:
+  - url: https://fusebit.io/pricing
+    status: 0
+    result: dns-nxdomain
+    checked: '2026-09-10'
+  - url: https://fusebit.io
+    status: 0
+    result: dns-nxdomain
+    checked: '2026-09-10'
+  - url: https://developer.fusebit.io
+    status: 0
+    result: dns-nxdomain
+    checked: '2026-09-10'
+historical_note: >-
+  Fusebit's commercial model was subscription-based access to a hosted platform, with a
+  self-hosted/private-deployment option operated through the Fusebit Operations CLI (`fuse-ops`).
+  The Subscription entity in the v1 contract is the billing and isolation boundary. No rate card for
+  either model is recoverable.

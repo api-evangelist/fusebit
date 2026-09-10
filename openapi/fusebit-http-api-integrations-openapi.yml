@@ -1,0 +1,2111 @@
+openapi: 3.0.0
+security:
+  - AccessToken: []
+
+servers:
+  - url: https://api.{region}.on.fusebit.io
+    description: Production
+    variables:
+      region:
+        description: |
+          The region where the API is deployed, for example `'us-west-1'`
+        default: 'us-west-1'
+
+info:
+  description: Fusebit HTTP API for the management and execution of Fusebit
+    accounts, users, functions and more
+  version: '1.0.0'
+  title: 'Fusebit HTTP API - Integrations'
+  contact:
+    email: contact@fusebit.io
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+
+tags:
+  - name: Session
+    description: An active configuration phase for a customer
+  - name: Connector
+    description: Management for external credentials
+  - name: Identity
+    description: |
+      A managed credential for a remote service, on behalf of a customer
+  - name: Integration
+    description: The logic necessary to integrate between two services
+  - name: Install
+    description: A fully configured integration for a customer
+
+paths:
+  #############################################################################
+  # Session
+  /v2/account/{accountId}/subscription/{subscriptionId}/{entityType}/{entityId}/session:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - $ref: '#/components/parameters/EntityType'
+      - $ref: '#/components/parameters/EntityId'
+    post:
+      tags:
+        - Session
+      summary: Create a new session
+      description: Create a new session on behalf of a new user, or to allow an existing
+        user to reconfigure their integration.
+      operationId: createSession
+      requestBody:
+        $ref: '#/components/requestBodies/PostSessionBody'
+      responses:
+        200:
+          description: The created session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['session:add']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/{entityType}/{entityId}/session/{sessionId}:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - $ref: '#/components/parameters/EntityType'
+      - $ref: '#/components/parameters/EntityId'
+      - $ref: '#/components/parameters/SessionId'
+    get:
+      tags:
+        - Session
+      summary: Get a session
+      description: Get the inputs and outputs of an existing session.
+      operationId: getSession
+      responses:
+        200:
+          description: The session entity with results from any operations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResult'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['session:get']
+
+    put:
+      tags:
+        - Session
+      summary: Update a session's output
+      description: Write the outputs of an configuration to a session. Primarily used in on
+        configuration form submission in an integration, or in a connector.
+      operationId: putSession
+      requestBody:
+        $ref: '#/components/requestBodies/PutSessionBody'
+      responses:
+        200:
+          description: The created session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResult'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['session:update']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/{entityType}/{entityId}/session/{sessionId}/commit:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - $ref: '#/components/parameters/EntityType'
+      - $ref: '#/components/parameters/EntityId'
+      - $ref: '#/components/parameters/SessionId'
+    post:
+      tags:
+        - Session
+      summary: Commit a session
+      description: Commit the session, creating the necessary install and identity
+        entities, or updating the configuration of existing entities as necessary.
+      operationId: postSession
+      responses:
+        202:
+          $ref: '#/components/responses/Session202'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['session:commit']
+
+  #############################################################################
+  # Connector
+  /v2/account/{accountId}/subscription/{subscriptionId}/connector:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+    get:
+      tags:
+        - Connector
+      summary: Search for and retrieve entities of the specified type
+      operationId: listConnectors
+      parameters:
+        - $ref: '#/components/parameters/SearchIdPrefix'
+        - $ref: '#/components/parameters/SearchCount'
+        - $ref: '#/components/parameters/SearchNext'
+        - $ref: '#/components/parameters/SearchSort'
+        - $ref: '#/components/parameters/SearchTag'
+        - $ref: '#/components/parameters/SearchStatus'
+      responses:
+        200:
+          description: A list of the entities found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorList'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['connector:get']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/connector/{connectorId}:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: connectorId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+    post:
+      tags:
+        - Connector
+      summary: Create a new entity of the specified type
+      operationId: postConnector
+      requestBody:
+        $ref: '#/components/requestBodies/PostConnectorBody'
+      responses:
+        202:
+          $ref: '#/components/responses/Connector202'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['connector:add']
+    get:
+      tags:
+        - Connector
+      summary: Get a connector
+      operationId: getConnector
+      responses:
+        200:
+          description: The requested entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorEntity'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['connector:get']
+    put:
+      tags:
+        - Connector
+      summary: Update a connector
+      operationId: putConnector
+      requestBody:
+        $ref: '#/components/requestBodies/PostConnectorBody'
+      responses:
+        202:
+          $ref: '#/components/responses/Connector202'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['connector:update']
+    delete:
+      tags:
+        - Connector
+      summary: Delete a connector
+      operationId: deleteConnector
+      responses:
+        202:
+          $ref: '#/components/responses/Connector202'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+      security:
+        - AccessToken: ['connector:delete']
+
+  #############################################################################
+  # Identity
+  /v2/account/{accountId}/subscription/{subscriptionId}/identity/:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+    get:
+      tags:
+        - Identity
+      summary: Search for and retrieve entities of the specified type across all Connectors
+      operationId: searchIdentities
+      parameters:
+        - $ref: '#/components/parameters/SearchCount'
+        - $ref: '#/components/parameters/SearchNext'
+        - $ref: '#/components/parameters/SearchSort'
+        - $ref: '#/components/parameters/SearchTag'
+      responses:
+        200:
+          description: A list of the entities found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityList'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['identity:get']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/connector/{connectorId}/identity/:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: connectorId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+    get:
+      tags:
+        - Identity
+      summary: Search for and retrieve entities of the specified type
+      operationId: listIdentities
+      parameters:
+        - $ref: '#/components/parameters/SearchCount'
+        - $ref: '#/components/parameters/SearchNext'
+        - $ref: '#/components/parameters/SearchSort'
+        - $ref: '#/components/parameters/SearchTag'
+      responses:
+        200:
+          description: A list of the entities found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityList'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['identity:get']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/connector/{connectorId}/identity/{identityId}:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: connectorId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+      - name: identityId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/IdentityId'
+    get:
+      tags:
+        - Identity
+      summary: Get an identity
+      operationId: getIdentity
+      responses:
+        200:
+          description: The requested entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityEntity'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['identity:get']
+    put:
+      tags:
+        - Identity
+      summary: Update an identity
+      operationId: putIdentity
+      requestBody:
+        $ref: '#/components/requestBodies/PostIdentityBody'
+      responses:
+        200:
+          description: The requested entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityEntity'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['identity:update']
+    delete:
+      tags:
+        - Identity
+      summary: Delete an identity
+      operationId: deleteIdentity
+      responses:
+        204:
+          description: The entity deletion succeeded
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['identity:delete']
+
+  #############################################################################
+  # Integration
+  /v2/account/{accountId}/subscription/{subscriptionId}/integration:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+    get:
+      tags:
+        - Integration
+      summary: Search for and retrieve entities of the specified type
+      operationId: listIntegrations
+      parameters:
+        - $ref: '#/components/parameters/SearchIdPrefix'
+        - $ref: '#/components/parameters/SearchCount'
+        - $ref: '#/components/parameters/SearchNext'
+        - $ref: '#/components/parameters/SearchSort'
+        - $ref: '#/components/parameters/SearchTag'
+        - $ref: '#/components/parameters/SearchStatus'
+      responses:
+        200:
+          description: A list of the entities found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationList'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['integration:get']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: integrationId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+    post:
+      tags:
+        - Integration
+      summary: Create a new entity of the specified type
+      operationId: postIntegration
+      requestBody:
+        $ref: '#/components/requestBodies/PostIntegrationBody'
+      responses:
+        202:
+          $ref: '#/components/responses/Integration202'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['integration:add']
+    get:
+      tags:
+        - Integration
+      summary: Get an integration
+      operationId: getIntegration
+      responses:
+        200:
+          description: The requested entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationEntity'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['integration:get']
+    put:
+      tags:
+        - Integration
+      summary: Update an integration
+      operationId: putIntegration
+      requestBody:
+        $ref: '#/components/requestBodies/PostIntegrationBody'
+      responses:
+        202:
+          $ref: '#/components/responses/Integration202'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['integration:update']
+    delete:
+      tags:
+        - Integration
+      summary: Delete an integration
+      operationId: deleteIntegration
+      responses:
+        202:
+          $ref: '#/components/responses/Integration202'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+      security:
+        - AccessToken: ['integration:delete']
+
+  #############################################################################
+  # Install
+  /v2/account/{accountId}/subscription/{subscriptionId}/install/:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+    get:
+      tags:
+        - Install
+      summary: Search for and retrieve entities of the specified type across all Integrations
+      operationId: searchInstalls
+      parameters:
+        - $ref: '#/components/parameters/SearchCount'
+        - $ref: '#/components/parameters/SearchNext'
+        - $ref: '#/components/parameters/SearchSort'
+        - $ref: '#/components/parameters/SearchTag'
+      responses:
+        200:
+          description: A list of the entities found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstallList'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['instance:get']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}/install/:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: integrationId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+    get:
+      tags:
+        - Install
+      summary: Search for and retrieve entities of the specified type
+      operationId: listInstalls
+      parameters:
+        - $ref: '#/components/parameters/SearchCount'
+        - $ref: '#/components/parameters/SearchNext'
+        - $ref: '#/components/parameters/SearchSort'
+        - $ref: '#/components/parameters/SearchTag'
+      responses:
+        200:
+          description: A list of the entities found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstallList'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['instance:get']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}/install/{installId}:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: integrationId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+      - name: installId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/InstallId'
+    get:
+      tags:
+        - Install
+      summary: Get an install
+      operationId: getInstall
+      responses:
+        200:
+          description: The requested entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstallEntity'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['instance:get']
+    put:
+      tags:
+        - Install
+      summary: Update an install
+      operationId: putInstall
+      requestBody:
+        $ref: '#/components/requestBodies/PostInstallBody'
+      responses:
+        200:
+          description: The requested entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstallEntity'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['instance:update']
+    delete:
+      tags:
+        - Install
+      summary: Delete an install
+      operationId: deleteInstall
+      responses:
+        204:
+          description: The entity deletion succeeded
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+      security:
+        - AccessToken: ['instance:delete']
+
+#############################################################################
+# Tags
+#
+# This section is duplicated, verbatim, for each of the various endpoints the
+# tags are mounted on: integration, connector, install, identity.
+#
+# Each endpoint is grouped by type, for simplicity in updating all of them at
+# once.
+#
+# GET /tag/
+  /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}/tag:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: integrationId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+    get:
+      tags:
+        - Integration/Tags
+      summary: Get the tags for an entity
+      operationId: getIntegrationTags
+      responses:
+        200:
+          $ref: '#/components/responses/Tag200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['integration:get']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/connector/{connectorId}/tag:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: connectorId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+    get:
+      tags:
+        - Connector/Tags
+      summary: Get the tags for an entity
+      operationId: getConnectorTags
+      responses:
+        200:
+          $ref: '#/components/responses/Tag200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['connector:get']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}/install/{installId}/tag:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: integrationId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+      - name: installId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/InstallId'
+    get:
+      tags:
+        - Install/Tags
+      summary: Get the tags for an entity
+      operationId: getInstallTags
+      responses:
+        200:
+          $ref: '#/components/responses/Tag200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['install:get']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/connector/{connectorId}/identity/{identityId}/tag:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: connectorId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+      - name: identityId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/IdentityId'
+    get:
+      tags:
+        - Identity/Tags
+      summary: Get the tags for an entity
+      operationId: getIdentityTags
+      responses:
+        200:
+          $ref: '#/components/responses/Tag200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['identity:get']
+
+# GET/DELETE /tag/tagKey
+  /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}/tag/{tagKey}:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: integrationId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+      - $ref: '#/components/parameters/TagKey'
+    get:
+      tags:
+        - Integration/Tags
+      summary: Get the value of a specific tag for an entity
+      operationId: getIntegrationTag
+      responses:
+        200:
+          $ref: '#/components/responses/TagKey200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['integration:get']
+    delete:
+      tags:
+        - Integration/Tags
+      summary: Delete a specific tag
+      operationId: deleteIntegrationTag
+      responses:
+        200:
+          $ref: '#/components/responses/Tag200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['integration:put-tag']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/connector/{connectorId}/tag/{tagKey}:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: connectorId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+      - $ref: '#/components/parameters/TagKey'
+    get:
+      tags:
+        - Connector/Tags
+      summary: Get the value of a specific tag for an entity
+      operationId: getConnectorTag
+      responses:
+        200:
+          $ref: '#/components/responses/TagKey200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['connector:get']
+    delete:
+      tags:
+        - Connector/Tags
+      summary: Delete a specific tag
+      operationId: deleteConnectorTag
+      responses:
+        200:
+          $ref: '#/components/responses/Tag200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['connector:put-tag']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}/install/{installId}/tag/{tagKey}:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: integrationId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+      - name: installId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/InstallId'
+      - $ref: '#/components/parameters/TagKey'
+    get:
+      tags:
+        - Install/Tags
+      summary: Get the value of a specific tag for an entity
+      operationId: getInstallTag
+      responses:
+        200:
+          $ref: '#/components/responses/TagKey200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['install:get']
+    delete:
+      tags:
+        - Install/Tags
+      summary: Delete a specific tag
+      operationId: deleteInstallTag
+      responses:
+        200:
+          $ref: '#/components/responses/Tag200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['install:put-tag']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/connector/{connectorId}/identity/{identityId}/tag/{tagKey}:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: connectorId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+      - $ref: '#/components/parameters/TagKey'
+      - name: identityId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/IdentityId'
+    get:
+      tags:
+        - Identity/Tags
+      summary: Get the value of a specific tag for an entity
+      operationId: getIdentityTag
+      responses:
+        200:
+          $ref: '#/components/responses/TagKey200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['connector:get']
+    delete:
+      tags:
+        - Install/Tags
+      summary: Delete a specific tag
+      operationId: deleteIdentityTag
+      responses:
+        200:
+          $ref: '#/components/responses/Tag200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['identity:put-tag']
+
+# PUT /tagKey/tagValue
+  /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}/tag/{tagKey}/{tagValue}:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: integrationId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+      - $ref: '#/components/parameters/TagKey'
+      - $ref: '#/components/parameters/TagValue'
+    put:
+      tags:
+        - Integration/Tags
+      summary: Set the value of a specific tag for an entity
+      operationId: putIntegrationTag
+      responses:
+        200:
+          $ref: '#/components/responses/Tag200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['integration:put']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/connector/{connectorId}/tag/{tagKey}/{tagValue}:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: connectorId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+      - $ref: '#/components/parameters/TagKey'
+      - $ref: '#/components/parameters/TagValue'
+    put:
+      tags:
+        - Connector/Tags
+      summary: Set the value of a specific tag for an entity
+      operationId: putConnectorTag
+      responses:
+        200:
+          $ref: '#/components/responses/Tag200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['connector:put-tag']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}/install/{installId}/tag/{tagKey}/{tagValue}:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: integrationId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+      - name: installId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/InstallId'
+      - $ref: '#/components/parameters/TagKey'
+      - $ref: '#/components/parameters/TagValue'
+    put:
+      tags:
+        - Install/Tags
+      summary: Set the value of a specific tag for an entity
+      operationId: putInstallTag
+      responses:
+        200:
+          $ref: '#/components/responses/Tag200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['install:put-tag']
+
+  /v2/account/{accountId}/subscription/{subscriptionId}/connector/{connectorId}/identity/{identityId}/tag/{tagKey}/{tagValue}:
+    parameters:
+      - $ref: '#/components/parameters/Account'
+      - $ref: '#/components/parameters/Subscription'
+      - name: connectorId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/EntityId'
+      - name: identityId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/IdentityId'
+      - $ref: '#/components/parameters/TagKey'
+      - $ref: '#/components/parameters/TagValue'
+    put:
+      tags:
+        - Identity/Tags
+      summary: Set the value of a specific tag for an entity
+      operationId: putIdentityTag
+      responses:
+        200:
+          $ref: '#/components/responses/Tag200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+        - AccessToken: ['connector:put-tag']
+
+#############################################################################
+# Components
+
+components:
+  securitySchemes:
+    AccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: For a description of the access token format, see
+        [this doc](https://developer.fusebit.io/docs/connecting-fusebit-with-your-application).
+
+  parameters:
+    Account:
+      name: accountId
+      in: path
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    Subscription:
+      name: subscriptionId
+      in: path
+      required: true
+      description: Subscription id
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    EntityType:
+      name: entityType
+      required: true
+      in: path
+      description: The type of the entity
+      schema:
+        $ref: '#/components/schemas/EntityType'
+    EntityId:
+      name: entityId
+      in: path
+      required: true
+      description: The id of the entity
+      schema:
+        $ref: '#/components/schemas/EntityId'
+    SessionId:
+      name: sessionId
+      in: path
+      required: true
+      description: The id of the session
+      schema:
+        $ref: '#/components/schemas/SessionId'
+    SearchIdPrefix:
+      name: idPrefix
+      in: query
+      description: A prefix to use when searching for a particular entity by id.
+        For example, to search for all integrations that start with a particular
+        service name.
+      schema:
+        type: string
+    SearchCount:
+      name: count
+      in: query
+      description: The maximum number of entries to return
+      schema:
+        type: number
+    SearchNext:
+      name: next
+      in: query
+      description: The key to use to retrieve the next set of results
+      schema:
+        type: string
+    SearchSort:
+      name: sort
+      in: query
+      description: Sort the results by `dateModified`, `dateAdded`, or the default value of `entityId`.  If `sort` is
+        prepended with a `-` character, the order direction is reversed.
+      schema:
+        type: string
+    SearchTag:
+      name: tag
+      in: query
+      description: A `tagName` or `tagName=tagValue` to search for. Can be specified multiple times in a query
+        parameter to indicate multiple tag values to require in the results.
+      schema:
+        type: string
+    SearchStatus:
+      name: status
+      in: query
+      description: Search for entities matching a particular status, `creating`, `invalid`, or `active.
+      schema:
+        $ref: '#/components/schemas/EntityState'
+    TagKey:
+      name: tagKey
+      in: path
+      required: true
+      description: The name of the tag, URL encoded as necessary
+      schema:
+        type: string
+    TagValue:
+      name: tagValue
+      in: path
+      required: true
+      description: The value of the tag, URL encoded as necessary
+      schema:
+        type: string
+
+  requestBodies:
+    PostConnectorBody:
+      description: Upload a new entity
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ConnectorPostEntity'
+
+    PostIdentityBody:
+      description: Upload a new entity
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IdentityEntity'
+
+    PostIntegrationBody:
+      description: Upload a new entity
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IntegrationPostEntity'
+
+    PostInstallBody:
+      description: Upload a new entity
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InstallEntity'
+
+    PostSessionBody:
+      description: Create a new session on an integration
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - redirectUrl
+            properties:
+              components:
+                type: array
+                description: A list of the desired components to configure. If not present,
+                  then all components specified in the integration are
+                  configured in this session.
+                items:
+                  type: string
+              tags:
+                description: A collection of tags that will be added to install entities created during this session.
+                allOf:
+                  - $ref: '#/components/schemas/EntityTags'
+              extendTags:
+                description: If set to `true`, add the tags present on the integration in the `data.componentTags` field
+                  to any installs created during this session. If set to `false`, only use the tags specified on the
+                  session directly.
+                default: false
+              input:
+                $ref: '#/components/schemas/SessionInput'
+              redirectUrl:
+                type: string
+                description: The URL in your infrastructure that the user should return to
+                  after completing the session. Must be a full url, including scheme and hostname.
+              installId:
+                type: string
+                description: Used when reconfiguring an existing user. Specifies the
+                  install associated with that user.
+
+    PutSessionBody:
+      description: The results of a configuration action, such as a form.
+      content:
+        application/json:
+          schema:
+            type: object
+
+  responses:
+    Connector202:
+      description: The entity creation is in progress. While the `operationState.status` value is
+        `processing`, the entity is still being created. Once the `operationState.status` value is
+        `success`, the entity is available for use.
+
+        On failure, `operationState.status` will be set to `failed` and `state` will be `invalid`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ConnectorEntity'
+
+    Integration202:
+      description: The entity creation is in progress. While the `operationState.status` value is
+        `processing`, the entity is still being created. Once the `operationState.status` value is
+        `success`, the entity is available for use.
+
+        On failure, `operationState.status` will be set to `failed` and `state` will be `invalid`.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IntegrationEntity'
+
+    Session202:
+      description: The install creation is in progress. To check its status, use the `targetUrl` endpoint
+        returned by this call. While the `operationState.status` value of the install is
+        `processing`, the entity is still being created. Once the `operationState.status` value is
+        `success`, the entity becomes available for use.
+
+        On failure, `operationState.status` will be set to `failed` and `state` will be `invalid`.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - targetUrl
+            properties:
+              targetUrl:
+                type: string
+                description: The endpoint where you can find the install being created
+
+    Tag200:
+      description: The set of tags that apply to a specific entity.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - tags
+            properties:
+              tags:
+                $ref: '#/components/schemas/EntityTags'
+              version:
+                type: string
+          example:
+            tags:
+              tenantId: Sonicity
+
+    TagKey200:
+      description: The requested tag value
+      content:
+        application/json:
+          schema:
+            type: string
+            description: The value of the requested tag, as a JSON encoded string.
+
+    400:
+      description: The request submitted is invalid. Please, check the documentation and
+        fix the request before sending it again.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - status
+              - statusCode
+              - message
+            properties:
+              status:
+                type: number
+                description: The HTTP status code
+                example: 400
+              statusCode:
+                type: number
+                description: The HTTP status code
+                example: 400
+              message:
+                type: string
+                description: A message with details regarding the error
+                example: Field redirectUrl is required.
+    403:
+      description: Access to the requested resource is forbidden.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - status
+              - statusCode
+              - message
+            properties:
+              status:
+                type: number
+                description: The HTTP status code
+                example: 403
+              statusCode:
+                type: number
+                description: The HTTP status code
+                example: 403
+              message:
+                type: string
+                description: A message with details regarding the error
+                example: Unauthorized
+    404:
+      description: The specified resource was not found.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - status
+              - statusCode
+              - message
+            properties:
+              status:
+                type: number
+                description: The HTTP status code
+                example: 404
+              statusCode:
+                type: number
+                description: The HTTP status code
+                example: 404
+              message:
+                type: string
+                description: A message with details regarding the error
+                example: Resource not found
+
+  schemas:
+    AccountId:
+      type: string
+      description: Account id
+      example: 'acc-5555555555555555'
+
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: 'sub-5555555555555555'
+
+    EntityId:
+      type: string
+      description: |
+        The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
+
+    ComponentsEntityId:
+      type: string
+      description: |
+        The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)` or `{{integration}}` when the current
+          entity's id should be used.
+
+          This parameter is optional. When not supplied, it defaults to the current entity's id.
+
+    InstallId:
+      type: string
+      description: Install id
+      example: 'ins-01234567890123456789012345678912'
+
+    IdentityId:
+      type: string
+      description: Identity id
+      example: 'ins-01234567890123456789012345678912'
+
+    ParentId:
+      type: string
+      description: |
+        The name of the parent entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
+
+    EntityType:
+      type: string
+      enum: [connector, integration, identity, install]
+      example: connector
+
+    EntityState:
+      type: string
+      enum: [creating, invalid, active]
+      example: active
+
+    OperationType:
+      type: string
+      enum: ['creating', 'updating', 'deleting']
+      example: updating
+
+    OperationStatus:
+      type: string
+      enum: ['success', 'failed', 'processing']
+      example: processing
+
+    OperationErrorCode:
+      type: string
+      enum:
+        [
+          'OK',
+          'InvalidParameterValue',
+          'UnauthorizedOperation',
+          'VersionConflict',
+          'InternalError',
+          'RequestLimitExceeded',
+        ]
+      example: OK
+
+    OperationStatusObject:
+      type: object
+      description: Contains the status of the last action taken on this entity
+      properties:
+        operation:
+          $ref: '#/components/schemas/OperationType'
+        status:
+          $ref: '#/components/schemas/OperationStatus'
+        message:
+          type: string
+        errorCode:
+          $ref: '#/components/schemas/OperationErrorCode'
+        errorDetails:
+          type: string
+
+    EntityTags:
+      type: object
+      description: A hash containing tags set on this entity
+      example:
+        tenant: tenant-525
+        customer: Sonicity
+
+    EntityVersion:
+      type: string
+      format: uuid
+
+    EntityExpires:
+      type: string
+      description: The time that the entity expires and is automatically removed from the system.
+
+    DateAdded:
+      type: string
+      format: date-time
+
+    DateModified:
+      type: string
+      format: date-time
+
+    EntityConfiguration:
+      type: object
+      description: The collection of configuration values used by this entity.
+
+    EntityFiles:
+      type: object
+      description: The collection of filename and content pairs that are packaged with this entity.
+
+    EntityEncodedFiles:
+      type: object
+      description: The collection of filename and encoded content pairs that are packaged with this entity.
+      properties:
+        encodedFileName:
+          description: A file encoded in a particular transport-safe encoding, such as 'base64'
+          type: object
+          properties:
+            data:
+              description: The file payload, encoded in a JSON-safe format.
+              type: string
+            encoding:
+              description: The file encoding, such as 'base64'.
+              type: string
+              example: 'base64'
+
+    EntitySecurity:
+      type: object
+      description: Additional security configuration variables for this entity.
+      properties:
+        permissions:
+          type: array
+          items:
+            type: object
+            description: |
+              A pair of an action and a resource, indicating that the entity has
+              permissions to perform API calls requiring that action on that, or
+              derived, resources.
+            properties:
+              action:
+                type: string
+              resource:
+                type: string
+
+    EntityFusebitEditor:
+      type: object
+      properties:
+        runConfig:
+          type: array
+          items:
+            type: object
+            description: Optional configuration values for the Fusebit Editor
+            properties:
+              method:
+                type: string
+                description: The method to use in the default api request
+                example: 'get'
+                enum:
+                  - get
+                  - post
+                  - put
+                  - patch
+                  - delete
+              url:
+                type: string
+                description: The endpoint of the default api request
+                example: '/api/tenant/user-1/test'
+              payload:
+                type: object
+                description: The payload of the default api request
+
+    SessionId:
+      type: string
+      description: Session id
+      example: 'sid-01234567890123456789012345678912'
+
+    Session:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/SessionId'
+        targetUrl:
+          type: string
+          description: The URL that the browser should be redirected to for the user to start configuring the session.
+          example: https://api.us-west-1.on.fusebit.io/v2/account/acc-123/subscription/sub-123/integration/my-integ-123/session/ses-123/start
+
+    SessionResult:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/SessionId'
+        input:
+          type: object
+        output:
+          type: object
+        dependsOn:
+          type: object
+
+    SessionInput:
+      type: object
+      example:
+        slack-integration:
+          useDemo: true
+      description: A collection of input variables to make available to
+        components as they are configured. Each key must correspond
+        with an entry in the component array, and carries
+        configuration that will only be available to that component.
+
+    SessionOutput:
+      type: object
+      example:
+        slack-integration:
+          channel: '#general'
+      description: A collection of output configuration elements created by the various
+        steps, and stored on the install for use in the integration.
+
+    SessionInstallIdResponse:
+      type: object
+      properties:
+        installId:
+          $ref: '#/components/schemas/InstallId'
+
+    EntityLocation:
+      type: object
+      required:
+        - accountId
+        - subscriptionId
+        - entityId
+        - entityType
+      description: The location of a particular entity.
+      properties:
+        accountId:
+          $ref: '#/components/schemas/AccountId'
+        subscriptionId:
+          $ref: '#/components/schemas/SubscriptionId'
+        entityId:
+          $ref: '#/components/schemas/EntityId'
+        entityType:
+          $ref: '#/components/schemas/EntityType'
+
+    ConnectorConfiguration:
+      type: object
+      description: The open collection of configuration values used by this entity.
+      properties:
+        defaultEventHandler:
+          type: string
+          description: A default integration target to handle anonymous events
+          example: 'my-integration-123'
+
+    ConnectorEntityData:
+      type: object
+      properties:
+        handler:
+          type: string
+          description: The npm package name used by this connector.
+          example: '@fusebit-int/oauth-connector'
+        configuration:
+          $ref: '#/components/schemas/ConnectorConfiguration'
+        files:
+          $ref: '#/components/schemas/EntityFiles'
+        encodedFiles:
+          $ref: '#/components/schemas/EntityEncodedFiles'
+        security:
+          $ref: '#/components/schemas/EntitySecurity'
+
+    ConnectorEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/EntityId'
+        data:
+          $ref: '#/components/schemas/ConnectorEntityData'
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        version:
+          $ref: '#/components/schemas/EntityVersion'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+        state:
+          $ref: '#/components/schemas/EntityState'
+        operationState:
+          $ref: '#/components/schemas/OperationStatusObject'
+
+    ConnectorPostEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/EntityId'
+        data:
+          $ref: '#/components/schemas/ConnectorEntityData'
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+        state:
+          $ref: '#/components/schemas/EntityState'
+        operationState:
+          $ref: '#/components/schemas/OperationStatusObject'
+
+    ConnectorListEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/EntityId'
+        data:
+          type: object
+          properties:
+            handler:
+              type: string
+              description: The npm package name used by this connector.
+              example: '@fusebit-int/oauth-connector'
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        version:
+          $ref: '#/components/schemas/EntityVersion'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+        state:
+          $ref: '#/components/schemas/EntityState'
+        operationState:
+          $ref: '#/components/schemas/OperationStatusObject'
+
+    ConnectorList:
+      type: object
+      properties:
+        items:
+          type: array
+          description: An array of the matching entities of this component type
+          items:
+            $ref: '#/components/schemas/ConnectorListEntity'
+        next:
+          type: string
+          description: The key to use when accessing the next block of entries
+        total:
+          type: number
+          description: The total number of entities of this type.
+
+    IdentityEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/IdentityId'
+        parentId:
+          $ref: '#/components/schemas/ParentId'
+        data:
+          type: object
+          description: The data used by the creating connector to establish a relationship
+            with the remote service on behalf of a user.
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        version:
+          $ref: '#/components/schemas/EntityVersion'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+
+    IdentityList:
+      type: object
+      properties:
+        items:
+          type: array
+          description: An array of the matching entities of this component type
+          items:
+            $ref: '#/components/schemas/IdentityEntity'
+        next:
+          type: string
+          description: The key to use when accessing the next block of entries
+        total:
+          type: number
+          description: The total number of entities of this type.
+
+    IntegrationEntityData:
+      type: object
+      properties:
+        handler:
+          type: string
+          description: The name of the file that is the entrypoint for this integration.
+          example: './integration'
+        configuration:
+          $ref: '#/components/schemas/EntityConfiguration'
+        files:
+          $ref: '#/components/schemas/EntityFiles'
+        encodedFiles:
+          $ref: '#/components/schemas/EntityEncodedFiles'
+        componentTags:
+          type: object
+          description: These tags are added to installs and identities created through
+            this integration.
+        components:
+          type: array
+          description: Connectors and other configuration endpoints such as forms located
+            on this integration are itemized here, in order that the client will
+            encounter them.
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: An arbirary name used to reference this component from within
+                  integration code.
+              entityType:
+                type: string
+                enum: [connector, integration]
+                description: Does this component reference a connector, to acquire a new identity for the user of this
+                  integration, or an integration form specified by the `path` parameter?
+              entityId:
+                $ref: '#/components/schemas/ComponentsEntityId'
+              skip:
+                type: boolean
+                default: false
+                description: Some components are only used in special cases and as specified during session creation; if
+                  `skip` is true, then this component is not part of the normal client configuration process.
+              path:
+                type: string
+                description: The location under the entity specified to pass the client to
+                  during a configuration process. For connector type components, this field is optional and will default
+                  to `/api/authorize`.  For integration type components, this field indicates the location on the
+                  connector that the browser will load as part of it's configuration process.
+                example: /api/authorize
+                  /api/channelSelectForm
+              dependsOn:
+                type: array
+                description: Allows this component to make use of the credentials or
+                  configuration values created by prior components. For example,
+                  a form could use slack credentials created by a connector
+                  named `slack` to lookup channels by adding `slack` to this
+                  list.
+                items:
+                  type: string
+                  description: The `name` of a component that occurs previously in the
+                    `components` array.
+              provider:
+                type: string
+                description: The utility package for a connector that provides a configured
+                  SDK for use by the integration.
+        schedule:
+          type: array
+          description: Schedule specific endpoints to be invoked based on the crontab
+          items:
+            type: object
+            properties:
+              cron:
+                type: string
+                description: The crontab schedule to invoke the endpoint on
+              timezone:
+                type: string
+                description: The timezone that the crontab should execute within
+              endpoint:
+                type: string
+                description: The endpoint to invoke on the `integration.cron` router
+        security:
+          $ref: '#/components/schemas/EntitySecurity'
+        routes:
+          type: array
+          description: Properties that control route-specific behaviors of the function
+          items:
+            type: object
+            description: |
+              Overrides security settings and controls task scheduling settings
+              on per-route basis. Given a request, the first route, if any, prefix-matching
+              the path of the request URL is used.
+            required:
+              - path
+            properties:
+              path:
+                type: string
+                description: A prefix of the request path
+                example: '/api/sendEmail'
+              security:
+                $ref: '#/components/schemas/EntitySecurity'
+              task:
+                type: object
+                description: |
+                  If present, HTTP POST requests prefix-matching this route are scheduled
+                  for asynchronous execution as tasks, and an immediate HTTP 202 response is sent
+                  with the `location` HTTP response header containing the URL at which the
+                  status of the task execution can be queried.
+
+                  If the number of requests pending execution exceeds `maxPending`,
+                  an HTTP 429 response is sent and the request is not scheduled for execution.
+
+                  Unless an explicit `security` element is specified for this route, the HTTP POST
+                  requests that schedule task execution must be authorized with an access token that
+                  grants the `function:schedule` action for the function resource.
+                properties:
+                  maxPending:
+                    type: number
+                    description: |
+                      The maximum number of tasks that can be scheduled for execution before
+                      subsequent requests are rejected with an HTTP 429 response. Specify 0
+                      to allow any number of pending requests.
+                    default: 1024
+                  maxRunning:
+                    type: number
+                    description: |
+                      The maximum number of tasks that can be running concurrently. Specify 0
+                      to not limit the maximum number of running tasks.
+                    default: 10
+        fusebitEditor:
+          $ref: '#/components/schemas/EntityFusebitEditor'
+
+    IntegrationListData:
+      type: object
+      properties:
+        handler:
+          type: string
+          description: The name of the file that is the entrypoint for this integration.
+          example: './integration'
+        componentTags:
+          type: object
+          description: These tags are added to installs and identities created through
+            this integration.
+        components:
+          type: array
+          description: Connectors and other configuration endpoints such as forms located
+            on this integration are itemized here, in order that the client will
+            encounter them.
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: An arbirary name used to reference this component from within
+                  integration code.
+              entityType:
+                type: string
+                enum: [connector, integration]
+                description: Does this component reference a connector or an integration?
+              entityId:
+                $ref: '#/components/schemas/ComponentsEntityId'
+              skip:
+                type: boolean
+                default: false
+                description: Some components are only used in special cases and as
+                  specified during session creation; if `skip` is true, then
+                  this component is not part of the normal client configuration
+                  process.
+              path:
+                type: string
+                description: The location under the entity specified to pass the client to
+                  during a configuration process.
+                example: /api/authorize
+                  /api/channelSelectForm
+              dependsOn:
+                type: array
+                description: Allows this component to make use of the credentials or
+                  configuration values created by prior components. For example,
+                  a form could use slack credentials created by a connector
+                  named `slack` to lookup channels by adding `slack` to this
+                  list.
+                items:
+                  type: string
+                  description: The `name` of a component that occurs previously in the
+                    `components` array.
+              provider:
+                type: string
+                description: The utility package for a connector that provides a configured
+                  SDK for use by the integration.
+
+    IntegrationEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/EntityId'
+        data:
+          $ref: '#/components/schemas/IntegrationEntityData'
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        version:
+          $ref: '#/components/schemas/EntityVersion'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+        state:
+          $ref: '#/components/schemas/EntityState'
+        operationState:
+          $ref: '#/components/schemas/OperationStatusObject'
+
+    IntegrationPostEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/EntityId'
+        data:
+          $ref: '#/components/schemas/IntegrationEntityData'
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+        state:
+          $ref: '#/components/schemas/EntityState'
+        operationState:
+          $ref: '#/components/schemas/OperationStatusObject'
+
+    IntegrationListEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/EntityId'
+        data:
+          $ref: '#/components/schemas/IntegrationListData'
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        version:
+          $ref: '#/components/schemas/EntityVersion'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+        state:
+          $ref: '#/components/schemas/EntityState'
+        operationState:
+          $ref: '#/components/schemas/OperationStatusObject'
+
+    IntegrationList:
+      type: object
+      properties:
+        items:
+          type: array
+          description: An array of the matching entities of this component type
+          items:
+            $ref: '#/components/schemas/IntegrationListEntity'
+        next:
+          type: string
+          description: The key to use when accessing the next block of entries
+        total:
+          type: number
+          description: The total number of entities of this type.
+
+    InstallEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/InstallId'
+        parentId:
+          $ref: '#/components/schemas/ParentId'
+        data:
+          type: object
+          description: A hash of configuration objects key'ed by the `name` in the
+            `data.components` object under the integration. A configuration object
+            that refers to an integration form will contain the configured value,
+            whereas a configuration object that refers to a connector will refer
+            to the identity entity used by this install.
+          example:
+            slack:
+              tags:
+                tenantId: client-15251
+              entityId: idn-012345678901234567890123456789012
+              accountId: acc-12de369f2f0c4982
+              entityType: identity
+              parentEntityId: slack-connector
+              subscriptionId: sub-a477d980e09c1cfe
+              parentEntityType: connector
+            channelSelectForm:
+              channel: \#random
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        version:
+          $ref: '#/components/schemas/EntityVersion'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+
+    InstallList:
+      type: object
+      properties:
+        items:
+          type: array
+          description: An array of the matching entities of this component type
+          items:
+            $ref: '#/components/schemas/InstallEntity'
+        next:
+          type: string
+          description: The key to use when accessing the next block of entries
+        total:
+          type: number
+          description: The total number of entities of this type.

@@ -1,0 +1,180 @@
+generated: '2026-09-10'
+method: derived
+source: >-
+  openapi/fusebit-http-api-core-openapi.yml, openapi/fusebit-http-api-integrations-openapi.yml.
+  The narrative auth pages both specs link to (developer.fusebit.io/docs/connecting-fusebit-with-your-
+  application and fusebit.io/docs/integrator-guide/authz-model) were probed on 2026-09-10 and fail DNS
+  resolution, so this profile is grounded entirely in the contracts and the CLI command tree.
+provider: Fusebit
+providerId: fusebit
+summary:
+  types:
+    - http
+  models:
+    - bearer-jwt
+  api_keys: false
+  oauth2: false
+  oidc: false
+  mtls: false
+schemes:
+  - name: AccessToken
+    type: http
+    scheme: bearer
+    bearerFormat: JWT
+    applied: global
+    description: >-
+      The only securityScheme in either contract, applied globally at the document root of both v1
+      and v2. Presented as `Authorization: Bearer <jwt>`.
+    sources:
+      - openapi/fusebit-http-api-core-openapi.yml
+      - openapi/fusebit-http-api-integrations-openapi.yml
+token_issuance:
+  model: trusted-issuer
+  description: >-
+    Fusebit does not mint tokens from a Fusebit-operated authorization server. An account registers
+    one or more trusted JWT ISSUERS (postAccountIssuer), each carrying either inline public keys or a
+    jsonKeysUrl. Any JWT signed by a registered issuer and matching a registered Identity is accepted.
+  entities:
+    - name: Issuer
+      operations: [getAccountIssuerList, getAccountIssuer, postAccountIssuer, putAccountIssuer, deleteIssuer]
+      fields: [displayName, jsonKeysUrl, 'publicKeys[] { keyId, publicKey }']
+    - name: Identity
+      shape: '{ issuerId, subject }'
+      description: >-
+        Binds the `iss` and `sub` claims of an incoming token to a Fusebit User or Client. A principal
+        may hold several identities.
+  bootstrap:
+    mechanism: init token
+    operations: [initUser, initClient, resolveInit]
+    description: >-
+      A new principal is onboarded with a one-time init token, redeemed through resolveInit (or
+      `fuse init <token>` in the CLI), which provisions the local profile and its keypair. This is how
+      Fusebit avoided shipping a password or API-key surface at all.
+authorization:
+  model: action-and-resource
+  is_oauth_scopes: false
+  shape: 'AccessStatement { action, resource }'
+  description: >-
+    Authorization is an explicit allow-list attached to the User or Client. `action` is a
+    colon-delimited verb, optionally wildcarded ("function:*"); `resource` is a hierarchical path such
+    as /account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/function/{functionId},
+    and a grant on a prefix implies everything beneath it. Because this is a grant list rather than an
+    OAuth scope set, no scopes/ artifact is emitted for Fusebit.
+  managed_by:
+    cli: ['fuse user access add', 'fuse user access rm', 'fuse client access add', 'fuse client access rm']
+    api: [postUser, patchUser, postClient, putAccountClient]
+  actions:
+    - action: account:get
+      description: Read the account.
+    - action: account:patch
+      description: Update the account.
+    - action: audit:get
+      description: Read the account audit trail.
+    - action: subscription:get
+      description: Read a subscription.
+    - action: user:add
+      description: Create a user.
+    - action: user:get
+      description: Read a user.
+    - action: user:update
+      description: Update a user, including its access grants and identities.
+    - action: user:delete
+      description: Delete a user.
+    - action: user:init
+      description: Issue an init token for a user.
+    - action: client:add
+      description: Create a machine client.
+    - action: client:get
+      description: Read a client.
+    - action: client:update
+      description: Update a client.
+    - action: client:delete
+      description: Delete a client.
+    - action: client:init
+      description: Issue an init token for a client.
+    - action: issuer:add
+      description: Register a trusted JWT issuer.
+    - action: issuer:get
+      description: Read an issuer.
+    - action: issuer:update
+      description: Update an issuer or its public keys.
+    - action: issuer:delete
+      description: Remove a trusted issuer.
+    - action: function:get
+      description: Read a function.
+    - action: function:put
+      description: Create or update a function.
+    - action: function:delete
+      description: Delete a function.
+    - action: function:get-log
+      description: Read a function's execution logs.
+    - action: function:schedule
+      description: Schedule an execution on a function task route.
+    - action: log:get
+      description: Read logs at account, subscription, boundary or function scope.
+    - action: storage:get
+      description: Read subscription-scoped storage.
+    - action: storage:put
+      description: Write subscription-scoped storage.
+    - action: storage:delete
+      description: Delete subscription-scoped storage.
+    - action: registry:get
+      description: Read the account's private npm registry configuration.
+    - action: integration:add
+      description: Create an integration (v2).
+    - action: integration:get
+      description: Read an integration (v2).
+    - action: integration:put
+      description: Replace an integration (v2).
+    - action: integration:update
+      description: Update an integration (v2).
+    - action: integration:delete
+      description: Delete an integration (v2).
+    - action: integration:put-tag
+      description: Set or remove an integration tag (v2).
+    - action: connector:add
+      description: Create a connector (v2).
+    - action: connector:get
+      description: Read a connector (v2).
+    - action: connector:update
+      description: Update a connector (v2).
+    - action: connector:delete
+      description: Delete a connector (v2).
+    - action: connector:put-tag
+      description: Set or remove a connector tag (v2).
+    - action: identity:get
+      description: Read a managed third-party credential (v2).
+    - action: identity:update
+      description: Update a managed third-party credential (v2).
+    - action: identity:delete
+      description: Delete a managed third-party credential (v2).
+    - action: identity:put-tag
+      description: Set or remove an identity tag (v2).
+    - action: install:get
+      description: Read an install (v2).
+    - action: install:put-tag
+      description: Set or remove an install tag (v2).
+    - action: instance:get
+      description: Read an install instance (v2, legacy naming).
+    - action: instance:update
+      description: Update an install instance (v2, legacy naming).
+    - action: instance:delete
+      description: Delete an install instance (v2, legacy naming).
+challenge_semantics:
+  unauthenticated_status: 403
+  www_authenticate: false
+  note: >-
+    Neither contract declares a 401 response or a WWW-Authenticate challenge header on any operation.
+    A missing, expired or insufficiently-granted token is answered 403 in all three cases, so a client
+    cannot distinguish "not authenticated" from "not authorized" from the status code alone.
+third_party_oauth:
+  note: >-
+    Distinct from Fusebit's OWN auth: Fusebit's product was managing OAuth 2.0 credentials for OTHER
+    services on behalf of its customers. 40 of its 80 @fusebit-int packages are OAuth connectors
+    (Slack, Salesforce, HubSpot, Xero, Atlassian, QuickBooks, Google, Microsoft Graph and more), plus a
+    generic oauth-connector, a client-credentials-flow connector and a private-key connector. Those
+    flows are the CONSUMING side and are catalogued in packages/fusebit-packages.yml, not here.
+callable: false
+callable_note: >-
+  Historical profile. api.us-west-1.on.fusebit.io returns NXDOMAIN (2026-09-10); no token can be
+  presented to anything.

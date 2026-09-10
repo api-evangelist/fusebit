@@ -1,12 +1,67 @@
-generated: '2026-07-11'
+generated: '2026-09-10'
 method: probed
-source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+source: live DNS/TLS/HTTP probes of every host in apis.yml and every OpenAPI servers[] host, 2026-09-10
+provider: Fusebit
+providerId: fusebit
+summary: >-
+  The fusebit.io zone is still published and still routes MAIL, but it serves no web. Every host
+  fails to resolve an A record, so there is no TLS endpoint to assess and no HSTS header to read.
+  DNSSEC is not enabled, no CAA record constrains certificate issuance, and no DMARC policy protects
+  a domain whose MX still points at Google Workspace — an unusual residual risk on a retired brand:
+  mail for @fusebit.io is still deliverable and unauthenticated senders are not rejected.
 hosts:
-- host: fusebit.io
-  https: false
+  - host: fusebit.io
+    a_record: null
+    https: false
+    result: dns-nxdomain
+    tls: null
+    hsts: null
+  - host: www.fusebit.io
+    a_record: null
+    https: false
+    result: dns-nxdomain
+  - host: developer.fusebit.io
+    a_record: null
+    https: false
+    result: dns-nxdomain
+  - host: api.us-west-1.on.fusebit.io
+    a_record: null
+    https: false
+    result: dns-nxdomain
+    note: The host named by servers[] in both published OpenAPI documents (region variable resolved to its declared default).
+  - host: manage.fusebit.io
+    a_record: null
+    https: false
+    result: dns-nxdomain
+  - host: cdn.fusebit.io
+    a_record: null
+    https: false
+    result: dns-nxdomain
 domains:
-- domain: fusebit.io
-  dnssec: false
-  caa: []
-  spf: true
-  dmarc: false
+  - domain: fusebit.io
+    registrar: 'NameCheap, Inc.'
+    created: '2019-04-10'
+    expires: '2027-04-10'
+    updated: '2026-08-12'
+    nameservers: [dns1.registrar-servers.com, dns2.registrar-servers.com]
+    zone_published: true
+    a_record: false
+    dnssec: false
+    dnssec_evidence: 'no DNSKEY and no DS record returned (dig DNSKEY/DS fusebit.io @1.1.1.1)'
+    caa: []
+    caa_note: No CAA record — nothing constrains which CA may issue for this domain.
+    spf: true
+    spf_record: 'v=spf1 include:_spf.google.com include:zcsend.net include:servers.mcsv.net ~all'
+    spf_note: >-
+      Soft-fail (~all) rather than hard-fail (-all). Still names Zoho Campaigns (zcsend.net) and
+      Mailchimp (servers.mcsv.net) as authorized senders for a brand that no longer operates.
+    dmarc: false
+    dmarc_note: >-
+      No record at _dmarc.fusebit.io. With no DMARC policy and a soft-fail SPF, a receiver has no
+      instruction to reject spoofed mail from this domain.
+    mx: true
+    mx_records: [aspmx.l.google.com, alt1.aspmx.l.google.com, alt2.aspmx.l.google.com, aspmx2.googlemail.com, aspmx3.googlemail.com]
+    mx_note: Google Workspace mail routing is still live for a domain whose web presence is entirely gone.
+    txt_verifications:
+      - 'MS=BCC655C596ADBD2570A850B3BFC55EDE7BFB2C68 (Microsoft)'
+      - 'google-site-verification x4'

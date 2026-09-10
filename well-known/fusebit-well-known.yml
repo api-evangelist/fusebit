@@ -1,0 +1,248 @@
+generated: '2026-09-10'
+method: probed
+source: live HTTPS probes of the NAMED /.well-known path list on every host this record knows, 2026-09-10
+provider: Fusebit
+providerId: fusebit
+note: 'Every host Fusebit ever operated -- the apex fusebit.io, www, the docs host developer.fusebit.io, the API host
+  api.us-west-1.on.fusebit.io named by the OpenAPI servers[] block, the portal manage.fusebit.io and the asset host cdn.fusebit.io
+  -- fails to resolve. fusebit.io itself is still registered (NameCheap, expiry 2027-04-10) and still has NS records
+  at dns1/dns2.registrar-servers.com, but the zone publishes no A record for the apex or any subdomain, so no /.well-known
+  document can be served or probed. Status 0 below means DNS resolution failed, not that a server answered. NO WellKnown,
+  SecurityTxt or AgentCard pointer is emitted from this file: this is a recorded absence, not a served surface.'
+result: no-documents-served
+documents_found: 0
+hosts:
+- host: fusebit.io
+  dns_a: null
+  documents:
+  - path: /.well-known/security.txt
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/oauth-protected-resource
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/api-catalog
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/agent.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /llms.txt
+    status: 0
+    result: dns-nxdomain
+    file: null
+- host: www.fusebit.io
+  dns_a: null
+  documents:
+  - path: /.well-known/security.txt
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/oauth-protected-resource
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/api-catalog
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/agent.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /llms.txt
+    status: 0
+    result: dns-nxdomain
+    file: null
+- host: developer.fusebit.io
+  dns_a: null
+  documents:
+  - path: /.well-known/security.txt
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/oauth-protected-resource
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/api-catalog
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/agent.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /llms.txt
+    status: 0
+    result: dns-nxdomain
+    file: null
+- host: api.us-west-1.on.fusebit.io
+  dns_a: null
+  documents:
+  - path: /.well-known/security.txt
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/oauth-protected-resource
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/api-catalog
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/agent.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /llms.txt
+    status: 0
+    result: dns-nxdomain
+    file: null
+- host: manage.fusebit.io
+  dns_a: null
+  documents:
+  - path: /.well-known/security.txt
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/oauth-protected-resource
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/api-catalog
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/agent.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /llms.txt
+    status: 0
+    result: dns-nxdomain
+    file: null
+- host: cdn.fusebit.io
+  dns_a: null
+  documents:
+  - path: /.well-known/security.txt
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/oauth-protected-resource
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/api-catalog
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /.well-known/agent.json
+    status: 0
+    result: dns-nxdomain
+    file: null
+  - path: /llms.txt
+    status: 0
+    result: dns-nxdomain
+    file: null

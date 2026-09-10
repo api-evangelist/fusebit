@@ -1,0 +1,119 @@
+generated: '2026-09-10'
+method: searched
+source: >-
+  https://www.npmjs.com/package/@fusebit/cli (registry metadata),
+  https://github.com/fivequarters/q5/tree/HEAD/cli/fusebit-cli/src/commands (command source tree),
+  https://fivequarters.github.io/q5/release-notes/fusebit-cli/ (release notes),
+  https://raw.githubusercontent.com/fivequarters/q5/HEAD/docs/downloads.md (install instructions)
+provider: Fusebit
+providerId: fusebit
+name: Fusebit CLI
+binary: fuse
+status: discontinued
+note: >-
+  Fusebit shipped three first-party command-line tools: the Fusebit CLI (`fuse`), the EveryAuth CLI
+  (`everyauth`), and the Fusebit Operations CLI (`fuse-ops`, for private/self-hosted deployments).
+  The command surface below is read from the CLI's own TypeScript command tree in Fusebit's engineering
+  monorepo (fivequarters/q5), not from prose. The CLI still installs from npm, but every command it
+  issues targets `https://api.{region}.on.fusebit.io`, which no longer resolves in DNS — the tool is
+  installable and non-functional.
+clis:
+  - name: Fusebit CLI
+    binary: fuse
+    package: '@fusebit/cli'
+    version: 1.24.0
+    published: '2022-06-23'
+    install:
+      - method: npm
+        command: npm install -g @fusebit/cli
+    docs: https://fivequarters.github.io/q5/release-notes/fusebit-cli/
+    source: https://github.com/fivequarters/q5/tree/HEAD/cli/fusebit-cli
+  - name: EveryAuth CLI
+    binary: everyauth
+    package: '@fusebit/everyauth-cli'
+    version: 1.24.0
+    published: '2022-06-23'
+    install:
+      - method: npm
+        command: npm install -g @fusebit/everyauth-cli
+    source: https://github.com/fivequarters/q5/tree/HEAD/cli/fusebit-cli
+  - name: Fusebit Operations CLI
+    binary: fuse-ops
+    package: null
+    version: '1.31'
+    published: null
+    install:
+      - method: tarball
+        command: https://cdn.fusebit.io/fusebit/cli/fusebit-ops-cli-v1.31.tgz
+    note: >-
+      Distributed as a tarball from cdn.fusebit.io, which no longer resolves in DNS (NXDOMAIN,
+      probed 2026-09-10). The version is read from the pinned download URL published in
+      https://raw.githubusercontent.com/fivequarters/q5/HEAD/docs/downloads.md; no registry
+      metadata endpoint exists for it, so no publish date can be recorded.
+command_groups:
+  - group: profile
+    command: fuse profile
+    description: Manage named CLI profiles (credentials + account/subscription/boundary defaults)
+    commands: [ls, get, set, add, copy, rename, update, rm, export, import]
+  - group: function
+    command: fuse function
+    description: Author, deploy, run and inspect Fusebit Functions
+    commands: [init, deploy, get, ls, edit, log, rm, rebuild, serve, url]
+  - group: integration
+    command: fuse integration
+    description: Author, deploy and test v2 Integrations
+    commands: [init, deploy, get, ls, edit, log, rm, test, install]
+  - group: connector
+    command: fuse connector
+    description: Author, deploy and inspect v2 Connectors and their Identities
+    commands: [init, deploy, get, ls, log, rm, identity]
+  - group: user
+    command: fuse user
+    description: Manage account users, their access grants and their identities
+    commands: [add, get, ls, update, rm, init, access, identity]
+  - group: client
+    command: fuse client
+    description: Manage machine clients, their access grants and their identities
+    commands: [add, get, ls, update, rm, init, access, identity]
+  - group: issuer
+    command: fuse issuer
+    description: Manage trusted JWT issuers and their public keys
+    commands: [add, get, ls, update, rm, key]
+  - group: storage
+    command: fuse storage
+    description: Read, write, list and delete subscription-scoped storage
+    commands: [get, ls, put, rm]
+  - group: npm
+    command: fuse npm
+    description: Work with the Fusebit-hosted private npm registry
+    commands: [login, search, exec, registry]
+  - group: log
+    command: fuse log
+    description: Stream and query real-time execution logs
+    commands: [get, stats]
+  - group: feed
+    command: fuse feed
+    description: List the Fusebit integration/connector catalog feed
+    commands: [ls]
+  - group: token
+    command: fuse token
+    description: Print the current access token for the active profile
+    commands: []
+  - group: init
+    command: fuse init
+    description: Redeem an init token to create a local profile
+    commands: []
+  - group: version
+    command: fuse version
+    description: Print the CLI version
+    commands: []
+key_flows:
+  - name: Bootstrap a profile
+    steps: ['fuse init <init-token>', 'fuse profile ls']
+    note: An account owner issues the init token with `fuse user init` or `fuse client init`.
+  - name: Author and deploy an integration
+    steps: ['fuse integration init <id>', 'fuse integration deploy <id>', 'fuse integration log <id>']
+  - name: Wire a third-party credential
+    steps: ['fuse connector init <id>', 'fuse connector deploy <id>', 'fuse connector identity ls <id>']
+machine_readable_output: >-
+  Most `get`/`ls` commands accept `-o json` for programmatic consumption, per the CLI release notes.

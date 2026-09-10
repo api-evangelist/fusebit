@@ -1,0 +1,156 @@
+generated: '2026-09-10'
+method: derived
+source: openapi/fusebit-http-api-core-openapi.yml, openapi/fusebit-http-api-integrations-openapi.yml
+status: candidate
+provider: Fusebit
+providerId: fusebit
+summary: >-
+  No Model Context Protocol server — hosted, remote or stdio — exists for Fusebit, and none could
+  exist: Fusebit shut down in 2022, three years before MCP was published. Searched npm (@fusebit and
+  @fusebit-int, 101 packages, none MCP-related), both Fusebit GitHub organizations (github.com/fusebit,
+  30 repos; github.com/fivequarters, 5 repos) and the surviving release notes. The candidate tool set
+  below is DERIVED from the published OpenAPI operations as a record of what an agent surface over
+  this API would have covered. It is not published by Fusebit and it is not callable.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: unknown
+  verified: derived
+  note: >-
+    mode is `none` because nobody ships a server. No endpoint is invented. Even if one existed, the
+    backing API host (api.us-west-1.on.fusebit.io) returns NXDOMAIN as of 2026-09-10, so no MCP server
+    over this contract could resolve a single call.
+searched:
+  - surface: npm
+    query: '@fusebit and @fusebit-int scopes (101 packages)'
+    result: no MCP server package
+  - surface: https://github.com/fusebit
+    query: 30 public repositories
+    result: no MCP server repository
+  - surface: https://github.com/fivequarters
+    query: 5 public repositories including the q5 platform monorepo
+    result: no MCP server, no tools/list manifest
+  - surface: https://fivequarters.github.io/q5/release-notes/
+    query: 176 HTTP API + 69 CLI release entries
+    result: no mention of MCP (last release 2022-11-07, predates the protocol)
+auth:
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  note: An MCP server over this API would have carried the Fusebit AccessToken JWT.
+no_pointer_note: >-
+  Deliberately NOT wired as `type: MCPServer` in apis.yml. An MCPServer pointer asserts that the
+  provider serves an agent surface; this file records that no one does. Same rule as the agent card.
+candidate_tools:
+  - name: list_integrations
+    maps_to: GET /v2/account/{accountId}/subscription/{subscriptionId}/integration
+    operation_id: listIntegrations
+    description: List the integrations defined in a subscription.
+  - name: get_integration
+    maps_to: GET /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}
+    operation_id: getIntegration
+    description: Read one integration, including its code files and component bindings.
+  - name: create_integration
+    maps_to: POST /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}
+    operation_id: postIntegration
+    description: Create an integration. Asynchronous — returns 202 with an operation status object.
+  - name: update_integration
+    maps_to: PUT /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}
+    operation_id: putIntegration
+    description: Replace an integration. Asynchronous.
+  - name: delete_integration
+    maps_to: DELETE /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}
+    operation_id: deleteIntegration
+    description: Delete an integration. Asynchronous and irreversible — no restore path exists.
+  - name: list_connectors
+    maps_to: GET /v2/account/{accountId}/subscription/{subscriptionId}/connector
+    operation_id: listConnectors
+    description: List the third-party credential connectors in a subscription.
+  - name: get_connector
+    maps_to: GET /v2/account/{accountId}/subscription/{subscriptionId}/connector/{connectorId}
+    operation_id: getConnector
+    description: Read one connector and its configuration.
+  - name: create_connector
+    maps_to: POST /v2/account/{accountId}/subscription/{subscriptionId}/connector/{connectorId}
+    operation_id: postConnector
+    description: Create a connector. Asynchronous.
+  - name: delete_connector
+    maps_to: DELETE /v2/account/{accountId}/subscription/{subscriptionId}/connector/{connectorId}
+    operation_id: deleteConnector
+    description: Delete a connector. Asynchronous and irreversible.
+  - name: search_installs
+    maps_to: GET /v2/account/{accountId}/subscription/{subscriptionId}/install/
+    operation_id: searchInstalls
+    description: Search every install in a subscription by tag, status or id prefix.
+  - name: list_installs
+    maps_to: GET /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}/install/
+    operation_id: listInstalls
+    description: List the installs of one integration.
+  - name: get_install
+    maps_to: GET /v2/.../integration/{integrationId}/install/{installId}
+    operation_id: getInstall
+    description: Read one customer's configured install of an integration.
+  - name: delete_install
+    maps_to: DELETE /v2/.../integration/{integrationId}/install/{installId}
+    operation_id: deleteInstall
+    description: Remove one customer's install. Irreversible.
+  - name: search_identities
+    maps_to: GET /v2/account/{accountId}/subscription/{subscriptionId}/identity/
+    operation_id: searchIdentities
+    description: Search managed third-party credentials across connectors.
+  - name: get_identity
+    maps_to: GET /v2/.../connector/{connectorId}/identity/{identityId}
+    operation_id: getIdentity
+    description: Read one managed third-party credential.
+  - name: create_session
+    maps_to: POST /v2/.../{entityType}/{entityId}/session
+    operation_id: createSession
+    description: Start a configuration session so an end customer can authorize connectors.
+  - name: commit_session
+    maps_to: POST /v2/.../{entityType}/{entityId}/session/{sessionId}/commit
+    operation_id: postSession
+    description: Commit a session, producing the install and its identities. Asynchronous.
+  - name: list_functions
+    maps_to: GET /v1/account/{accountId}/subscription/{subscriptionId}/function
+    operation_id: getSubscriptionFunctionList
+    description: List every function in a subscription.
+  - name: get_function
+    maps_to: GET /v1/.../boundary/{boundaryId}/function/{functionId}
+    operation_id: getFunction
+    description: Read a function's code, runtime, routes and security.
+  - name: deploy_function
+    maps_to: PUT /v1/.../boundary/{boundaryId}/function/{functionId}
+    operation_id: putFunction
+    description: Create or update a function. May return 429 while module dependencies build.
+  - name: delete_function
+    maps_to: DELETE /v1/.../boundary/{boundaryId}/function/{functionId}
+    operation_id: deleteFunction
+    description: Delete a function. Irreversible — no restore endpoint exists.
+  - name: get_function_logs
+    maps_to: GET /v1/.../function/{functionId}/log
+    operation_id: getFunctionLog
+    description: Read a function's real-time execution logs.
+  - name: get_storage
+    maps_to: GET /v1/account/{accountId}/subscription/{subscriptionId}/storage/{storageId}
+    operation_id: getStorage
+    description: Read subscription-scoped key/value storage.
+  - name: put_storage
+    maps_to: PUT /v1/account/{accountId}/subscription/{subscriptionId}/storage/{storageId}
+    operation_id: putStorage
+    description: Write storage. Supports ETag optimistic concurrency; 409 on a stale ETag.
+  - name: list_users
+    maps_to: GET /v1/account/{accountId}/user
+    operation_id: getUserList
+    description: List account users and their access grants.
+  - name: get_account_audit
+    maps_to: GET /v1/account/{accountId}/audit
+    operation_id: getAccountAudit
+    description: Query the account audit trail.
+coverage:
+  rest_operations_total: 89
+  candidate_tools: 26
+  note: >-
+    26 of 89 operations are represented; the remainder are tag CRUD, log-query polling, build
+    polling and profile/registry management that an agent surface would fold into the tools above.

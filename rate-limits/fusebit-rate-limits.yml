@@ -1,91 +1,83 @@
-specification: API Commons Rate Limits
-specificationVersion: '0.1'
-schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+generated: '2026-09-10'
+method: derived
+source: >-
+  openapi/fusebit-http-api-core-openapi.yml (FunctionRoutes.task schema and the 429 responses on
+  putFunction / postFunctionBuild / getFunctionBuild) and
+  https://fivequarters.github.io/q5/release-notes/fusebit-http-api/ (release 1.40.23).
 provider: Fusebit
 providerId: fusebit
-created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
-tags:
-  - Developer Tools
-  - Embedded iPaaS
-  - Integration
-  - Acquired
-  - Rate Limiting
-  - Quotas
-  - Throttling
-description: Machine-readable rate limit definitions for the Fusebit API surface. Captures per-tier quotas,
-  burst behavior, response signaling, and recovery semantics. Defaults are scaffold values to be replaced
-  with published provider limits.
-headers:
-  limit: X-RateLimit-Limit
-  remaining: X-RateLimit-Remaining
-  reset: X-RateLimit-Reset
-  retryAfter: Retry-After
-  policy: RateLimit-Policy
-responseCodes:
-  throttled: 429
-  quotaExceeded: 429
-  serviceUnavailable: 503
+checked: '2026-09-10'
+summary: >-
+  Fusebit published no plan-level API rate limits and no rate-limit response headers. What it DID
+  publish, inside the contract itself, is a per-function task-queue admission control with concrete
+  numeric defaults, plus a 429 on the module-build path. Those two are recorded below because they
+  are real, published, numeric limits an integrator had to design around. Nothing here was observed
+  on a live response: the API host no longer resolves (api.us-west-1.on.fusebit.io, NXDOMAIN,
+  2026-09-10), so a live probe is impossible and none is claimed.
+supersedes_note: >-
+  This file replaces an API Evangelist scaffold dated 2026-05-04 that asserted free/professional/
+  enterprise tiers with invented per-minute limits, monthly quotas and an X-RateLimit-* header family
+  Fusebit never published. Those values were never sourced from Fusebit and have been removed.
+limit_count: 2
+headers_published: false
+headers: []
+headers_note: >-
+  No RateLimit-*, X-RateLimit-* or Retry-After response header is declared anywhere in either
+  published contract. A client can observe that it was throttled from the status code alone; it
+  cannot see its remaining budget or a server-advised backoff. This is the single biggest runtime
+  gap in the Fusebit rate-limit surface.
+status_on_exhaustion: 429
+status_history:
+  - change: Rate-limited function executions changed from HTTP 503 to HTTP 429.
+    version: 1.40.23
+    date: '2022-11-01'
+    source: https://fivequarters.github.io/q5/release-notes/fusebit-http-api/
 limits:
-  - tier: free
-    name: Free Tier Default
-    scope: api-key
-    metric: requests_per_minute
+  - scope: per-function
+    surface: 'Fusebit Functions — task routes (v1)'
+    name: maxPending
+    limit: 1024
+    unit: pending task executions
+    window: concurrent (queue depth, not time-windowed)
+    burst: null
+    status_on_exhaustion: 429
+    configurable: true
+    description: >-
+      A function route declared as a `task` route queues HTTP POSTs for asynchronous execution and
+      answers 202 immediately with a `location` header pointing at the task status URL. Once the
+      number of executions pending exceeds `maxPending`, further requests are rejected with 429 and
+      are NOT scheduled. Default 1024; specify 0 to allow any number of pending requests.
+    source: 'openapi/fusebit-http-api-core-openapi.yml#/components/schemas/FunctionRoutes'
+  - scope: per-function
+    surface: 'Fusebit Functions — task routes (v1)'
+    name: maxRunning
     limit: 10
-    burst: 20
-    timeFrame: minute
-    applies:
-      - Fusebit API
-  - tier: free
-    name: Free Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 1000
-    timeFrame: month
-    applies:
-      - Fusebit API
-  - tier: professional
-    name: Professional Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 100
-    burst: 200
-    timeFrame: minute
-    applies:
-      - Fusebit API
-  - tier: professional
-    name: Professional Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 100000
-    timeFrame: month
-    applies:
-      - Fusebit API
-  - tier: enterprise
-    name: Enterprise Negotiated Limit
-    scope: contract
-    metric: requests_per_minute
-    limit: 1000
-    burst: 5000
-    timeFrame: minute
-    applies:
-      - Fusebit API
-policies:
-  - name: Backoff Strategy
-    description: Clients should implement exponential backoff with jitter, honoring the Retry-After header
-      when present.
-  - name: Burst Handling
-    description: Short bursts above the steady-state limit are tolerated up to the documented burst ceiling
-      before throttling engages.
-  - name: Quota Reset
-    description: Monthly quotas reset at the start of each calendar month in UTC. Per-minute and per-second
-      windows reset on a sliding-window basis.
-  - name: Fair Use
-    description: Even on uncapped enterprise tiers, sustained usage that materially impacts shared infrastructure
-      may be subject to fair-use throttling.
-maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+    unit: concurrently running tasks
+    window: concurrent
+    burst: null
+    status_on_exhaustion: null
+    configurable: true
+    description: >-
+      Caps concurrent task execution for the route. Exceeding it does not reject the request; it
+      holds the task in the pending queue, which is what eventually trips maxPending. Default 10;
+      specify 0 for unlimited concurrency.
+    source: 'openapi/fusebit-http-api-core-openapi.yml#/components/schemas/FunctionRoutes'
+undocumented_throttles:
+  - surface: 'Module dependency build (v1)'
+    operations: [putFunction, postFunctionBuild, getFunctionBuild]
+    status: 429
+    declared_description: Module dependency failed to build
+    note: >-
+      These three operations declare a 429 whose description ("Module dependency failed to build")
+      does not describe a rate limit at all. Whatever the real throttle is on the npm build pipeline,
+      its threshold, window and reset are unpublished. Recorded as an undocumented throttle rather
+      than counted in limit_count, because no number was ever stated.
+plan_limits:
+  published: false
+  note: >-
+    No per-plan or per-account request quota was published. See plans/fusebit-plans-pricing.yml —
+    Fusebit's pricing page is gone from DNS and no tier limits survive in any reachable document.
+client_guidance: >-
+  Historical. With no Retry-After and no budget headers, the only correct client behaviour against a
+  Fusebit 429 was exponential backoff with jitter, plus keeping task submission rate below the
+  route's own maxPending/maxRunning configuration.

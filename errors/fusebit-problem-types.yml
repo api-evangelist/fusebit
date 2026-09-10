@@ -1,0 +1,150 @@
+generated: '2026-09-10'
+method: derived
+source: openapi/fusebit-http-api-core-openapi.yml, openapi/fusebit-http-api-integrations-openapi.yml
+provider: Fusebit
+providerId: fusebit
+format: custom-json
+rfc9457: false
+media_type: application/json
+envelope:
+  schema: Error
+  required:
+  - status
+  - statusCode
+  - message
+  properties:
+    status: number — the HTTP status code
+    statusCode: number — the HTTP status code (duplicated)
+    message: string — a message with details regarding the error
+  note: 'Fusebit returns a plain application/json envelope, not RFC 9457 application/problem+json. There is no stable
+    machine-readable error `type` or code: the only discriminator an agent gets is the HTTP status plus free-text
+    `message`, and `status`/`statusCode` are redundant copies of the same number. The one place a typed code does
+    exist is the v2 async operation status object.'
+note: 'Derived from every declared 4xx/5xx response across the two published Fusebit OpenAPI documents. Fusebit published
+  no separate error-code reference page that survives: the docs host developer.fusebit.io no longer resolves. Neither
+  contract declares ANY 5xx response, so server-side failure modes were never part of the published contract.'
+operation_error_codes:
+  schema: OperationErrorCode (v2)
+  applies_to: the OperationStatusObject returned with 202 on async Connector/Integration/Session mutations
+  codes:
+  - code: OK
+    meaning: The asynchronous operation completed successfully.
+  - code: InvalidParameterValue
+    meaning: A supplied parameter failed validation during async processing.
+  - code: UnauthorizedOperation
+    meaning: The caller was not authorized for the operation.
+  - code: VersionConflict
+    meaning: The entity changed underneath the operation; re-read and retry.
+  - code: InternalError
+    meaning: An unclassified server-side failure during async processing.
+  - code: RequestLimitExceeded
+    meaning: The operation was rejected because a request limit was exceeded.
+  note: This enum is the only typed, machine-readable error vocabulary Fusebit published.
+problem_types:
+- status: 400
+  title: Bad Request
+  operation_count: 88
+  descriptions:
+  - description: The request submitted is invalid. Please, check the documentation and fix the request before sending
+      it again.
+    operations: 40
+  - description: Malformed request
+    operations: 8
+  - description: Malformed account id or invalid query
+    operations: 5
+  - description: Malformed account, subscription, boundary or function id
+    operations: 4
+  - description: Malformed account, subscription or storage id
+    operations: 4
+  - description: Malformed account or issuer id
+    operations: 2
+  - description: Malformed account or client id
+    operations: 2
+  - description: Malformed initialization token parameters
+    operations: 2
+  remediation: Validate the request body and path parameters against the schema before retrying; the `message` member
+    names the offending value. Not retryable unchanged.
+  example_operations:
+  - createSession
+  - deleteClient
+  - deleteConnector
+  - deleteConnectorTag
+  - deleteFunction
+  - deleteIdentity
+  - deleteIdentityTag
+  - deleteInstall
+- status: 403
+  title: Forbidden
+  operation_count: 89
+  descriptions:
+  - description: Not authorized
+    operations: 49
+  - description: Access to the requested resource is forbidden.
+    operations: 40
+  remediation: The bearer token is missing, expired, or its AccessStatement grants do not cover the {action, resource}
+    pair for this operation. Re-mint the token against a registered issuer, or add the grant with `fuse user access
+    add` / `fuse client access add`. Note Fusebit answers 403 (not 401) for unauthenticated calls as well.
+  example_operations:
+  - createSession
+  - deleteClient
+  - deleteConnector
+  - deleteConnectorTag
+  - deleteFunction
+  - deleteIdentity
+  - deleteIdentityTag
+  - deleteInstall
+- status: 404
+  title: Not Found
+  operation_count: 66
+  descriptions:
+  - description: The specified resource was not found.
+    operations: 37
+  - description: Subscription, boundary or function not found
+    operations: 7
+  - description: User not found
+    operations: 5
+  - description: Subscription not found
+    operations: 4
+  - description: Issuer not found
+    operations: 3
+  - description: Client not found
+    operations: 3
+  - description: Subscription or storage not found
+    operations: 3
+  - description: Subscription or boundary not found
+    operations: 2
+  remediation: The addressed account, subscription, boundary, function or v2 entity does not exist, or the caller
+    lacks a grant that would let it be seen. Confirm the id and the account/subscription in the path.
+  example_operations:
+  - createSession
+  - deleteClient
+  - deleteConnectorTag
+  - deleteFunction
+  - deleteIdentity
+  - deleteIdentityTag
+  - deleteInstallTag
+  - deleteIntegrationTag
+- status: 409
+  title: Conflict
+  operation_count: 2
+  descriptions:
+  - description: Etag Conflict
+    operations: 2
+  remediation: Optimistic-concurrency failure on Storage. Re-read the object, take the current ETag from the response
+    header, re-apply the change and retry.
+  example_operations:
+  - deleteStorage
+  - putStorage
+- status: 429
+  title: Too Many Requests
+  operation_count: 3
+  descriptions:
+  - description: Module dependency failed to build
+    operations: 3
+  remediation: Throttled. For task routes this means pending executions exceeded `maxPending` (default 1024); for
+    builds it means a module dependency build was rate limited. No Retry-After or RateLimit-* header is returned,
+    so back off exponentially with jitter and re-poll.
+  example_operations:
+  - getFunctionBuild
+  - postFunctionBuild
+  - putFunction

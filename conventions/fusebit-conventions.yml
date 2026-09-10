@@ -1,0 +1,188 @@
+generated: '2026-09-10'
+method: derived
+source: >-
+  openapi/fusebit-http-api-core-openapi.yml, openapi/fusebit-http-api-integrations-openapi.yml,
+  and https://fivequarters.github.io/q5/release-notes/fusebit-http-api/ (dated release notes).
+  The narrative documentation these specs link to (developer.fusebit.io, fusebit.io/docs) no longer
+  resolves in DNS, so every statement below is grounded in the contract or the surviving release notes.
+provider: Fusebit
+providerId: fusebit
+status: discontinued
+auth:
+  style: bearer-jwt
+  header: 'Authorization: Bearer <jwt>'
+  scheme_name: AccessToken
+  note: >-
+    A single securityScheme (`AccessToken`, http/bearer, bearerFormat JWT) is declared and applied
+    globally in both v1 and v2. Tokens are minted against a trusted issuer registered on the account
+    (`/v1/account/{accountId}/issuer/{issuerId}`), or bootstrapped by redeeming an init token
+    (`resolveInit`, `initUser`, `initClient`). There is no API-key surface and no OAuth 2.0 flow in
+    the contract, so no scopes/ artifact is emitted.
+  authorization_model:
+    style: action-and-resource
+    shape: 'AccessStatement { action, resource }'
+    note: >-
+      Authorization is expressed as an explicit list of {action, resource} grants attached to a user
+      or client, not as OAuth scopes. `action` is a colon-delimited verb ("function:get", "user:add",
+      "function:*"); `resource` is a hierarchical path
+      ("/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/function/{functionId}"),
+      and a grant on a prefix implies the subtree.
+    actions_v1: [account:get, account:patch, audit:get, client:add, client:delete, client:get,
+      client:init, client:update, function:delete, function:get, function:get-log, function:put,
+      function:schedule, issuer:add, issuer:delete, issuer:get, issuer:update, log:get, registry:get,
+      storage:delete, storage:get, storage:put, subscription:get, user:add, user:delete, user:get,
+      user:init, user:update]
+    actions_v2: [connector:add, connector:delete, connector:get, connector:put-tag, connector:update,
+      identity:delete, identity:get, identity:put-tag, identity:update, install:get, install:put-tag,
+      instance:delete, instance:get, instance:update, integration:add, integration:delete,
+      integration:get, integration:put, integration:put-tag, integration:update]
+idempotency:
+  supported: false
+  coverage: none
+  mechanism: null
+  header: null
+  note: >-
+    Neither spec declares an Idempotency-Key header or any replay-protection mechanism; the string
+    "idempoten" does not appear in either contract. The closest thing Fusebit ships is optimistic
+    concurrency on Storage: putStorage and deleteStorage accept an ETag and return 409 "Etag Conflict"
+    on a stale token. That prevents a lost update, not a duplicate write, so it is recorded under
+    conditional_requests below rather than as idempotency coverage.
+  conditional_requests:
+    supported: true
+    scope: [putStorage, deleteStorage]
+    mechanism: ETag / 409 Etag Conflict
+    note: >-
+      Storage writes carry an opaque ETag representing the state of the stored data. Supplying a stale
+      ETag returns 409 with the current ETag in the response header.
+reversibility:
+  grade: none
+  note: >-
+    Fusebit publishes a full write surface (putFunction, putStorage, postConnector, putIntegration,
+    putInstall, putIdentity, deleteFunction, deleteConnector, deleteIntegration, deleteInstall,
+    deleteIdentity, deleteUser, deleteClient, deleteIssuer, deleteStorage, deleteStorageRecusive)
+    and NO reversal operation of any kind. There is no cancel, undo, restore, rollback, trash or
+    soft-delete endpoint in either contract, and no retention or restore window is stated anywhere
+    in the specs or the surviving release notes. Deletes are terminal as published.
+  write_surfaces:
+    - operation: deleteFunction
+      reversal: null
+      window: null
+      note: No restore endpoint exists. A function can be re-created with putFunction, but that is a
+        new write from the caller's own source, not a reversal of the delete.
+    - operation: deleteStorageRecusive
+      reversal: null
+      window: null
+      note: Recursive delete of a storage subtree with no published restore path or retention window.
+    - operation: deleteIntegration
+      reversal: null
+      window: null
+      note: >-
+        Returns 202 with an operation status object; the async operation can be polled but not
+        cancelled. No reversal endpoint.
+    - operation: putStorage
+      reversal: null
+      window: null
+      note: >-
+        Prior versions are not addressable. The ETag guards against overwriting a state you have not
+        read; it does not let you recover the state you overwrote.
+  dry_run_mode: none
+pagination:
+  style: cursor
+  request_params:
+    - name: count
+      in: query
+      description: The maximum number of entries to return
+    - name: next
+      in: query
+      description: The key to use to retrieve the next set of results
+    - name: sort
+      in: query
+      description: 'v2 only — sort by dateModified, dateAdded, or the default entityId'
+  response_fields:
+    - name: items
+      description: The page of entities
+    - name: next
+      description: Opaque cursor to pass back as the `next` query parameter; absent on the last page
+  applies_to: >-
+    v1 list operations (getUserList, getAccountClientList, getAccountIssuerList,
+    getSubscriptionFunctionList, getFunctionList, getStorageList, getAccountSubscriptionList) and every
+    v2 list/search operation (listConnectors, listIntegrations, listIdentities, searchIdentities,
+    listInstalls, searchInstalls).
+filtering:
+  params:
+    - name: idPrefix
+      description: 'v2 — prefix match on entity id'
+    - name: tag
+      description: 'v2 — `tagName` or `tagName=tagValue`, repeatable, ANDed across occurrences'
+    - name: status
+      description: 'v2 — creating | invalid | active'
+    - name: search
+      description: 'v1 — free-text search on audit and log queries'
+    - name: 'from / to'
+      description: 'v1 — time bounds on audit queries'
+metadata:
+  supported: true
+  mechanism: entity tags
+  note: >-
+    Every v2 entity (Integration, Connector, Install, Identity) carries a `tags` map and exposes a
+    dedicated tag sub-resource — getIntegrationTags / getIntegrationTag / putIntegrationTag /
+    deleteIntegrationTag and the Connector, Install and Identity equivalents — so callers can attach
+    and query their own key/value metadata without rewriting the entity.
+async_operations:
+  supported: true
+  note: >-
+    v2 mutations on Connector, Integration and Session are asynchronous. postConnector, putConnector,
+    deleteConnector, postIntegration, putIntegration, deleteIntegration and postSession return 202
+    with an OperationStatusObject; the caller polls the entity until `status` leaves `creating`.
+  status_values: [creating, invalid, active]
+  error_codes: [OK, InvalidParameterValue, UnauthorizedOperation, VersionConflict, InternalError,
+    RequestLimitExceeded]
+  note_v1: >-
+    v1 Functions expose a build pipeline in the same shape — postFunctionBuild returns a build id
+    polled through getFunctionBuild. Function routes can additionally be declared as `task` routes,
+    where an HTTP POST is queued and answered immediately with 202 plus a `location` header pointing
+    at the task status URL.
+versioning:
+  style: url-path
+  versions: [v1, v2]
+  note: >-
+    Two concurrent major versions on one host. `/v1/*` is the core platform surface (accounts,
+    subscriptions, boundaries, functions, users, clients, issuers, storage, registry); `/v2/*` is the
+    integrations surface (integrations, connectors, installs, identities, sessions). v2 did not
+    replace v1 — they were shipped and versioned together, and the platform release stream itself
+    follows Semantic Versioning 2.0 (release notes state this explicitly).
+  latest_platform_release: 1.41.1
+  latest_platform_release_date: '2022-11-07'
+error_envelope:
+  format: custom-json
+  rfc9457: false
+  media_type: application/json
+  shape: '{ status: number, statusCode: number, message: string }'
+  note: >-
+    Both v1 and v2 return the same envelope. It is NOT RFC 9457 application/problem+json — there is no
+    `type`, `title`, `detail` or `instance` member, and `status` is duplicated as `statusCode`. See
+    errors/fusebit-problem-types.yml.
+rate_limit_signaling:
+  documented: partial
+  status_code: 429
+  headers: []
+  note: >-
+    429 is a declared response on putFunction, postFunctionBuild and getFunctionBuild, and the
+    FunctionRoutes.task schema documents the concrete trigger: a task route rejects with 429 once
+    pending executions exceed `maxPending` (default 1024), with `maxRunning` (default 10) capping
+    concurrency. Release 1.40.23 (2022-11-01) changed rate-limited function executions from 503 to
+    429. No RateLimit-*, X-RateLimit-* or Retry-After response header is declared anywhere in either
+    contract, so a client can see that it was throttled but cannot see its budget. See
+    rate-limits/fusebit-rate-limits.yml.
+request_id_tracing:
+  supported: false
+  note: >-
+    No request-id or correlation header is declared in either contract. Observability was delivered
+    out-of-band instead: real-time execution logs (getFunctionLog, getBoundaryLogs, log query
+    operations) and managed Grafana dashboards per account, added across releases 1.40.11-1.40.18.
+cross_links:
+  errors: errors/fusebit-problem-types.yml
+  lifecycle: lifecycle/fusebit-lifecycle.yml
+  authentication: authentication/fusebit-authentication.yml
+  rate_limits: rate-limits/fusebit-rate-limits.yml
+  changelog: changelog/fusebit-changelog.yml

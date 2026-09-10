@@ -1,0 +1,4202 @@
+openapi: 3.0.0
+security:
+  - AccessToken: []
+
+servers:
+  - url: https://api.{region}.on.fusebit.io
+    description: Production
+    variables:
+      region:
+        description: The region where the API is deployed, for example `'us-west-1'`
+        default: 'us-west-1'
+
+info:
+  description: 'Fusebit HTTP API for the management and execution of Fusebit accounts, users, functions and more'
+  version: '1.0.0'
+  title: 'Fusebit HTTP API - Core'
+  contact:
+    email: contact@fusebit.io
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+
+tags:
+  - name: Accounts
+    description: Account management operations
+  - name: Subscriptions
+    description: Subscription management operations
+  - name: Issuers
+    description: Issuer management operations
+  - name: Users
+    description: User management operations
+  - name: Clients
+    description: Client management operations
+  - name: Boundaries
+    description: Boundary management operations
+  - name: Functions
+    description: Function management operations
+#  - name: Statistics
+#    description: Statistical queries on function behavior
+#  - name: Registries
+#    description: Package registries for private implementations
+
+paths:
+  /v1/account/{accountId}/logs:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+    post:
+      tags:
+        - Accounts
+      summary: Start new account-level log query
+      operationId: newAccountLogQuery
+      description: |
+        Starts a new log query scoped to account logs.
+      requestBody:
+        description: Log query parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewLogQuery'
+      responses:
+        200:
+          description: New query initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewLogQueryResponse'
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['log:get']
+  /v1/account/{accountId}/logs/{queryId}:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - in: path
+        name: queryId
+        required: true
+        description: Query id
+        schema:
+          $ref: '#/components/schemas/QueryId'
+    get:
+      tags:
+        - Accounts
+      summary: Get account-level log query results
+      operationId: getAccountLogQueryResults
+      description: |
+        Get the status and results of a previously started account-level log query.
+      responses:
+        200:
+          description: Query status and results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogQueryResult'
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['log:get']
+
+  /v1/account/{accountId}/subscription/{subscriptionId}/logs:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - in: path
+        name: subscriptionId
+        required: true
+        description: Subscription id
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+    post:
+      tags:
+        - Subscriptions
+      summary: Start new subscription-level log query
+      operationId: newSubscriptionLogQuery
+      description: |
+        Starts a new log query scoped to subscription logs.
+      requestBody:
+        description: Log query parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewLogQuery'
+      responses:
+        200:
+          description: New query initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewLogQueryResponse'
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['log:get']
+  /v1/account/{accountId}/subscription/{subscriptionId}/logs/{queryId}:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - in: path
+        name: subscriptionId
+        required: true
+        description: Subscription id
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+      - in: path
+        name: queryId
+        required: true
+        description: Query id
+        schema:
+          $ref: '#/components/schemas/QueryId'
+    get:
+      tags:
+        - Subscriptions
+      summary: Get subscription-level log query results
+      operationId: getSubscriptionLogQueryResults
+      description: |
+        Get the status and results of a previously started subscripton-level log query.
+      responses:
+        200:
+          description: Query status and results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogQueryResult'
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['log:get']
+
+  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/logs/{queryId}:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - in: path
+        name: subscriptionId
+        required: true
+        description: Subscription id
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+      - in: path
+        name: boundaryId
+        required: true
+        description: Boundary id
+        schema:
+          $ref: '#/components/schemas/BoundaryId'
+      - in: path
+        name: queryId
+        required: true
+        description: Query id
+        schema:
+          $ref: '#/components/schemas/QueryId'
+    get:
+      tags:
+        - Boundaries
+      summary: Get boundary-level log query results
+      operationId: getBoundaryLogQueryResults
+      description: |
+        Get the status and results of a previously started boundary-level log query.
+      responses:
+        200:
+          description: Query status and results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogQueryResult'
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['log:get']
+
+  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/function/{functionId}/logs/{queryId}:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - in: path
+        name: subscriptionId
+        required: true
+        description: Subscription id
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+      - in: path
+        name: boundaryId
+        required: true
+        description: Boundary id
+        schema:
+          $ref: '#/components/schemas/BoundaryId'
+      - in: path
+        name: functionId
+        required: true
+        description: Function id
+        schema:
+          $ref: '#/components/schemas/FunctionId'
+      - in: path
+        name: queryId
+        required: true
+        description: Query id
+        schema:
+          $ref: '#/components/schemas/QueryId'
+    get:
+      tags:
+        - Functions
+      summary: Get function-level log query results
+      operationId: getFunctionLogQueryResults
+      description: |
+        Get the status and results of a previously started function-level log query.
+      responses:
+        200:
+          description: Query status and results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogQueryResult'
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['log:get']
+
+  /v1/account/{accountId}:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+    get:
+      tags:
+        - Accounts
+      summary: Get an account
+      operationId: getAccount
+      description: |
+        Returns details about the given account.
+      responses:
+        200:
+          description: The account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        400:
+          description: Malformed account id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['account:get']
+    patch:
+      tags:
+        - Accounts
+      summary: Patches an account
+      operationId: patchAccount
+      description: |
+        Updates the display name of the given account.
+      requestBody:
+        description: An object with the new display name of the account
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountPatch'
+      responses:
+        200:
+          description: The account that was patched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        400:
+          description: Malformed request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['account:patch']
+
+  /v1/account/{accountId}/subscription:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+    get:
+      tags:
+        - Accounts
+      summary: Get subscriptions of an account
+      operationId: getAccountSubscriptionList
+      description: |
+        Returns a list of the subscriptions of the given account.
+
+        Use query string parameters to filter the list of subscriptions.
+
+        All query filters are combined with a logical AND operator.
+      parameters:
+        - in: query
+          name: next
+          required: false
+          description: Opaque token to start returning results from
+          schema:
+            type: string
+        - in: query
+          name: count
+          required: false
+          description: Optional number of results to return
+          schema:
+            type: number
+            minimum: 1
+            maximum: 100
+      responses:
+        200:
+          description: List of subscriptions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionList'
+        400:
+          description: Malformed account id or invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['subscription:get']
+
+  /v1/account/{accountId}/subscription/{subscriptionId}:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - in: path
+        name: subscriptionId
+        required: true
+        description: Subscription id
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+    get:
+      tags:
+        - Accounts
+      summary: Get a subscription of an account
+      operationId: getSubscription
+      description: |
+        Returns the details of the given subscription of the given account.
+      responses:
+        200:
+          description: A subscription
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        400:
+          description: Malformed account or subscription id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['subscription:get']
+
+  /v1/account/{accountId}/audit:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - in: query
+        name: resource
+        required: false
+        description: |
+          Optional identifier to match against the `resource` field of audit entries. Matching is case-sensitive. The resource in the audit entry must begin with the identifier to be considered a match.
+
+          Given an audit entry with a resource of `'/account/acc-5555555555555555/subscription/sub-5555555555555555/'`, the
+          following queries would result in a match:
+
+            - `resource=/account/acc-`
+            - `resource=/account/acc-5555555555555555/subscription/`
+            - `resource=/account/acc-5555555555555555/subscription/sub-5555555555555555/`
+
+          Given the same audit entry, the following queries would not result in a match:
+
+            - `resource=acc-`
+            - `resource=account/acc-5555555555555555`
+            - `resource=subscription/sub-5555555555555555/`
+        schema:
+          type: string
+      - in: query
+        name: action
+        required: false
+        description: |
+          Optional identifier to match against the `action` field of audit entries. Matching is case-sensitive.
+          Both fully-qualified actions and wildcard actions are supported.
+          Examples of fully-qualified actions include: `'user:get'`, `'function:put'`.
+          Examples of wildcard actions include: `'user:*'`, `'function:*'`.
+
+          Given an audit entry with an action of `'function:put'`, the
+          following queries would result in a match:
+
+            - `action=function:*`
+            - `action=function:put`
+
+          Given the same audit entry, the following query would not result in a match:
+
+            - `action=function:get`
+        schema:
+          type: string
+      - in: query
+        name: issuerId
+        required: false
+        description: |
+          Optional identifier to match against the `issuerId` field of audit entries.
+          Matching is case-sensitive. The full issuer id must be provided as partial matches are not supported.
+        schema:
+          $ref: '#/components/schemas/IssuerId'
+      - in: query
+        name: subject
+        required: false
+        description: |
+          Optional identifier to match against the `subject` field of audit entries.
+          Only valid if the `issuerId` query filter is also provided.
+          Matching is case-sensitive. The full subject must be provided as partial matches are not supported.
+        schema:
+          type: string
+      - in: query
+        name: from
+        required: false
+        description: |
+          Optional time from which to return audit entries. Can be any format accepted by the JavaScript Date constructor
+          or a relative date of the format `'-{integer}{s | m | h | d}'`, where `'s'` is seconds, `'m'` is minutes, `'h'` is hours and `'d'` is days.
+
+          All of the following are valid queries:
+          - `from=1559605282105` (absolute time in milliseconds since 1 January 1970 UTC)
+          - `from=2019-06-03T23:42:16.976Z`
+          - `from=Mon, 03 Jun 2019 23:42:30 GMT`
+          - `from=-30s` (30 seconds prior to now)
+          - `from=-5m` (5 minutes prior to now)
+          - `from=-2h` (2 hours prior to now)
+          - `from=-1d` (1 day prior to now)
+        schema:
+          type: string
+      - in: query
+        name: to
+        required: false
+        description: |
+          Optional time up to which to return audit entries. Can be any format accepted by the JavaScript Date constructor
+          or a relative date of the format `'-{integer}{s | m | h | d}'`, where `'s'` is seconds, `'m'` is minutes, `'h'` is hours and `'d'` is days.
+
+          All of the following are valid queries:
+          - `from=1559605282105` (absolute time in milliseconds since 1 January 1970 UTC)
+          - `from=2019-06-03T23:42:16.976Z`
+          - `from=Mon, 03 Jun 2019 23:42:30 GMT`
+          - `from=-30s` (30 seconds prior to now)
+          - `from=-5m` (5 minutes prior to now)
+          - `from=-2h` (2 hours prior to now)
+          - `from=-1d` (1 day prior to now)
+        schema:
+          type: string
+      - in: query
+        name: next
+        required: false
+        description: Opaque token to start returning results from
+        schema:
+          type: string
+      - in: query
+        name: count
+        required: false
+        description: Optional number of results to return
+        schema:
+          type: number
+          minimum: 1
+          maximum: 100
+    get:
+      tags:
+        - Accounts
+      summary: Get audit trail
+      operationId: getAccountAudit
+      description: |
+        Returns the audit trail of calls to the HTTP APIs related to resources that belong to the account id.
+        Each entry of the audit trail contains the timestamp of the call, resource, action, and the identity of the caller represented as the (issuer, subject) pair.
+        Use query string parameters to filter the entries.
+
+        All query filters are combined with a logical AND operator.
+
+        By default, only the most recent 15 minutes of audit logs are returned. You can change this with the `from` query parameter.
+      responses:
+        200:
+          description: Entries of the audit trail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountAudit'
+        400:
+          description: Malformed account id or invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['audit:get']
+
+  /v1/account/{accountId}/init:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+    post:
+      tags:
+        - Accounts
+      summary: Resolve an initialization token
+      operationId: resolveInit
+      description: |
+        Add an identity to an existing user or client using a previously obtained single-use initialization token.
+        This API requires the initialization token to be presented as an access token.
+      requestBody:
+        description: The parameters for the initialization token resolution
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitResolveRequest'
+      responses:
+        200:
+          description: Identity successfully added to the user or client
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/User'
+                  - $ref: '#/components/schemas/Client'
+        400:
+          description: Malformed request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: []
+
+  /v1/account/{accountId}/issuer:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+    get:
+      tags:
+        - Issuers
+      summary: Get issuers of an account
+      operationId: getAccountIssuerList
+      description: |
+        Returns a list of issuers associated with the given account.
+
+        Use query string parameters to filter the list of issuers.
+        All query filters are combined with a logical AND operator.
+      parameters:
+        - in: query
+          name: name
+          required: false
+          description: |
+            Optional identifier to match against the `displayName` field of the issuer.
+            Matching is case-sensitive. Partial matches are supported.
+          schema:
+            type: string
+        - in: query
+          name: next
+          required: false
+          description: Opaque token to start returning results from
+          schema:
+            type: string
+        - in: query
+          name: count
+          required: false
+          description: Optional number of results to return
+          schema:
+            type: number
+            minimum: 1
+            maximum: 100
+      responses:
+        200:
+          description: A list of issuers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssuerList'
+        400:
+          description: Malformed account id or invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['issuer:get']
+
+  /v1/account/{accountId}/issuer/{issuerId}:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - in: path
+        name: issuerId
+        required: true
+        description: Issuer id
+        schema:
+          $ref: '#/components/schemas/IssuerId'
+    get:
+      tags:
+        - Issuers
+      summary: Get an issuer of an account
+      operationId: getAccountIssuer
+      description: |
+        Returns an issuer associated with the given account.
+      responses:
+        200:
+          description: The issuer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issuer'
+        400:
+          description: Malformed account or issuer id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Issuer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['issuer:get']
+    post:
+      tags:
+        - Issuers
+      summary: Add a new issuer to an account
+      operationId: postAccountIssuer
+      description: |
+        Adds a new issuer to be associated with the given account.
+      requestBody:
+        description: The issuer to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewIssuer'
+      responses:
+        200:
+          description: The issuer that was added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issuer'
+        400:
+          description: Malformed account id, invalid issuer or issuer already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['issuer:add']
+    patch:
+      tags:
+        - Issuers
+      summary: Update an existing issuer of an account
+      operationId: putAccountIssuer
+      description: |
+        Updates an existing issuer associated with the given account.
+      requestBody:
+        description: The issuer to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewIssuer'
+      responses:
+        200:
+          description: The issuer that was updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issuer'
+        400:
+          description: Malformed account or issuer id, or invalid issuer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Issuer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['issuer:update']
+    delete:
+      tags:
+        - Issuers
+      summary: Delete an issuer of an account
+      description: |
+        Deletes an issuer that was previously associated with the given account.
+      operationId: deleteIssuer
+      responses:
+        204:
+          description: Issuer was deleted
+        400:
+          description: Malformed account or issuer id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Issuer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['issuer:delete']
+
+  /v1/account/{accountId}/client:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+    get:
+      tags:
+        - Clients
+      summary: Get clients of an account
+      operationId: getAccountClientList
+      description: |
+        Returns a list of clients associated with the given account.
+
+        Use query string parameters to filter the list of clients.
+        All query filters are combined with a logical AND operator.
+      parameters:
+        - in: query
+          name: include
+          required: false
+          description: |
+            Optional switch to include all properties of the clients in the response.
+            If this switch is not provided only the `id` and `displayName` fields of each client are returned in the response.
+          schema:
+            type: string
+            enum:
+              - all
+        - in: query
+          name: name
+          required: false
+          description: |
+            Optional identifier to match against the `displayName` field of the clients. Matching is case-sensitive. Partial
+            matches are supported.
+          schema:
+            type: string
+        - in: query
+          name: issuerId
+          required: false
+          description: |
+            Optional identifier to match against the `issuerId` field of the identities of the clients.
+            Matching is case-sensitive. The full issuer id must be provided as partial matches are not supported.
+          schema:
+            $ref: '#/components/schemas/IssuerId'
+        - in: query
+          name: subject
+          required: false
+          description: |
+            Optional identifier to match against the `subject` field of the identities of the clients.
+            Only valid if the `issuerId` query filter is also provided. Matching is case-sensitive.
+            The full subject must be provided as partial matches are not supported.
+          schema:
+            type: string
+        - in: query
+          name: next
+          required: false
+          description: Opaque token to start returning results from
+          schema:
+            type: string
+        - in: query
+          name: count
+          required: false
+          description: Optional number of results to return
+          schema:
+            type: number
+            minimum: 1
+            maximum: 100
+      responses:
+        200:
+          description: A list of clients
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientList'
+        400:
+          description: Malformed account id or invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+      security:
+        - AccessToken: ['client:get']
+    post:
+      tags:
+        - Clients
+      summary: Add a client
+      operationId: postClient
+      description: |
+        Adds a client to given account.
+      requestBody:
+        description: The new client to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewClient'
+      responses:
+        200:
+          description: The client that was added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        400:
+          description: Malformed account id or invalid client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['client:add']
+
+  /v1/account/{accountId}/client/{clientId}:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - in: path
+        name: clientId
+        required: true
+        description: Client id
+        schema:
+          $ref: '#/components/schemas/ClientId'
+    get:
+      tags:
+        - Clients
+      summary: Get a client of an account
+      operationId: getAccountClient
+      description: |
+        Returns a client associated with the given account.
+      responses:
+        200:
+          description: The client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        400:
+          description: Malformed account or client id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['client:get']
+    patch:
+      tags:
+        - Clients
+      summary: Update a client of an account
+      operationId: putAccountClient
+      description: |
+        Updates a client associated with the given account.
+      requestBody:
+        description: The client to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewClient'
+      responses:
+        200:
+          description: The client that was updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        400:
+          description: Malformed account or client id, or invalid client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['client:update']
+    delete:
+      tags:
+        - Clients
+      summary: Delete a client of an account
+      description: |
+        Deletes a client that was previously associated with the given account.
+      operationId: deleteClient
+      responses:
+        204:
+          description: Client was deleted
+        400:
+          description: Malformed account or client id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['client:delete']
+
+  /v1/account/{accountId}/client/{clientId}/init:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - in: path
+        name: clientId
+        required: true
+        description: Client id
+        schema:
+          $ref: '#/components/schemas/ClientId'
+    post:
+      tags:
+        - Clients
+      summary: Create an initialization token for an existing client
+      operationId: initClient
+      description: |
+        Create an initialization token for an existing client.
+        The initialization token is a single-use bearer credential that allows the caller to add a new identity for the client.
+        If unused, the initialization token expires after eight hours.
+      requestBody:
+        description: The parameters for the initialization token
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitRequest'
+      responses:
+        200:
+          description: The initialization token was generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InitResponse'
+        400:
+          description: Malformed initialization token parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['client:init']
+
+  /v1/account/{accountId}/user:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+    get:
+      tags:
+        - Users
+      summary: Get users
+      operationId: getUserList
+      description: |
+        Returns a list of users associated with the given account.
+
+        Use query string parameters to filter the list of users. All query filters are combined with a logical AND operator.
+      parameters:
+        - in: query
+          name: include
+          required: false
+          description: |
+            Optional switch to include all properties of the users in the response.
+            If this switch is not provided only the `id` and `firstName`, `lastName` and `primaryEmail` fields of each user are returned in the response.
+          schema:
+            type: string
+            enum:
+              - all
+        - in: query
+          name: name
+          required: false
+          description: |
+            Optional identifier to match against the `firstName` or `lastName` fields of the users.
+            Matching is case-sensitive. Partial matches are supported.
+          schema:
+            type: string
+        - in: query
+          name: email
+          required: false
+          description: |
+            Optional identifier to match against the `primaryEmail` field of the users.
+            Matching is case-sensitive. Partial matches are supported.
+          schema:
+            type: string
+        - in: query
+          name: issuerId
+          required: false
+          description: |
+            Optional identifier to match against the `issuerId` field of the identities of the users.
+            Matching is case-sensitive. The full issuer id must be provided as partial matches are not supported.
+          schema:
+            $ref: '#/components/schemas/IssuerId'
+        - in: query
+          name: subject
+          required: false
+          description: |
+            Optional identifier to match against the `subject` field of the identities of the users.
+            Only valid if the `issuerId` query filter is also provided. Matching is case-sensitive.
+            The full subject must be provided as partial matches are not supported.
+          schema:
+            type: string
+        - in: query
+          name: next
+          required: false
+          description: Opaque token to start returning results from
+          schema:
+            type: string
+        - in: query
+          name: count
+          required: false
+          description: Optional number of results to return
+          schema:
+            type: number
+            minimum: 1
+            maximum: 100
+      responses:
+        200:
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+        400:
+          description: Malformed account id or invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['user:get']
+    post:
+      tags:
+        - Users
+      summary: Add a user
+      operationId: postUser
+      description: |
+        Adds a user to the platform.
+      requestBody:
+        description: The new user to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+      responses:
+        200:
+          description: The user that was added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Malformed account id or invalid user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['user:add']
+
+  /v1/account/{accountId}/user/{userId}:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - in: path
+        name: userId
+        required: true
+        description: User id
+        schema:
+          $ref: '#/components/schemas/UserId'
+    get:
+      tags:
+        - Users
+      summary: Get a user
+      operationId: getUser
+      description: |
+        Returns details of a user.
+      responses:
+        200:
+          description: The user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Malformed account or user id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['user:get']
+    patch:
+      tags:
+        - Users
+      summary: Update an existing user
+      operationId: patchUser
+      description: |
+        Updates the details of a user.
+      requestBody:
+        description: The details of the user to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        200:
+          description: The user that was updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Malformed account or user id, or invalid user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['user:update']
+    delete:
+      tags:
+        - Users
+      summary: Delete a User
+      description: |
+        Removes the user and all of their access and identities
+      operationId: deleteUser
+      responses:
+        204:
+          description: User was deleted
+        400:
+          description: Malformed account or user id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['user:delete']
+
+  /v1/account/{accountId}/user/{userId}/init:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - in: path
+        name: userId
+        required: true
+        description: User id
+        schema:
+          $ref: '#/components/schemas/UserId'
+    post:
+      tags:
+        - Users
+      summary: Create an initialization token for an existing user
+      operationId: initUser
+      description: |
+        Create an initialization token for an existing user.
+        The initialization token is a single-use bearer credential that allows the caller to add a new identity for the users.
+        If unused, the initialization token expires after eight hours.
+      requestBody:
+        description: The parameters for the initialization token
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitRequest'
+      responses:
+        200:
+          description: The initialization token was generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InitResponse'
+        400:
+          description: Malformed initialization token parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['user:init']
+
+  /v1/account/{accountId}/subscription/{subscriptionId}/function:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - name: subscriptionId
+        in: path
+        description: Subscription id
+        required: true
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+    get:
+      tags:
+        - Functions
+      summary: Get the functions of a subscription
+      description: |
+        Returns the list of functions of a given subscription.
+
+        Use query string parameters to filter the list of functions. All query filters are combined with a logical AND operator.
+      operationId: getSubscriptionFunctionList
+      parameters:
+        - in: query
+          name: include
+          required: false
+          description: |
+            Optional switch to include all tags of the functions in the response.
+          schema:
+            type: string
+            enum:
+              - all
+        - in: query
+          name: next
+          required: false
+          description: Opaque token to start returning results from
+          schema:
+            type: string
+        - in: query
+          name: count
+          required: false
+          description: Maximum number of results to return. Each query will return between 1 and `count` entries.
+          schema:
+            type: number
+            minimum: 1
+            maximum: 100
+        - in: query
+          name: cron
+          required: false
+          description: |
+            Optional switch that determines whether to include or exclude functions that have cron enabled.
+            If `'true'` only functions with cron enabled will be returned.
+            If `'false'` only functions without cron enabled will be returned.
+            If not specified, all functions will be returned.
+          schema:
+            type: boolean
+        - in: query
+          name: search
+          required: false
+          description: |
+            Search the metadata for functions that match this criteria.
+            Each method has several different scopes that can be searched within, including `'compute'`, `'dependency'`, and `'tag'`.
+            They correspond to values in the `compute` dependencies in the `package.json` and `metadata.tags` sections of the function specification.
+
+            Search supports a single filtering criteria, in the form of `search=key` for any function possessing a key matching that value, or `search=key=value` for functions that specifically match a value.
+            If the key or value contains an `=`, encode them to the URI specification first.
+
+            Examples include `?search=compute.timeout=30`, `?search=dependency.ms=2.1.2`, `?search=tag.enabled`.
+
+            Specifying `search` multiple times acts as a logical AND between the criteria, returning only functions that match all of the requested elements.
+          schema:
+            type: string
+      responses:
+        200:
+          description: A list of functions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunctionList'
+        400:
+          description: Malformed account or subscription id, invalid next or invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['function:get']
+
+  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/function:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - name: subscriptionId
+        in: path
+        description: Subscription id
+        required: true
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+      - name: boundaryId
+        in: path
+        description: The boundary id
+        required: true
+        schema:
+          $ref: '#/components/schemas/BoundaryId'
+    get:
+      tags:
+        - Boundaries
+      summary: Get the functions of a boundary
+      description: |
+        Returns the list of functions in a given boundary of a given subscription.
+
+        Use query string parameters to filter the list of functions. All query filters are combined with a logical AND operator.
+      operationId: getFunctionList
+      parameters:
+        - in: query
+          name: include
+          required: false
+          description: |
+            Optional switch to include all tags of the functions in the response.
+          schema:
+            type: string
+            enum:
+              - all
+        - in: query
+          name: next
+          required: false
+          description: Opaque token to start returning results from
+          schema:
+            type: string
+        - in: query
+          name: count
+          required: false
+          description: Maximum number of results to return. Each query will return between 1 and `count` entries.
+          schema:
+            type: number
+            minimum: 1
+            maximum: 100
+        - in: query
+          name: cron
+          required: false
+          description: |
+            Optional switch that determines whether to include or exclude functions that have cron enabled.
+            If `'true'` only functions with cron enabled will be returned.
+            If `'false'` only functions without cron enabled will be returned.
+            If not specified, all functions will be returned.
+          schema:
+            type: boolean
+        - in: query
+          name: search
+          required: false
+          description: |
+            Search the metadata for functions that match this criteria. Each method has several different scopes that can be searched
+            within, including `'compute'`, `'dependency'` and `'tag'`, corresponding to values in the `compute`,
+            dependencies in the `package.json` and `metadata.tags` sections of the function specification.
+
+            Search supports a single filtering criteria, in the form of `search=key` for any function posessing a key matching that
+            value, or `search=key=value` for functions that specifically match a value. If the key or value
+            contains an `=`, encode them to the URI specification first.
+
+            Examples include `?search=compute.timeout=30`, `?search=dependency.ms=2.1.2`, `?search=tag.enabled`.
+
+            Specifying `search` multiple times acts as a logical AND between the criteria, returning only
+            functions which match all of the requested elements.
+          schema:
+            type: string
+      responses:
+        200:
+          description: A list of functions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunctionList'
+        400:
+          description: Malformed account or subscription id, invalid next, or invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription or boundary not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['function:get']
+
+  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/log:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - name: subscriptionId
+        in: path
+        description: Subscription id
+        required: true
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+      - name: boundaryId
+        in: path
+        description: The boundary id
+        required: true
+        schema:
+          $ref: '#/components/schemas/BoundaryId'
+    get:
+      tags:
+        - Boundaries
+      summary: |
+        Get real-time logs of all functions executed within the given boundary
+      description: |
+        Returns a text/event-stream response with streaming real-time logs generated by all functions executing in a boundary.
+      operationId: getBoundaryLogs
+      responses:
+        200:
+          description: Stream of text/event-stream log data
+        400:
+          description: Malformed account, subscription or boundary id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription or boundary not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['function:get-log']
+
+  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/logs:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - name: subscriptionId
+        in: path
+        description: Subscription id
+        required: true
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+      - name: boundaryId
+        in: path
+        description: The boundary id
+        required: true
+        schema:
+          $ref: '#/components/schemas/BoundaryId'
+    post:
+      tags:
+        - Boundaries
+      summary: Start new boundary-level log query
+      operationId: newBoundaryLogQuery
+      description: |
+        Starts a new log query scoped to boundary logs.
+      requestBody:
+        description: Log query parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewLogQuery'
+      responses:
+        200:
+          description: New query initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewLogQueryResponse'
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['log:get']
+
+  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/function/{functionId}:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - name: subscriptionId
+        in: path
+        description: Subscription id
+        required: true
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+      - name: boundaryId
+        in: path
+        description: The boundary id, unique within the subscription.
+        required: true
+        schema:
+          $ref: '#/components/schemas/BoundaryId'
+      - name: functionId
+        in: path
+        description: The function id, unique within the boundary.
+        required: true
+        schema:
+          $ref: '#/components/schemas/FunctionId'
+      - in: query
+        name: include
+        required: false
+        description: |
+          Optional switch to control what information about the function is returned.
+
+          If `all` is specified, the result will contain the serialized form of the 'compute', 'schedule' and 'configuration' properties in addition to the parsed form.
+
+          If `task` is specified, the result will only contain the specification of the task scheduling routes along with the basic statistics for each route.
+        schema:
+          type: string
+          enum:
+            - all
+            - task
+    get:
+      tags:
+        - Functions
+      summary: Get the definition of a deployed function
+      description: |
+        Returns the specification of a previously deployed function
+      operationId: getFunction
+      responses:
+        200:
+          description: The function specification
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Function'
+        400:
+          description: Malformed account, subscription, boundary or function id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription, boundary or function not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['function:get']
+    put:
+      tags:
+        - Functions
+      summary: Initiate a new build and deployment of a function
+      description: |
+        Initiates a build and deployment of the function within the isolation boundary.
+        This may complete synchronously with a status code of 200, or asynchronously with a status code of 201.
+        If it completes asynchronously, it returns immediately with a response that includes a `buildId` representing the function build process.
+        This `buildId` can be used to poll for completion by calling `'GET /build/{buildId}'`.
+
+        Supply additional options in the `metadata.tags` object to provide additional properties on a function that are searchable.
+
+        The URL for executing the function will be provided as the `location` property of the response.
+
+        The maximum payload size is 500KB.
+      operationId: putFunction
+      requestBody:
+        description: The function to build and deploy
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewFunction'
+      responses:
+        200:
+          description: Function build complete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Build'
+        201:
+          description: Function build in progress
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Build'
+        204:
+          description: No change to function
+        400:
+          description: Malformed account, subscription, boundary or function id, or invalid function
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription, boundary or function not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          description: Module dependency failed to build
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['function:put']
+
+    delete:
+      tags:
+        - Functions
+      summary: Delete a function
+      description: |
+        Deletes a previously deployed function.
+      operationId: deleteFunction
+      responses:
+        204:
+          description: Function was deleted
+        400:
+          description: Malformed account, subscription, boundary or function id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription, boundary or function not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['function:delete']
+
+  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/function/{functionId}/build:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - name: subscriptionId
+        in: path
+        description: Subscription id
+        required: true
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+      - name: boundaryId
+        in: path
+        description: The boundary id, unique within the subscription.
+        required: true
+        schema:
+          $ref: '#/components/schemas/BoundaryId'
+      - name: functionId
+        in: path
+        description: The function id, unique within the boundary.
+        required: true
+        schema:
+          $ref: '#/components/schemas/FunctionId'
+    post:
+      tags:
+        - Functions
+      summary: Evaluate and rebuild a function
+      description: |
+        Evaulate each of a functions dependencies using `semver` and rebuild using
+        the latest packages that satisfy the versioning requirements.
+      operationId: postFunctionBuild
+      responses:
+        200:
+          description: Function build complete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Build'
+        201:
+          description: Function build in progress
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Build'
+        204:
+          description: No change to function
+        400:
+          description: Malformed account, subscription, boundary or function id, or invalid function
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription, boundary or function not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          description: Module dependency failed to build
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['function:get']
+
+  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/function/{functionId}/log:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - name: subscriptionId
+        in: path
+        description: Subscription id
+        required: true
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+      - name: boundaryId
+        in: path
+        description: The boundary id, unique within the subscription.
+        required: true
+        schema:
+          $ref: '#/components/schemas/BoundaryId'
+      - name: functionId
+        in: path
+        description: The function id, unique within the boundary.
+        required: true
+        schema:
+          $ref: '#/components/schemas/FunctionId'
+    get:
+      tags:
+        - Functions
+      summary: Get real-time logs of a function
+      description: |
+        Returns a text/event-stream response with streaming real-time logs generated by the function.
+      operationId: getFunctionLog
+      responses:
+        200:
+          description: Stream of text/event-stream log data
+        400:
+          description: Malformed account, subscription, boundary or function id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription, boundary or function not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['function:get-log']
+    post:
+      tags:
+        - Functions
+      summary: Start new function-level log query
+      operationId: newFunctionLogQuery
+      description: |
+        Starts a new log query scoped to function logs.
+      requestBody:
+        description: Log query parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewLogQuery'
+      responses:
+        200:
+          description: New query initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewLogQueryResponse'
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['log:get']
+
+  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/function/{functionId}/location:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - name: subscriptionId
+        in: path
+        description: Subscription id
+        required: true
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+      - name: boundaryId
+        in: path
+        description: The boundary id, unique within the subscription.
+        required: true
+        schema:
+          $ref: '#/components/schemas/BoundaryId'
+      - name: functionId
+        in: path
+        description: The function id, unique within the boundary.
+        required: true
+        schema:
+          $ref: '#/components/schemas/FunctionId'
+    get:
+      tags:
+        - Functions
+      summary: Get the URL for executing the function
+      description: |
+        Returns the URL to use to execute the function.
+      operationId: getFunctionLocation
+      responses:
+        200:
+          description: The URL to use to execute the function
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunctionLocation'
+        400:
+          description: Malformed account, subscription, boundary or function id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription, boundary or function not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['function:get']
+
+  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/function/{functionId}/build/{buildId}:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - name: subscriptionId
+        in: path
+        description: Subscription id
+        required: true
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+      - name: boundaryId
+        in: path
+        description: The boundary id, unique within the subscription.
+        required: true
+        schema:
+          $ref: '#/components/schemas/BoundaryId'
+      - name: functionId
+        in: path
+        description: The function id, unique within the boundary.
+        required: true
+        schema:
+          $ref: '#/components/schemas/FunctionId'
+      - name: buildId
+        in: path
+        description: The build id, unique to the function.
+        required: true
+        schema:
+          $ref: '#/components/schemas/BuildId'
+    get:
+      tags:
+        - Functions
+      summary: Get the status of a build of a function
+      description: |
+        Returns the status of the build of a function. This is used for polling the result of the asynchronous build process of a function.
+        The `status` parameter progresses from `'pending'` to `'building'` to either `'success'` or `'failure'`, which are the final states of the build process.
+      operationId: getFunctionBuild
+      responses:
+        200:
+          description: Function build complete - success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Build'
+        201:
+          description: Function build in progress
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Build'
+        400:
+          description: Malformed account, subscription, boundary, function or build id, or invalid function
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription, boundary or function not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          description: Module dependency failed to build
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['function:get']
+
+  #  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/statistics/codeactivityhg:
+  #    parameters:
+  #      - name: accountId
+  #        in: path
+  #        required: true
+  #        description: Account id
+  #        schema:
+  #          $ref: '#/components/schemas/AccountId'
+  #      - name: subscriptionId
+  #        in: path
+  #        description: Subscription id
+  #        required: false
+  #        schema:
+  #          $ref: '#/components/schemas/SubscriptionId'
+  #      - name: boundaryId
+  #        in: path
+  #        description: The boundary id, unique within the subscription.
+  #        required: false
+  #        schema:
+  #          $ref: '#/components/schemas/BoundaryId'
+  #      - name: from
+  #        in: query
+  #        description: Report on statistics starting with this ISO 8601 date string.
+  #        required: true
+  #        schema:
+  #          type: string
+  #      - name: to
+  #        in: query
+  #        description: Report on statistics ending with this ISO 8601 date string.
+  #        required: true
+  #        schema:
+  #          type: string
+  #      - name: width
+  #        in: query
+  #        description: |
+  #          Aggregate statistical analysis on a bucket of this width.
+  #
+  #          Valid widths:
+  #
+  #            - `1s` - Aggregate on buckets 1 second in width
+  #            - `1m` - Aggregate on buckets 1 minute in width
+  #            - `1h` - Aggregate on buckets 1 hour in width
+  #            - `1d` - Aggregate on buckets one day in width
+  #            - `1w` - Aggregate on buckets on a weekly basis
+  #            - `1M` - Aggregate on buckets on a monthly basis
+  #            - `1q` - Aggregate on buckets on a quarterly basis
+  #            - `1y` - Aggregate on buckets on a yearly basis
+  #
+  #          The width is passed to the Elastic Search backend, and follows the [calendar interval specification](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-datehistogram-aggregation.html#calendar_intervals).
+  #        required: false
+  #        schema:
+  #          type: string
+  #          default: "1d"
+  #      - name: codeGrouped
+  #        in: query
+  #        description: Group HTTP response codes by 2xx, 3xx, 4xx, and 5xx instead of granular by each code
+  #        required: false
+  #        schema:
+  #          type: boolean
+  #          default: false
+  #    get:
+  #      tags:
+  #        - Statistics
+  #      summary: Aggregated total count results
+  #      description: |
+  #        Returns the aggregated __total count__ results for all active HTTP status codes during the specified time period.
+  #      operationId: getStatisticsCodeActivityHG
+  #      responses:
+  #        200:
+  #          description: Response body contains the requested data
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Statistics/Histogram'
+  #        400:
+  #          description: Malformed query parameters
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Error'
+  #        403:
+  #          description: Not authorized
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Error'
+  #        405:
+  #          description: Query was not found
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Error'
+  #      security:
+  #        - AccessToken: []
+  #
+  #  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/statistics/codelatencyhg:
+  #    parameters:
+  #      - name: accountId
+  #        in: path
+  #        required: true
+  #        description: Account id
+  #        schema:
+  #          $ref: '#/components/schemas/AccountId'
+  #      - name: subscriptionId
+  #        in: path
+  #        description: Subscription id
+  #        required: false
+  #        schema:
+  #          $ref: '#/components/schemas/SubscriptionId'
+  #      - name: boundaryId
+  #        in: path
+  #        description: The boundary id, unique within the subscription.
+  #        required: false
+  #        schema:
+  #          $ref: '#/components/schemas/BoundaryId'
+  #      - name: from
+  #        in: query
+  #        description: Report on statistics starting with this ISO 8601 date string.
+  #        required: true
+  #        schema:
+  #          type: string
+  #      - name: to
+  #        in: query
+  #        description: Report on statistics ending with this ISO 8601 date string.
+  #        required: true
+  #        schema:
+  #          type: string
+  #      - name: width
+  #        in: query
+  #        description: |
+  #          Aggregate statistical analysis on a bucket of this width.
+  #
+  #          Valid widths:
+  #
+  #            - `1s` - Aggregate on buckets 1 second in width
+  #            - `1m` - Aggregate on buckets 1 minute in width
+  #            - `1h` - Aggregate on buckets 1 hour in width
+  #            - `1d` - Aggregate on buckets one day in width
+  #            - `1w` - Aggregate on buckets on a weekly basis
+  #            - `1M` - Aggregate on buckets on a monthly basis
+  #            - `1q` - Aggregate on buckets on a quarterly basis
+  #            - `1y` - Aggregate on buckets on a yearly basis
+  #
+  #          The width is passed to the Elastic Search backend, and follows the [calendar interval specification](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-datehistogram-aggregation.html#calendar_intervals).
+  #        required: false
+  #        schema:
+  #          type: string
+  #          default: "1d"
+  #      - name: codeGrouped
+  #        in: query
+  #        description: Group HTTP response codes by 2xx, 3xx, 4xx, and 5xx instead of granular by each code
+  #        required: false
+  #        schema:
+  #          type: boolean
+  #          default: false
+  #    get:
+  #      tags:
+  #        - Statistics
+  #      summary: Aggregated average latency results
+  #      description: |
+  #        Returns the aggregated __average latency__ results for all active HTTP status codes.
+  #      operationId: getStatisticsLatencyHG
+  #      responses:
+  #        200:
+  #          description: Response body contains the requested data
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Statistics/Histogram'
+  #        400:
+  #          description: Malformed query parameters
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Error'
+  #        403:
+  #          description: Not authorized
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Error'
+  #        404:
+  #          description: Query was not found
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Error'
+  #      security:
+  #        - AccessToken: []
+  #
+  #  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/statistics/codeactivitylatencyhg:
+  #    parameters:
+  #      - name: accountId
+  #        in: path
+  #        required: true
+  #        description: Account id
+  #        schema:
+  #          $ref: '#/components/schemas/AccountId'
+  #      - name: subscriptionId
+  #        in: path
+  #        description: Subscription id
+  #        required: false
+  #        schema:
+  #          $ref: '#/components/schemas/SubscriptionId'
+  #      - name: boundaryId
+  #        in: path
+  #        description: The boundary id, unique within the subscription.
+  #        required: false
+  #        schema:
+  #          $ref: '#/components/schemas/BoundaryId'
+  #      - name: from
+  #        in: query
+  #        description: Report on statistics starting with this ISO 8601 date string.
+  #        required: true
+  #        schema:
+  #          type: string
+  #      - name: to
+  #        in: query
+  #        description: Report on statistics ending with this ISO 8601 date string.
+  #        required: true
+  #        schema:
+  #          type: string
+  #      - name: width
+  #        in: query
+  #        description: |
+  #          Aggregate statistical analysis on a bucket of this width.
+  #
+  #          Valid widths:
+  #
+  #            - `1s` - Aggregate on buckets 1 second in width
+  #            - `1m` - Aggregate on buckets 1 minute in width
+  #            - `1h` - Aggregate on buckets 1 hour in width
+  #            - `1d` - Aggregate on buckets one day in width
+  #            - `1w` - Aggregate on buckets on a weekly basis
+  #            - `1M` - Aggregate on buckets on a monthly basis
+  #            - `1q` - Aggregate on buckets on a quarterly basis
+  #            - `1y` - Aggregate on buckets on a yearly basis
+  #
+  #          The width is passed to the Elastic Search backend, and follows the [calendar interval specification](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-datehistogram-aggregation.html#calendar_intervals).
+  #        required: false
+  #        schema:
+  #          type: string
+  #          default: "1d"
+  #      - name: codeGrouped
+  #        in: query
+  #        description: Group HTTP response codes by 2xx, 3xx, 4xx, and 5xx instead of granular by each code
+  #        required: false
+  #        schema:
+  #          type: boolean
+  #          default: false
+  #    get:
+  #      tags:
+  #        - Statistics
+  #      summary: Aggregated average latency and total count results
+  #      description: |
+  #        Returns the aggregated __average latency__ and __total count__ results for all active HTTP status codes.
+  #      operationId: getStatisticsActivityLatencyHG
+  #      responses:
+  #        200:
+  #          description: Response body contains the requested data
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Statistics/HistogramPair'
+  #        400:
+  #          description: Malformed query parameters
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Error'
+  #        403:
+  #          description: Not authorized
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Error'
+  #        404:
+  #          description: Query was not found
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Error'
+  #      security:
+  #        - AccessToken: []
+  #
+  #  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/statistics/fielduniquehg:
+  #    parameters:
+  #      - name: accountId
+  #        in: path
+  #        required: true
+  #        description: Account id
+  #        schema:
+  #          $ref: '#/components/schemas/AccountId'
+  #      - name: subscriptionId
+  #        in: path
+  #        description: Subscription id
+  #        required: false
+  #        schema:
+  #          $ref: '#/components/schemas/SubscriptionId'
+  #      - name: boundaryId
+  #        in: path
+  #        description: The boundary id, unique within the subscription.
+  #        required: false
+  #        schema:
+  #          $ref: '#/components/schemas/BoundaryId'
+  #      - name: from
+  #        in: query
+  #        description: Report on statistics starting with this ISO 8601 date string.
+  #        required: true
+  #        schema:
+  #          type: string
+  #      - name: to
+  #        in: query
+  #        description: Report on statistics ending with this ISO 8601 date string.
+  #        required: true
+  #        schema:
+  #          type: string
+  #      - name: width
+  #        in: query
+  #        description: |
+  #          Aggregate statistical analysis on a bucket of this width.
+  #
+  #          Valid widths:
+  #
+  #            - `1s` - Aggregate on buckets 1 second in width
+  #            - `1m` - Aggregate on buckets 1 minute in width
+  #            - `1h` - Aggregate on buckets 1 hour in width
+  #            - `1d` - Aggregate on buckets one day in width
+  #            - `1w` - Aggregate on buckets on a weekly basis
+  #            - `1M` - Aggregate on buckets on a monthly basis
+  #            - `1q` - Aggregate on buckets on a quarterly basis
+  #            - `1y` - Aggregate on buckets on a yearly basis
+  #
+  #          The width is passed to the Elastic Search backend, and follows the [calendar interval specification](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-datehistogram-aggregation.html#calendar_intervals).
+  #        required: false
+  #        schema:
+  #          type: string
+  #          default: "1d"
+  #      - name: codeGrouped
+  #        in: query
+  #        description: Group HTTP response codes by 2xx, 3xx, 4xx, and 5xx instead of granular by each code
+  #        required: false
+  #        schema:
+  #          type: boolean
+  #          default: false
+  #      - name: field
+  #        in: query
+  #        description: Group the histogram based on the number of unique values for the following keys: deploymentkey, accountid, subscriptionid, boundaryid, functionid
+  #        required: true
+  #    get:
+  #      tags:
+  #        - Statistics
+  #      summary: Aggregated total count results
+  #      description: |
+  #        Returns the aggregated __unique count__ results for all active HTTP status codes during the specified time period across the specified field.
+  #      operationId: getStatisticsCodeActivityHG
+  #      responses:
+  #        200:
+  #          description: Response body contains the requested data
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Statistics/Histogram'
+  #        400:
+  #          description: Malformed query parameters
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Error'
+  #        403:
+  #          description: Not authorized
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Error'
+  #        405:
+  #          description: Query was not found
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Error'
+  #      security:
+  #        - AccessToken: []
+  #
+  #  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/statistics/itemizedbulk:
+  #    parameters:
+  #      - name: accountId
+  #        in: path
+  #        required: true
+  #        description: Account id
+  #        schema:
+  #          $ref: '#/components/schemas/AccountId'
+  #      - name: subscriptionId
+  #        in: path
+  #        description: Subscription id
+  #        required: false
+  #        schema:
+  #          $ref: '#/components/schemas/SubscriptionId'
+  #      - name: boundaryId
+  #        in: path
+  #        description: The boundary id, unique within the subscription.
+  #        required: false
+  #        schema:
+  #          $ref: '#/components/schemas/BoundaryId'
+  #      - name: from
+  #        in: query
+  #        description: Report on statistics starting with this ISO 8601 date string.
+  #        required: true
+  #        schema:
+  #          type: string
+  #      - name: to
+  #        in: query
+  #        description: Report on statistics ending with this ISO 8601 date string.
+  #        required: true
+  #        schema:
+  #          type: string
+  #      - name: code
+  #        in: query
+  #        description: Filter the reported statistics on this HTTP status code, or status code group such as 2xx, 3xx, etc.
+  #        schema:
+  #          type: string
+  #          default: 200
+  #      - name: next
+  #        in: query
+  #        description: Opaque token to start returning results from.
+  #        require: false
+  #        schema:
+  #          type: number
+  #      - name: count
+  #        in: query
+  #        description: Include this many entries in the response.
+  #        require: false
+  #        schema:
+  #          type: number
+  #          default: 10
+  #    get:
+  #      tags:
+  #        - Statistics
+  #      summary: All function events
+  #      description: |
+  #        Returns the __full event details__ for the specified HTTP status code (or `200` if unspecified).
+  #      operationId: getStatisticsBulk
+  #      responses:
+  #        200:
+  #          description: Response body contains the requested data
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Statistics/Bulk'
+  #        400:
+  #          description: Malformed query parameters
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Error'
+  #        403:
+  #          description: Not authorized
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Error'
+  #        404:
+  #          description: Query was not found
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Error'
+  #      security:
+  #        - AccessToken: []
+  #
+
+  /v1/account/{accountId}/registry/default:
+    parameters:
+      - name: accountId
+        in: path
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+    get:
+      tags:
+        - Registry
+      summary: Get the registry configuration
+      description: |
+        Returns the configuration for the specified registry
+      operationId: getRegistry
+      responses:
+        200:
+          description: Configuration details for the registry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistryGet'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Registry was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['registry:get']
+    put:
+      tags:
+        - Registry
+      summary: Updates the registry configuration.
+      description: |
+        Updates the registry, with the supplied configuration.
+      operationId: putRegistry
+      requestBody:
+        description: The registry to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistryPut'
+      responses:
+        200:
+          description: Registry successfully updated
+        400:
+          description: Malformed registry specification
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['registry-config:put']
+
+  /v1/account/{accountId}/registry/default/npm:
+    parameters:
+      - name: accountId
+        in: path
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+    description: |
+      An endpoint that conforms to the protocol supported by the `npm` command line tool, which can be used to publish and retrieve packages from this registry.
+
+  /v1/account/{accountId}/subscription/{subscriptionId}/storage:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - name: subscriptionId
+        in: path
+        description: Subscription id
+        required: true
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+      - in: query
+        name: next
+        required: false
+        description: Opaque token to start returning results from
+        schema:
+          type: string
+      - in: query
+        name: count
+        required: false
+        description: Optional number of results to return
+        schema:
+          type: number
+          minimum: 1
+          maximum: 100
+    get:
+      tags:
+        - Storage
+      summary: |
+        List all storage ids for the given subscription
+      operationId: getStorageList
+      responses:
+        200:
+          description: A list of all storage ids
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageList'
+        400:
+          description: Malformed account or subscription id, or invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['storage:get']
+  /v1/account/{accountId}/subscription/{subscriptionId}/storage/{storageId}:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - name: subscriptionId
+        in: path
+        description: Subscription id
+        required: true
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+      - name: storageId
+        in: path
+        description: The unique path to the storage location, containing all URL path segments after /storage/
+        required: true
+        schema:
+          $ref: '#/components/schemas/StorageId'
+    get:
+      tags:
+        - Storage
+      summary: |
+        Get the stored data for the given storage id
+      description: |
+        Returns the JSON of the stored data for the given storage id
+      operationId: getStorage
+      responses:
+        200:
+          description: The stored data object
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: |
+                An opaque token that represents the state of the stored data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageData'
+        400:
+          description: Malformed account, subscription or storage id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Storage not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['storage:get']
+    put:
+      parameters:
+        - in: header
+          name: If-Match
+          required: false
+          description: |
+            An opaque token indicates the state of the stored data when it was last retrieved; the operation should only succeed if the stored data state still matches the opaque token
+          schema:
+            type: string
+      tags:
+        - Storage
+      summary: |
+        Sets the stored data for the given storage id
+      description: |
+        Sets the JSON of the stored data for the given storage id
+      operationId: putStorage
+      requestBody:
+        description: The JSON to set as the stored data for the given storage id
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StorageData'
+      responses:
+        200:
+          description: The data was stored
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: |
+                An opaque token that represents the state of the stored data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageData'
+        400:
+          description: Malformed account, subscription or storage id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription or storage not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        409:
+          description: Etag Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['storage:put']
+    delete:
+      parameters:
+        - in: header
+          name: If-Match
+          required: false
+          description: |
+            An opaque token indicates the state of the stored data when it was last retrieved; the operation should only succeed if the stored data state still matches the opaque token
+          schema:
+            type: string
+      tags:
+        - Storage
+      summary: |
+        Deletes the stored data for the given storage id
+      description: |
+        Deletes the JSON of the stored data for the given storage id
+      operationId: deleteStorage
+      responses:
+        204:
+          description: The data was deleted
+        400:
+          description: Malformed account, subscription or storage id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription or storage not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        409:
+          description: Etag Conflict
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: |
+                An opaque token that represents the state of the stored data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageData'
+      security:
+        - AccessToken: ['storage:delete']
+  /v1/account/{accountId}/subscription/{subscriptionId}/storage/{storageId}/*:
+    parameters:
+      - in: path
+        name: accountId
+        required: true
+        description: Account id
+        schema:
+          $ref: '#/components/schemas/AccountId'
+      - name: subscriptionId
+        in: path
+        description: Subscription id
+        required: true
+        schema:
+          $ref: '#/components/schemas/SubscriptionId'
+      - name: storageId
+        in: path
+        description: The hierarchical storage id which is a sequence of segments separated with a '/'
+        required: true
+        schema:
+          $ref: '#/components/schemas/StorageId'
+    get:
+      parameters:
+        - in: query
+          name: next
+          required: false
+          description: Opaque token to start returning results from
+          schema:
+            type: string
+        - in: query
+          name: count
+          required: false
+          description: Optional number of results to return
+          schema:
+            type: number
+            minimum: 1
+            maximum: 100
+      tags:
+        - Storage
+      summary: |
+        List all subordinate storage ids, excluding the storage id itself
+      operationId: getStorageListRecursive
+      responses:
+        200:
+          description: A list of storage ids
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageList'
+        400:
+          description: Malformed account, subscription id, storage id, or invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['storage:get']
+    delete:
+      tags:
+        - Storage
+      summary: |
+        Deletes the stored data recursively
+      description: |
+        Deletes the JSON of the stored data for all subordinate storage ids in the storage hierarchy, excluding the storage id itself
+      operationId: deleteStorageRecusive
+      responses:
+        204:
+          description: The data was deleted
+        400:
+          description: Malformed account, subscription or storage id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription or storage not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessToken: ['storage:delete']
+
+components:
+  securitySchemes:
+    AccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: For a description of the access token format, see [this doc](../../integrator-guide/authz-model).
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - status
+        - statusCode
+        - message
+      properties:
+        status:
+          type: number
+          description: The HTTP status code
+          example: 404
+        statusCode:
+          type: number
+          description: The HTTP status code
+          example: 404
+        message:
+          type: string
+          description: A message with details regarding the error
+          example: The user 'usr-5555555555555555' does not exist
+
+    AccountId:
+      type: string
+      description: Account id
+      example: 'acc-5555555555555555'
+
+    QueryId:
+      type: string
+      description: Log Query id
+      example: 'ffd9b69e-d323-4722-bad8-d57f3b4a28f4'
+
+    Account:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          $ref: '#/components/schemas/AccountId'
+        displayName:
+          type: string
+          description: Account display name
+          example: ABC Company
+        primaryEmail:
+          type: string
+          description: Account owner primary email
+          example: john.doe@abc-compnay.com
+
+    AccountPatch:
+      type: object
+      required:
+        - displayName
+      properties:
+        displayName:
+          type: string
+          description: Account display name
+          example: ABC Company
+
+    AccountAudit:
+      type: object
+      required:
+        - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountAuditEntry'
+
+    AccountAuditEntry:
+      type: object
+      required:
+        - timestamp
+        - action
+        - resource
+        - accountId
+        - issuerId
+        - subject
+        - authorized
+      properties:
+        accountId:
+          $ref: '#/components/schemas/AccountId'
+        timestamp:
+          type: string
+          description: Timestamp of the audit entry in ISO format
+          example: 2019-03-21T03:48:36.408Z
+        action:
+          type: string
+          description: Name of the action performed
+          example: function:put
+        resource:
+          type: string
+          description: Name of the resource on which the action was performed
+          example: /account/acc-5555555555555555/subscription/sub-5555555555555555/boundary/boundary-1/function/function-17
+        issuerId:
+          type: string
+          description: Identifier of the issuer that authenticated the user
+          example: https://sales-anchor.auth0.com/
+        subject:
+          type: string
+          description: Identifier of the user, unique within the issuer
+          example: google-oauth2|skjdhfsadhfalkajsdhf
+        authorized:
+          type: boolean
+          description: If `'true'` the action was authorized; if `'false'` the action was not authorized and was not allowed to continue
+
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: 'sub-5555555555555555'
+
+    Subscription:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          $ref: '#/components/schemas/SubscriptionId'
+        displayName:
+          type: string
+          description: Subscription display name
+          example: Production Subscription
+
+    SubscriptionList:
+      type: object
+      required:
+        - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of subscriptions
+          items:
+            $ref: '#/components/schemas/Subscription'
+
+    PublicKey:
+      type: object
+      description: A key id and the public key for a public/private key pair
+      required:
+        - keyId
+        - publicKey
+      properties:
+        keyId:
+          type: string
+          description: The key id for the public key
+        publicKey:
+          type: string
+          description: The public key of a public/private key pair
+
+    IssuerId:
+      type: string
+      description: Issuer id
+      example: 'https://auth-server.company-abc.com'
+
+    NewIssuer:
+      type: object
+      description: An issuer of access tokens that should be accepted
+      properties:
+        displayName:
+          type: string
+          description: Issuer display name
+          example: Company ABC Authorization Server
+        publicKeys:
+          type: array
+          description: |
+            The public keys of the key pairs used to sign access tokens from the issuer. Either the `publicKeys` or the `jsonKeysUrl` must be provided.
+          items:
+            $ref: '#/components/schemas/PublicKey'
+        jsonKeysUrl:
+          type: string
+          description: |
+            The uri key of json key file that contains the public key of the key pair used to sign access tokens from the issuer. Either the `publicKey` or the `jsonKeysUrl` must be provided.
+
+    Issuer:
+      allOf:
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              $ref: '#/components/schemas/IssuerId'
+        - $ref: '#/components/schemas/NewIssuer'
+
+    IssuerList:
+      type: object
+      required:
+        - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of issuers
+          items:
+            $ref: '#/components/schemas/Issuer'
+
+    InitProtocol:
+      type: string
+      enum: [pki, oauth]
+      description: >
+        The initialization token protocol that determines the type of the source of trust for validating access tokens
+        the user or client will present when making HTTP API calls:
+          * `pki` - when adding an indentity to the user or client, the caller must present a public key that can be used to validate signatures of access tokens
+          * `oauth` - when adding an indentity to the user or client, the caller must indicate a trusted issuer of access tokens that is already pre-configured in the system
+
+    InitRequest:
+      type: object
+      required:
+        - protocol
+        - profile
+      properties:
+        protocol:
+          $ref: '#/components/schemas/InitProtocol'
+        profile:
+          type: object
+          description: |
+            Additional information to be included in the initialization token for consumption by the intended recipient of the token.
+            For example, this information can be used to include default parameters of the CLI profile or OAuth parameters that indicate the identity provider to use.
+          properties:
+            subscription:
+              description: The default subscription id the caller should use
+              $ref: '#/components/schemas/SubscriptionId'
+            boundary:
+              description: The default boundary id the caller should use
+              $ref: '#/components/schemas/BoundaryId'
+            function:
+              description: The default function id the caller should use
+              $ref: '#/components/schemas/FunctionId'
+            oauth:
+              type: object
+              description: Parameters the caller should use when obtaining an access token from an OAuth identity provider
+              properties:
+                webAuthorizationUrl:
+                  type: string
+                  description: The authorization URL to initiate OAuth implicit flow
+                webClientId:
+                  type: string
+                  description: The OAuth client id to use when initializing OAuth implicit flow
+                webLogoutUrl:
+                  type: string
+                  description: The URL to navigate to to log a browser client out from the OAuth identity provider
+                deviceAuthorizationUrl:
+                  type: string
+                  description: The authorization URL to initiate OAuth device flow
+                deviceClientId:
+                  type: string
+                  description: The OAuth client id to use when initializing OAuth device flow
+                tokenUrl:
+                  type: string
+                  description: The OAuth URL to use to exchange refresh tokens for access tokens
+
+    InitResponse:
+      type: string
+      description: |
+        A single-use initialization token in JWT format. If unused, the token expires in eight hours. The `profile`
+        parameter of the JWT payload contains the information specified in the `profile` parameter of the request
+        as well as additional information for consumption by the intended recipient of the token.
+
+    InitResolveRequest:
+      type: object
+      required:
+        - protocol
+        - accessToken
+      properties:
+        protocol:
+          $ref: '#/components/schemas/InitProtocol'
+        accessToken:
+          type: string
+          description: |
+            A valid access token in JWT format.
+            If `protocol` is `pki`, the access token must be signed with a private key associated with the `publicKey` in this request.
+            The value of the `iss` and `sub` claims must match the values of the `profile.issuerId` and `profile.subject` fields of the initialization token, respectively.
+            If `protocol` is `oauth`, the token must have been obtained from an OAuth identity provider that is already trusted by the system.
+        publicKey:
+          type: string
+          description: |
+            The public key that can be used to validate the signature of the `accessToken` in PEM format. Required if `protocol` is `pki`.
+
+    Identity:
+      type: object
+      required:
+        - issuerId
+        - subject
+      properties:
+        issuerId:
+          $ref: '#/components/schemas/IssuerId'
+        subject:
+          type: string
+          description: The `sub` claim value in access tokens
+
+    AccessStatement:
+      type: object
+      required:
+        - action
+        - resource
+      properties:
+        action:
+          type: string
+          description: The action to perform
+          example: function:*
+        resource:
+          type: string
+          description: The resource to perform the action on
+          example: /account/acc-5555555555555555/subscription/sub-5555555555555555/boundary/my-boundary-1/function/my-function-17
+
+    ClientId:
+      type: string
+      description: Client id
+      example: 'clt-5555555555555555'
+
+    NewClient:
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: The client's display name
+          example: production-service
+        identities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identity'
+        access:
+          type: object
+          properties:
+            allow:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccessStatement'
+
+    Client:
+      allOf:
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              $ref: '#/components/schemas/ClientId'
+        - $ref: '#/components/schemas/NewClient'
+
+    ClientList:
+      type: object
+      required:
+        - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of clients
+          items:
+            $ref: '#/components/schemas/Client'
+
+    UserId:
+      type: string
+      description: User id
+      example: 'usr-5555555555555555'
+
+    NewUser:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: The user's first name
+          example: John
+        lastName:
+          type: string
+          description: The user's last name
+          example: Doe
+        primaryEmail:
+          type: string
+          description: The user's primary email
+          example: john.doe@abc-compnay.com
+        identities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identity'
+        access:
+          type: object
+          properties:
+            allow:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccessStatement'
+
+    User:
+      allOf:
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              $ref: '#/components/schemas/UserId'
+        - $ref: '#/components/schemas/NewUser'
+
+    UserList:
+      type: object
+      required:
+        - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of users
+          items:
+            $ref: '#/components/schemas/User'
+
+    BoundaryId:
+      type: string
+      description: Boundary id
+      example: my-boundary-xyz
+
+    FunctionId:
+      type: string
+      description: Function id
+      example: my-function-abc
+
+    FunctionLocation:
+      type: object
+      required:
+        - location
+      properties:
+        location:
+          type: string
+          description: The URL for executing the function
+          example: 'https://domain.com/function-abc'
+
+    FunctionShort:
+      type: object
+      required:
+        - functionId
+        - boundaryId
+        - schedule
+        - location
+      properties:
+        functionId:
+          $ref: '#/components/schemas/FunctionId'
+        boundaryId:
+          $ref: '#/components/schemas/BoundaryId'
+        schedule:
+          type: string
+          example: '*/15 * * * *'
+        location:
+          type: string
+          description: The URL for executing the function
+          example: 'https://domain.com/function-abc'
+        runtime:
+          $ref: '#/components/schemas/FunctionRuntime'
+
+    FunctionRuntime:
+      type: object
+      required:
+        - tags
+      properties:
+        tags:
+          type: object
+          description: User-specified and synthetic tags of a function
+          additionalProperties: true
+
+    Function:
+      allOf:
+        - type: object
+          required:
+            - id
+            - boundaryId
+            - subscriptionId
+          properties:
+            id:
+              $ref: '#/components/schemas/FunctionId'
+            boundaryId:
+              $ref: '#/components/schemas/BoundaryId'
+            subscriptionId:
+              $ref: '#/components/schemas/SubscriptionId'
+        - $ref: '#/components/schemas/NewFunction'
+        - $ref: '#/components/schemas/FunctionLocation'
+
+    FunctionSecurity:
+      type: object
+      description: Properties that impact the runtime security of the function.
+      properties:
+        authorization:
+          type: array
+          description: |
+            Use this property in conjunction with the `authentication` property. This property should not be used
+            when `authentication` is `none` or undefined, because in those cases all callers will be allowed.
+
+            If the caller is authenticated, you can use this property to only allow callers with specific
+            permissions to invoke this function. You can also leave it undefined, which will allow all authenticated
+            callers to invoke the function, without checking what permissions they have.
+
+            The following example will only allow callers who have `function:execute` permission to the given subscription:
+            `[{ action: "function:execute", resource: "/account/acc-5555555555555555/subscription/sub-5555555555555555/" }]`
+
+            When the caller has been authorized, the `ctx.caller.permissions` property is set to the validated
+            permissions of the caller. Otherwise, the property will be undefined.
+          items:
+            $ref: '#/components/schemas/AccessStatement'
+        authentication:
+          description: |
+            Controls the authentication of the caller of the function, based on the bearer token supplied in the
+            `Authorization` header of the HTTP request.
+
+            If the value is `none` or the property is undefined, then the `Authorization` header is not
+            evaluated and the function is executed.
+
+            If the value is `required`, the caller must supply a valid JWT trusted by Fusebit. If the token is
+            present and valid, a check will be performed as described in the `authorization` property. If the
+            check succeeds, the function will execute, the `ctx.fusebit.callerAccessToken` property
+            will contain the supplied JWT, and the `ctx.caller.permission` property will contain the set of
+            authorized permissions associated with the caller. If the check fails, a 403 Forbidden error response
+            will be returned.
+
+            If the value is `optional`, then the caller may supply a valid JWT trusted by Fusebit. If the token is
+            present and valid, an authorization check will be performed as described in the `required` property
+            description. If a token is not present, not valid, or fails the authorization check, the function executes
+            as an unauthenticated user. This authentication option allows you to use Fusebit authorization for certain
+            paths in your function, while implementing your own authorization for other paths.
+          type: string
+          enum:
+            - none
+            - optional
+            - required
+          default: 'none'
+        functionPermissions:
+          type: object
+          description: |
+            In case a function needs to call Fusebit management APIs, the system can provide the necessary
+            JWT via the `ctx.fusebit.functionAccessToken` property. The permissions of that token can be set using this
+            property. For example, the following object will result in a token that has full control of all storage
+            objects under the given subscription:
+            `{ "allow": [{ "action": "storage:*", resource: "/account/acc-5555555555555555/subscription/sub-5555555555555555/" }] }`
+
+            The function creator (the caller of this API) must have the same or broader permissions as what's being
+            assigned here, as well as `function:put` for this function, otherwise the function creation will be rejected.
+          properties:
+            allow:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccessStatement'
+
+    FunctionRoutes:
+      type: array
+      description: Properties that control route-specific behaviors of the function
+      items:
+        type: object
+        description: |
+          Overrides security settings and controls task scheduling settings
+          on per-route basis. Given a request, the first route, if any, prefix-matching
+          the path of the request URL is used.
+        required:
+          - path
+        properties:
+          path:
+            type: string
+            description: A prefix of the request path
+            example: '/task/sendEmail'
+          security:
+            $ref: '#/components/schemas/FunctionSecurity'
+          task:
+            type: object
+            description: |
+              If present, HTTP POST requests prefix-matching this route are scheduled
+              for asynchronous execution as tasks, and an immediate HTTP 202 response is sent
+              with the `location` HTTP response header containing the URL at which the 
+              status of the task execution can be queried. 
+
+              If the number of requests pending execution exceeds `maxPending`, 
+              an HTTP 429 response is sent and the request is not scheduled for execution.
+
+              Unless an explicit `security` element is specified for this route, the HTTP POST
+              requests that schedule task execution must be authorized with an access token that 
+              grants the `function:schedule` action for the function resource.
+            properties:
+              maxPending:
+                type: number
+                description: |
+                  The maximum number of tasks that can be scheduled for execution before
+                  subsequent requests are rejected with an HTTP 429 response. Specify 0
+                  to allow any number of pending requests.
+                default: 1024
+              maxRunning:
+                type: number
+                description: |
+                  The maximum number of tasks that can be running concurrently. Specify 0
+                  to not limit the maximum number of running tasks.
+                default: 10
+
+    NewFunction:
+      type: object
+      properties:
+        compute:
+          type: object
+          properties:
+            memorySize:
+              type: number
+              default: 128
+            timeout:
+              type: number
+              default: 30
+            staticIp:
+              type: boolean
+              default: false
+            persistLogs:
+              type: boolean
+              default: false
+        computeSerialized:
+          type: string
+        configuration:
+          type: object
+        configurationSerialized:
+          type: string
+        nodejs:
+          type: object
+          properties:
+            files:
+              type: object
+              properties:
+                index.js:
+                  type: string
+                  example: |
+                    module.exports = async (ctx) => { return {  body: 'Hello' }; };
+                package.json:
+                  type: object
+                  properties:
+                    engines:
+                      type: object
+                      properties:
+                        node:
+                          type: string
+                          example: '> 8'
+                    dependencies:
+                      type: object
+            encodedFiles:
+              type: object
+              properties:
+                binaryFileName.gif:
+                  type: object
+                  properties:
+                    data:
+                      type: string
+                    encoding:
+                      type: string
+                      example: 'base64'
+        schedule:
+          type: object
+          properties:
+            cron:
+              type: string
+              example: '*/15 * * * *'
+            timezone:
+              type: string
+              example: US/Pacific
+        scheduleSerialized:
+          type: string
+        metadata:
+          type: object
+          properties:
+            tags:
+              type: object
+              properties:
+                key:
+                  type: string
+                value:
+                  type: string
+        runtime:
+          type: object
+          description: Ignored during function creation operations.
+          properties:
+            tags:
+              type: object
+              description: The tags generated for this function by the system
+              properties:
+                key:
+                  type: string
+                value:
+                  type: string
+        fusebitEditor:
+          type: object
+          properties:
+            runConfig:
+              type: array
+              items:
+                type: object
+                description: Optional configuration values for the Fusebit Editor
+                properties:
+                  method:
+                    type: string
+                    description: The method to use in the default api request
+                    example: 'get'
+                    enum:
+                      - get
+                      - post
+                      - put
+                      - patch
+                      - delete
+                  url:
+                    type: string
+                    description: The endpoint of the default api request
+                    example: '/api/tenant/user-1/test'
+                  payload:
+                    type: object
+                    description: The payload of the default api request
+        security:
+          $ref: '#/components/schemas/FunctionSecurity'
+        routes:
+          $ref: '#/components/schemas/FunctionRoutes'
+
+    FunctionList:
+      type: object
+      required:
+        - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of functions
+          items:
+            $ref: '#/components/schemas/FunctionShort'
+
+    BuildId:
+      type: string
+      description: Build id
+      example: sb9oa2
+
+    Build:
+      allOf:
+        - type: object
+          properties:
+            buildId:
+              $ref: '#/components/schemas/BuildId'
+            functionId:
+              $ref: '#/components/schemas/FunctionId'
+            boundaryId:
+              $ref: '#/components/schemas/BoundaryId'
+            subscriptionId:
+              $ref: '#/components/schemas/SubscriptionId'
+            status:
+              type: string
+              enum:
+                - 'pending'
+                - 'building'
+                - 'success'
+                - 'failure'
+            error:
+              type: object
+            version:
+              type: number
+            transitions:
+              type: 'object'
+        - $ref: '#/components/schemas/FunctionLocation'
+
+    NewLogQuery:
+      type: object
+      properties:
+        filter:
+          type: string
+          description: A filter expression in the AWS Cloud Watch Logs Insights format.
+          example: 'response.statusCode = 500'
+        stats:
+          type: string
+          description: An aggregation expression in the AWS Cloud Watch Logs Insights format.
+          example: 'count(*) by bin(15s)'
+        from:
+          type: string
+          description: Start time of the logging window specified as an absolute date time in ISO format or a relative time in seconds.
+          example: 2021-10-21T00:00:00.361Z or -1800
+        to:
+          type: string
+          description: End time of the logging window specified as an absolute date time in ISO format or a relative time in seconds.
+          example: 2021-10-21T00:00:00.361Z or +900
+        limit:
+          type: number
+          description: Maximum number of records to return.
+          example: 20
+
+    NewLogQueryResponse:
+      type: object
+      properties:
+        queryId:
+          type: string
+          description: A unique log query id to use when polling for query completion
+
+    LogQueryResult:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - 'scheduled'
+            - 'running'
+            - 'complete'
+            - 'failed'
+            - 'timeout'
+            - 'unknown'
+          description: Status of the query.
+        recordsMatched:
+          type: number
+          description: The number of log records matched by the query. The number of records returned in the result may be smaller, subject to the limit.
+        results:
+          type: array
+          description: Array of records representing the query result.
+          items:
+            type: object
+            description: For log aggregation queries, one record of aggregation results. For log queries, one record representing an HTTP request.
+
+    RegistryGet:
+      type: object
+      properties:
+        scopes:
+          type: array
+          description: A list of the npm package scopes reserved in this registry
+          items:
+            type: string
+            description: An npm package scope, such as '@internal'
+            example: '@internal'
+        url:
+          type: string
+          description: The URL for the npm endpoint for this registry
+          example: 'https://api.{region}.fusebit.io/v1/account/{accountId}/registry/default/npm'
+    RegistryPut:
+      type: object
+      properties:
+        scopes:
+          type: array
+          description: A list of the npm package scopes reserved in this registry
+          items:
+            type: string
+            description: An npm package scope, such as '@internal'
+            example: '@internal'
+
+    #    Statistics:
+    #      HistogramEntry:
+    #        type: object
+    #        properties:
+    #          key:
+    #            type: string
+    #            description: The date in ISO 8601 string format.
+    #          "200,404,503,2xx,3xx,etc":
+    #            type: string
+    #            description: |
+    #              The tally for each HTTP status code active during this aggregate.
+    #
+    #              For example:
+    #                `{ "key": "2020-04-22T22:13:51.066Z", "200": 512, "403": 15, "501": 2 }`
+    #
+    #      Histogram:
+    #        type: object
+    #        description: A collection of histogram artifacts ranging across the specified time range.
+    #        properties:
+    #          items:
+    #            type: array
+    #            description: A list of histogram aggregated intervals
+    #            items:
+    #              $ref: '#/components/schemas/Statistics/HistogramEntry'
+    #          codes:
+    #            type: array
+    #            items:
+    #              type: number
+    #            description: The HTTP status codes active during this interval.
+
+    #      HistogramPairEntry:
+    #        type: object
+    #        properties:
+    #          key:
+    #            type: string
+    #            description: The date in ISO 8601 string format.
+    #          "200,404,503,2xx,3xx,etc":
+    #            type: string
+    #            description: |
+    #              A _pair_ of the average latency and the tally for each HTTP status code active during this aggregate.
+    #
+    #              For example:
+    #                `{ "key": "2020-04-22T22:13:51.066Z", "200": [125.3, 512], "403": [25.12, 15], "501": [12.5, 2] }`
+    #
+    #      HistogramPair:
+    #        type: object
+    #        description: A collection of histogram artifacts ranging across the specified time range.
+    #        properties:
+    #          items:
+    #            type: array
+    #            description: A list of histogram aggregated intervals
+    #            items:
+    #              $ref: '#/components/schemas/Statistics/HistogramPairEntry'
+    #          codes:
+    #            type: array
+    #            items:
+    #              type: string
+    #            description: |
+    #             The HTTP status codes active during this interval. For example, `[200, 301, 404]` or
+    #             `["2xx", "3xx", "4xx"]` if codeGrouped is specified.
+    #
+    #      BulkEntry:
+    #        description: An object containing all of the collected metrics and behaviors for an event
+    #        type: object
+    #
+    #      Bulk:
+    #        type: object
+    #        description: A collection of bulk events ranging across the specified time range
+    #        properties:
+    #          items:
+    #            type: array
+    #            items:
+    #              $ref: '#/components/schemas/Statistics/BulkEntry'
+    #          next:
+    #            type: number
+    #            description: Opaque token to start returning results from.
+    #          total:
+    #            type: number
+    #            description: The number of total entries in this time range for this query.
+    #
+    StorageId:
+      type: string
+      description: Storage id
+      example: my-storage-id
+    StorageShort:
+      type: object
+      required:
+        - storageId
+      properties:
+        storageId:
+          $ref: '#/components/schemas/StorageId'
+        tags:
+          type: object
+          description: The tags associated with this object
+        etag:
+          type: string
+          description: An opaque token that represents the state of the stored data
+        expires:
+          type: string
+          description: The expiration time of this object
+    StorageList:
+      type: object
+      required:
+        - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of storage ids
+          items:
+            $ref: '#/components/schemas/StorageShort'
+    StorageData:
+      type: object
+      properties:
+        etag:
+          type: string
+          description: An opaque token that represents the state of the stored data
+        tags:
+          type: object
+          description: The tags associated with this object
+        expires:
+          type: string
+          description: The expiration time of this object
+        data:
+          description: A JSON value of stored data

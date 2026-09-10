@@ -1,0 +1,65 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Fusebit HTTP API - Integrations
+  version: 1.0.0
+x-provenance:
+  generated: '2026-09-10'
+  method: generated
+  source: openapi/fusebit-http-api-integrations-openapi.yml
+  note: >-
+    An OpenAPI Overlay 1.0.0 document capturing API Evangelist's enhancements to the Fusebit
+    v2 contract. The original spec in openapi/ is never mutated. Every action below adds an
+    annotation that is TRUE OF THE CONTRACT AS PUBLISHED or is a probe result recorded on
+    2026-09-10 — no operation, parameter, response or schema is invented.
+extends: openapi/fusebit-http-api-integrations-openapi.yml
+actions:
+  - target: $.info
+    description: Record the retirement of the API this contract describes.
+    update:
+      x-lifecycle:
+        state: retired
+        last-release: 1.41.1
+        last-release-date: '2022-11-07'
+        evidence: >-
+          Every host named by servers[] fails DNS resolution. dig A api.us-west-1.on.fusebit.io
+          @8.8.8.8 returned NXDOMAIN on 2026-09-10, as did fusebit.io and every other Fusebit
+          subdomain. See lifecycle/fusebit-lifecycle.yml.
+      x-artifact-status: contract-preserved-service-retired
+  - target: $.info
+    description: >-
+      Point at the surviving first-party documentation, since the externalDocs and description links
+      in this contract resolve to hosts that no longer exist.
+    update:
+      x-surviving-documentation:
+        release-notes: https://fivequarters.github.io/q5/release-notes/
+        source-of-this-contract: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+        packages: https://www.npmjs.com/org/fusebit
+      x-dead-links:
+        - url: https://developer.fusebit.io
+          status: 0
+          result: dns-nxdomain
+        - url: https://fusebit.io/docs/
+          status: 0
+          result: dns-nxdomain
+  - target: $.info
+    description: Record the derived agent-readiness semantics for this contract.
+    update:
+      x-conventions:
+        idempotency: none
+        reversibility: none
+        pagination: cursor (count + next)
+        error-format: 'custom-json { status, statusCode, message }'
+        rate-limit-headers: none
+        artifact: conventions/fusebit-conventions.yml
+  - target: $.components.securitySchemes.AccessToken
+    description: >-
+      Record the authorization model the securityScheme description points at, since the doc link in
+      that description no longer resolves.
+    update:
+      x-authorization-model:
+        style: action-and-resource
+        shape: 'AccessStatement { action, resource }'
+        artifact: authentication/fusebit-authentication.yml
+        note: >-
+          Grants are explicit {action, resource} pairs, not OAuth scopes; a grant on a resource path
+          prefix implies the subtree. Unauthenticated requests are answered 403, not 401.

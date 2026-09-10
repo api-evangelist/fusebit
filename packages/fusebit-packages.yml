@@ -1,0 +1,1051 @@
+generated: '2026-09-10'
+method: searched
+source: https://registry.npmjs.org/-/v1/search?text=%40fusebit and per-package https://registry.npmjs.org/<pkg>
+  metadata endpoints, fetched 2026-09-10
+provider: Fusebit
+providerId: fusebit
+note: 'First-party npm packages published by Fusebit under the @fusebit and @fusebit-int scopes. Every version/published
+  pair below was read from the npm registry metadata endpoint on 2026-09-10, not from prose. CURRENCY FINDING: the
+  newest first-party release in either scope is 2023-01-11 (@fusebit-int/* all frozen at 7.53.1). Nothing has shipped
+  in the 3.6 years since, and the API these SDKs wrap no longer resolves in DNS (api.us-west-1.on.fusebit.io returns
+  NXDOMAIN), so the SDK decay signal and the platform retirement agree.'
+registries_checked:
+- registry: npm
+  result: 101 first-party packages found
+  url: https://www.npmjs.com/org/fusebit
+- registry: PyPI
+  result: no first-party packages found
+  url: https://pypi.org/search/?q=fusebit
+- registry: RubyGems
+  result: not checked — Fusebit shipped a Node.js-only platform; no Ruby SDK is referenced in any first-party repo
+    or doc
+- registry: crates.io
+  result: not checked — Node.js-only platform
+- registry: Maven Central
+  result: not checked — Node.js-only platform
+- registry: NuGet
+  result: not checked — Node.js-only platform
+- registry: pkg.go.dev
+  result: not checked — Node.js-only platform
+summary:
+  package_count: 101
+  official_count: 101
+  languages:
+  - javascript
+  scopes:
+  - '@fusebit'
+  - '@fusebit-int'
+  newest_release: '2023-01-11'
+  oldest_release: '2020-11-23'
+  abandonment_signal: strong — no first-party release since 2023-01-11
+packages:
+- name: '@fusebit/cli'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/cli
+  language: javascript
+  official: true
+  kind: cli
+  version: 1.24.0
+  published: '2022-06-23'
+  license: MIT
+  note: Fusebit CLI for managing accounts, subscriptions, functions and integrations
+- name: '@fusebit-int/framework'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/framework
+  language: javascript
+  official: true
+  kind: sdk
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Fusebit official SDK — the runtime framework every integration and connector builds on
+- name: '@fusebit/everyauth-express'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/everyauth-express
+  language: javascript
+  official: true
+  kind: sdk
+  version: 2.1.3
+  published: '2022-05-05'
+  license: ISC
+  note: EveryAuth Express middleware for third-party OAuth credential management
+- name: '@fusebit/everyauth-cli'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/everyauth-cli
+  language: javascript
+  official: true
+  kind: cli
+  version: 1.24.0
+  published: '2022-06-23'
+  license: MIT
+  note: EveryAuth CLI
+- name: '@fusebit/add-on-sdk'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/add-on-sdk
+  language: javascript
+  official: true
+  kind: sdk
+  version: 3.1.0
+  published: '2021-01-13'
+  license: MIT
+  note: SDK for implementing Fusebit Add-Ons (v1 generation)
+- name: '@fusebit/react-marketplace'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/react-marketplace
+  language: javascript
+  official: true
+  kind: component
+  version: 2.6.0
+  published: '2022-08-23'
+  license: ISC
+  note: React marketplace component for surfacing integrations in-product
+- name: '@fusebit/monaco-jsonforms'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/monaco-jsonforms
+  language: javascript
+  official: true
+  kind: component
+  version: 1.0.9
+  published: '2022-09-12'
+  license: ISC
+  note: Monaco editor component for the JSONForms.io library
+- name: '@fusebit/objectmap-jsonforms'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/objectmap-jsonforms
+  language: javascript
+  official: true
+  kind: component
+  version: 1.4.3
+  published: '2022-10-18'
+  license: MIT
+  note: JSONForms object-map renderer
+- name: '@fusebit/objectmap-utils'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/objectmap-utils
+  language: javascript
+  official: true
+  kind: library
+  version: 1.4.3
+  published: '2022-10-18'
+  license: MIT
+  note: Utilities backing the object-map JSONForms renderer
+- name: '@fusebit/schema'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/schema
+  language: javascript
+  official: true
+  kind: library
+  version: 1.0.0
+  published: '2022-01-04'
+  license: SEE LICENSE IN LICENSE
+  note: Shared Fusebit schema definitions
+- name: '@fusebit/tunnel'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/tunnel
+  language: javascript
+  official: true
+  kind: tool
+  version: 3.2.6
+  published: '2022-05-02'
+  license: MIT
+  note: fusetunnel — expose localhost to the world for local integration development
+- name: '@fusebit/tunnel-server'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/tunnel-server
+  language: javascript
+  official: true
+  kind: tool
+  version: 1.1.0
+  published: '2022-05-02'
+  license: MIT
+  note: Server side of fusetunnel
+- name: '@fusebit/cloud-git'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/cloud-git
+  language: javascript
+  official: true
+  kind: library
+  version: 1.0.0
+  published: '2021-04-10'
+  license: MIT
+  note: Node.js git server for cloud-native applications
+- name: '@fusebit/apimeter'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/apimeter
+  language: javascript
+  official: true
+  kind: library
+  version: 1.0.0
+  published: '2022-03-15'
+  license: MIT
+  note: Simple API metering for Express apps using BigQuery
+- name: '@fusebit/fuse-tool'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/fuse-tool
+  language: javascript
+  official: true
+  kind: tool
+  version: 1.2.0
+  published: '2021-10-07'
+  license: ISC
+  note: Internal fuse tooling
+- name: '@fusebit/msteams-add-on'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/msteams-add-on
+  language: javascript
+  official: true
+  kind: connector
+  version: 0.0.1-pre-3
+  published: '2020-11-23'
+  license: MIT
+  note: Microsoft Teams Add-On (pre-release, v1 generation)
+- name: '@fusebit/asana-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/asana-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 1.1.1
+  published: '2021-09-09'
+  license: MIT
+  note: Fusebit Connector for Asana
+- name: '@fusebit/atlassian-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/atlassian-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 1.1.1
+  published: '2021-09-09'
+  license: MIT
+  note: Fusebit Connector for Atlassian
+- name: '@fusebit/msteams-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/msteams-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 2.4.1
+  published: '2021-03-04'
+  license: MIT
+  note: Fusebit Connector for Microsoft Teams
+- name: '@fusebit/oauth-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/oauth-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 1.3.1
+  published: '2021-09-09'
+  license: MIT
+  note: Fusebit Connector for OAuth
+- name: '@fusebit/salesforce-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/salesforce-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 1.0.3
+  published: '2021-10-14'
+  license: MIT
+  note: Fusebit Connector for Salesforce
+- name: '@fusebit/slack-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit/slack-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 1.1.1
+  published: '2021-09-09'
+  license: MIT
+  note: Fusebit Connector for Slack
+- name: '@fusebit-int/asana-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/asana-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Asana Connector
+- name: '@fusebit-int/asana-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/asana-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Asana provider
+- name: '@fusebit-int/atlassian-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/atlassian-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Jira Connector
+- name: '@fusebit-int/atlassian-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/atlassian-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Jira provider
+- name: '@fusebit-int/aws-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/aws-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: AWS Connector
+- name: '@fusebit-int/aws-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/aws-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: AWS provider
+- name: '@fusebit-int/bamboohr-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/bamboohr-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: BambooHR Connector
+- name: '@fusebit-int/bamboohr-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/bamboohr-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: BambooHR provider
+- name: '@fusebit-int/calendly-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/calendly-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Calendly Connector
+- name: '@fusebit-int/calendly-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/calendly-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: CalendlyOAuth provider
+- name: '@fusebit-int/ccf-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/ccf-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Client Credential Flow Connector
+- name: '@fusebit-int/ccf-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/ccf-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Client Credential Flow provider
+- name: '@fusebit-int/clearbit-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/clearbit-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Clearbit Connector
+- name: '@fusebit-int/clearbit-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/clearbit-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Clearbit provider
+- name: '@fusebit-int/clickup-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/clickup-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: ClickUp Connector
+- name: '@fusebit-int/clickup-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/clickup-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: ClickUp provider
+- name: '@fusebit-int/constantcontact-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/constantcontact-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Constant Contact Connector
+- name: '@fusebit-int/constantcontact-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/constantcontact-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: ConstantContact provider
+- name: '@fusebit-int/discord-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/discord-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Discord Connector
+- name: '@fusebit-int/discord-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/discord-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Discord provider
+- name: '@fusebit-int/drift-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/drift-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Drift Connector
+- name: '@fusebit-int/drift-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/drift-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Drift provider
+- name: '@fusebit-int/githubapp-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/githubapp-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: GitHub App Connector
+- name: '@fusebit-int/githubapp-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/githubapp-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: GitHub App provider
+- name: '@fusebit-int/githuboauth-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/githuboauth-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: GitHubOAuth Connector
+- name: '@fusebit-int/githuboauth-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/githuboauth-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: GitHubOAuth provider
+- name: '@fusebit-int/gitlab-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/gitlab-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: GitLab Connector
+- name: '@fusebit-int/gitlab-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/gitlab-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: GitLab provider
+- name: '@fusebit-int/gong-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/gong-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Gong Connector
+- name: '@fusebit-int/gong-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/gong-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Gong provider
+- name: '@fusebit-int/google-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/google-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Google Connector
+- name: '@fusebit-int/google-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/google-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Google provider
+- name: '@fusebit-int/hubspot-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/hubspot-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: HubSpot Connector
+- name: '@fusebit-int/hubspot-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/hubspot-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: HubSpot provider
+- name: '@fusebit-int/linear-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/linear-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Linear Connector
+- name: '@fusebit-int/linear-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/linear-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Linear provider
+- name: '@fusebit-int/linkedin-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/linkedin-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: LinkedIn Connector
+- name: '@fusebit-int/linkedin-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/linkedin-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: LinkedIn provider
+- name: '@fusebit-int/loom-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/loom-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Loom Connector
+- name: '@fusebit-int/loom-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/loom-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Loom provider
+- name: '@fusebit-int/mailchimp-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/mailchimp-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Mailchimp Connector
+- name: '@fusebit-int/mailchimp-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/mailchimp-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Mailchimp provider
+- name: '@fusebit-int/mastodon-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/mastodon-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Mastodon Connector
+- name: '@fusebit-int/mastodon-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/mastodon-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Mastodon provider
+- name: '@fusebit-int/microsoft-bot-framework-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/microsoft-bot-framework-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Connector for the Microsoft Bot Framework
+- name: '@fusebit-int/microsoft-bot-framework-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/microsoft-bot-framework-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Microsoft Bot Framework provider
+- name: '@fusebit-int/microsoft-dynamics-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/microsoft-dynamics-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Microsoft-Dynamics Connector
+- name: '@fusebit-int/microsoft-dynamics-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/microsoft-dynamics-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Microsoft-Dynamics provider
+- name: '@fusebit-int/microsoftgraph-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/microsoftgraph-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: MicrosoftGraph Connector
+- name: '@fusebit-int/microsoftgraph-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/microsoftgraph-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: MicrosoftGraph provider
+- name: '@fusebit-int/oauth-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/oauth-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Fusebit OAuth 2.0 connector
+- name: '@fusebit-int/oauth-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/oauth-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Fusebit OAuth 2.0 Provider
+- name: '@fusebit-int/outreach-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/outreach-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Outreach Connector
+- name: '@fusebit-int/outreach-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/outreach-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Outreach provider
+- name: '@fusebit-int/pagerduty-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/pagerduty-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: PagerDuty Connector
+- name: '@fusebit-int/pagerduty-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/pagerduty-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: PagerDuty provider
+- name: '@fusebit-int/pipedrive-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/pipedrive-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Pipedrive Connector
+- name: '@fusebit-int/pipedrive-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/pipedrive-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Pipedrive provider
+- name: '@fusebit-int/privatekey-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/privatekey-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Privatekey Connector
+- name: '@fusebit-int/procore-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/procore-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Procore Connector
+- name: '@fusebit-int/procore-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/procore-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Procore provider
+- name: '@fusebit-int/quickbooks-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/quickbooks-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: QuickBooks Connector
+- name: '@fusebit-int/quickbooks-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/quickbooks-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: QuickBooks provider
+- name: '@fusebit-int/reddit-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/reddit-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Reddit Connector
+- name: '@fusebit-int/reddit-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/reddit-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Reddit provider
+- name: '@fusebit-int/salesforce-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/salesforce-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Fusebit Salesforce connector
+- name: '@fusebit-int/salesforce-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/salesforce-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Fusebit Salesforce Provider
+- name: '@fusebit-int/sendgrid-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/sendgrid-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Sendgrid Connector
+- name: '@fusebit-int/sendgrid-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/sendgrid-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Sendgrid provider
+- name: '@fusebit-int/slack-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/slack-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Fusebit Slack connector
+- name: '@fusebit-int/slack-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/slack-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Fusebit Slack Provider
+- name: '@fusebit-int/stackoverflow-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/stackoverflow-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: StackOverflow Connector
+- name: '@fusebit-int/stackoverflow-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/stackoverflow-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: StackOverflow provider
+- name: '@fusebit-int/twitter-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/twitter-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Twitter Connector
+- name: '@fusebit-int/twitter-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/twitter-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Twitter provider
+- name: '@fusebit-int/xero-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/xero-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Xero Connector
+- name: '@fusebit-int/xero-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/xero-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Xero provider
+- name: '@fusebit-int/zoom-connector'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/zoom-connector
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Zoom Connector
+- name: '@fusebit-int/zoom-provider'
+  registry: npm
+  url: https://www.npmjs.com/package/@fusebit-int/zoom-provider
+  language: javascript
+  official: true
+  kind: connector
+  version: 7.53.1
+  published: '2023-01-11'
+  license: MIT
+  note: Zoom provider

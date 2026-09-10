@@ -1,0 +1,104 @@
+# Fusebit
+
+> Fusebit was a code-first, developer-facing embedded integration platform (embedded iPaaS) that let
+> SaaS teams build, deploy and run third-party integrations inside their own products. The company was
+> founded in 2019 in Seattle and the platform is retired: as of 2026-09-10 the domain fusebit.io is
+> still registered but publishes no DNS A record, and neither the API, the docs, the portal nor the
+> CDN resolves. The contract, the CLI and 101 npm packages survive in public registries and in
+> Fusebit's own GitHub organizations.
+
+IMPORTANT FOR AGENTS: Fusebit's API is NOT CALLABLE. Every host in the OpenAPI servers[] block
+(https://api.{region}.on.fusebit.io) returns NXDOMAIN. Do not attempt to call it. The material below
+is a historical record of what Fusebit published, useful for understanding the platform, migrating off
+it, or reading code that still imports its SDKs — not for making requests.
+
+## Status
+
+- API: retired. Last HTTP API release 1.41.1, 2022-11-07.
+- Domain: registered (NameCheap, expiry 2027-04-10), zone serves no A record for any host.
+- Packages: 101 first-party npm packages, all still installable, none published since 2023-01-11.
+- Documentation: only the release notes survive, mirrored on Fusebit's own GitHub Pages.
+
+## Contracts
+
+- OpenAPI 3.0.0 — Fusebit HTTP API - Core (v1), 33 paths / 49 operations: openapi/fusebit-http-api-core-openapi.yml
+- OpenAPI 3.0.0 — Fusebit HTTP API - Integrations (v2), 25 paths / 40 operations: openapi/fusebit-http-api-integrations-openapi.yml
+- Source of both, first-party: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+
+## What the API did
+
+v1 (Core) — the compute and identity plane:
+- Accounts, Subscriptions, Boundaries and Functions: deploy and run serverless functions with
+  npm dependencies, HTTP routes, cron schedules and async task queues.
+- Users, Clients, Issuers and Identities: JWT-based access, with authorization expressed as explicit
+  {action, resource} grants ("function:get" on a resource path prefix), not OAuth scopes.
+- Storage: subscription-scoped key/value storage with ETag optimistic concurrency.
+- Registry: an account-private npm registry scope.
+- Audit and real-time logs.
+
+v2 (Integrations) — the embedded-integration plane:
+- Integrations: the logic connecting two services.
+- Connectors: managed credentials for one third-party service (Slack, Salesforce, HubSpot, Xero,
+  Atlassian, QuickBooks and ~37 more).
+- Identities: a managed third-party credential held on behalf of one end customer.
+- Installs: a fully configured Integration for one end customer.
+- Sessions: the time-boxed configuration flow an end customer walks to authorize connectors; committing
+  a session produces the Install and its Identities.
+- Tags: caller-supplied key/value metadata on every v2 entity.
+
+## Conventions
+
+- Auth: `Authorization: Bearer <JWT>`, minted against an Issuer registered on the account.
+  Unauthenticated requests return 403, not 401.
+- Pagination: cursor — `count` and `next`; v2 adds `sort` (dateModified | dateAdded | entityId),
+  `idPrefix`, `tag`, `status`.
+- Async: v2 Connector/Integration/Session mutations return 202 with an operation status object polled
+  to completion; v1 task routes return 202 with a `location` header.
+- Errors: bespoke JSON envelope `{ status, statusCode, message }` — NOT RFC 9457. The only typed error
+  vocabulary is the v2 OperationErrorCode enum.
+- Idempotency: none. No Idempotency-Key header anywhere in either contract.
+- Reversibility: none. Deletes are terminal; there is no undo, restore or retention window.
+- Rate limits: 429, with the task-route trigger documented (maxPending default 1024, maxRunning
+  default 10). No RateLimit-* or Retry-After response header.
+- Versioning: URL path (/v1, /v2), semver on platform releases. v1 and v2 ran concurrently.
+
+## Tooling
+
+- Fusebit CLI (`fuse`): `npm install -g @fusebit/cli` — v1.24.0, 2022-06-23. Command groups: profile,
+  function, integration, connector, user, client, issuer, storage, npm, log, feed, token, init, version.
+- EveryAuth CLI (`everyauth`): `npm install -g @fusebit/everyauth-cli` — v1.24.0, 2022-06-23.
+- EveryAuth Express middleware: `@fusebit/everyauth-express` — v2.1.3, 2022-05-05.
+- Fusebit SDK: `@fusebit-int/framework` — v7.53.1, 2023-01-11.
+- Fusebit Editor: an embeddable browser IDE, distributed unpinned from cdn.fusebit.io (now NXDOMAIN).
+
+## Repository artifacts
+
+- openapi/ — both published OpenAPI contracts, verbatim
+- packages/fusebit-packages.yml — all 101 first-party npm packages with registry versions and dates
+- cli/fusebit-cli.yml — the three first-party CLIs and their command surface
+- components/fusebit-components.yml — embeddable marketplace, JSONForms and editor components
+- changelog/fusebit-changelog.yml — four dated release-note streams, 176 HTTP API releases
+- conventions/fusebit-conventions.yml — auth, pagination, async, errors, idempotency, reversibility
+- data-model/fusebit-data-model.yml — 18 entities, 25 relationships derived from the contracts
+- errors/fusebit-problem-types.yml — the error envelope and every declared 4xx
+- lifecycle/fusebit-lifecycle.yml — versioning, releases, and the evidence for the retirement
+- conformance/fusebit-conformance.yml — standards the contract does and does not meet
+- authentication/fusebit-authentication.yml — the JWT + action/resource authorization model
+- well-known/fusebit-well-known.yml — the /.well-known probe, recording a total absence
+- security/ — domain security posture probes
+
+## Links that still work
+
+- GitHub (product org): https://github.com/fusebit
+- GitHub (engineering monorepo, holds the contracts): https://github.com/fivequarters/q5
+- npm: https://www.npmjs.com/org/fusebit
+- Release notes: https://fivequarters.github.io/q5/release-notes/
+- LinkedIn: https://www.linkedin.com/company/fusebit
+
+## Links that no longer resolve (probed 2026-09-10, all NXDOMAIN)
+
+- https://fusebit.io
+- https://developer.fusebit.io
+- https://api.us-west-1.on.fusebit.io
+- https://manage.fusebit.io
+- https://cdn.fusebit.io

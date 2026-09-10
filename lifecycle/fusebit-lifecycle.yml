@@ -1,0 +1,118 @@
+generated: '2026-09-10'
+method: searched
+source: >-
+  https://fivequarters.github.io/q5/release-notes/ (live release notes on Fusebit's own engineering
+  GitHub org), https://raw.githubusercontent.com/fivequarters/q5/HEAD/docs/downloads.md,
+  live DNS probes of fusebit.io and every Fusebit subdomain (2026-09-10),
+  and the two published OpenAPI documents in openapi/.
+provider: Fusebit
+providerId: fusebit
+status: discontinued
+summary: >-
+  Fusebit's API is retired. The contract, the CLI and the SDKs are still retrievable from public
+  registries and from Fusebit's own GitHub orgs, but every host the platform ran on is gone from DNS,
+  so nothing published here is callable. Fusebit never published a deprecation policy, a Sunset/
+  Deprecation header convention, an SLA, or a status page — the retirement was silent.
+versioning:
+  scheme: semver
+  scheme_evidence: >-
+    "All public releases ... follow the Semantic Versioning 2.0 specification" —
+    https://fivequarters.github.io/q5/release-notes/fusebit-http-api/
+  api_versioning: url-path
+  versions:
+    - version: v1
+      surface: Core — accounts, subscriptions, boundaries, functions, users, clients, issuers, storage, registry
+      spec: openapi/fusebit-http-api-core-openapi.yml
+      operations: 49
+      state: retired
+    - version: v2
+      surface: Integrations — integrations, connectors, installs, identities, sessions, tags
+      spec: openapi/fusebit-http-api-integrations-openapi.yml
+      operations: 40
+      state: retired
+  note: >-
+    v1 and v2 ran concurrently on the same host; v2 added the embedded-integrations surface rather
+    than superseding v1. A versioning-strategy page was published at
+    fusebit.io/docs/integrator-guide/versioning and is linked from every release-notes page; that URL
+    no longer resolves, so the policy text itself is unrecoverable.
+releases:
+  latest_platform_version: 1.41.1
+  latest_platform_release_date: '2022-11-07'
+  release_count_http_api: 176
+  streams:
+    - name: Fusebit HTTP API
+      latest: 1.41.1
+      date: '2022-11-07'
+      url: https://fivequarters.github.io/q5/release-notes/fusebit-http-api/
+    - name: Fusebit CLI
+      latest: 1.24.0
+      date: '2022-06-10'
+      url: https://fivequarters.github.io/q5/release-notes/fusebit-cli/
+    - name: Fusebit Editor
+      latest: 2.4.0
+      date: '2022-02-08'
+      url: https://fivequarters.github.io/q5/release-notes/fusebit-editor/
+    - name: Fusebit Portal
+      latest: 1.0.2
+      date: '2020-11-17'
+      url: https://fivequarters.github.io/q5/release-notes/fusebit-portal/
+deprecation_policy:
+  published: false
+  sunset_header: false
+  deprecation_header: false
+  note: >-
+    No RFC 8594 Sunset header, no Deprecation header, and no published deprecation or end-of-life
+    policy. Neither OpenAPI document marks a single operation `deprecated: true`. The only
+    deprecation language in the entire surviving record is a single release-note line — "Deprecate
+    official lambda node 12 runtime" (1.41.0, 2022-11-07) — which concerns a runtime, not an API
+    contract.
+deprecated_operations: []
+sla:
+  published: false
+  note: No service-level agreement or uptime commitment survives in any reachable Fusebit document.
+status_page:
+  published: false
+  note: >-
+    No status page was found. Fusebit ran per-account Grafana health dashboards for customers
+    (releases 1.40.11-1.40.18) and an internal health endpoint /v1/health/analytics, but neither is a
+    public status page and neither host resolves. No StatusPage pointer is emitted.
+retirement:
+  state: retired
+  evidence:
+    - claim: The apex domain publishes no A record.
+      probe: 'dig A fusebit.io @8.8.8.8'
+      result: NXDOMAIN — no answer
+      checked: '2026-09-10'
+    - claim: Every operational subdomain is equally dark.
+      probe: 'dig A for www.fusebit.io, developer.fusebit.io, api.us-west-1.on.fusebit.io, manage.fusebit.io, cdn.fusebit.io, blog.fusebit.io, everyauth.fusebit.io'
+      result: NXDOMAIN on all seven
+      checked: '2026-09-10'
+    - claim: The domain registration is alive; only the service is gone.
+      probe: 'whois fusebit.io'
+      result: 'Registrar NameCheap, created 2019-04-10, registry expiry 2027-04-10, updated 2026-08-12, NS dns1/dns2.registrar-servers.com (registrar parking nameservers, zone serves no A record)'
+      checked: '2026-09-10'
+    - claim: The API host named by the contract is unreachable.
+      probe: 'https://api.us-west-1.on.fusebit.io/v1/account/{accountId} (servers[] default region from the spec)'
+      result: DNS resolution failure
+      checked: '2026-09-10'
+    - claim: No first-party package has shipped since early 2023.
+      probe: 'registry.npmjs.org metadata for all 101 @fusebit and @fusebit-int packages'
+      result: newest publish date 2023-01-11 (@fusebit-int/* all frozen at 7.53.1)
+      checked: '2026-09-10'
+    - claim: The last platform release predates the shutdown by years.
+      probe: https://fivequarters.github.io/q5/release-notes/fusebit-http-api/
+      result: 1.41.1, released 2022-11-07
+      checked: '2026-09-10'
+  what_survives:
+    - The two OpenAPI contracts, in Fusebit's own engineering monorepo (github.com/fivequarters/q5).
+    - Four dated release-note streams, served live from GitHub Pages at fivequarters.github.io/q5/release-notes/.
+    - 101 first-party npm packages under @fusebit and @fusebit-int, all still installable.
+    - 30 public repositories in github.com/fusebit, 7 of them archived by Fusebit.
+    - The source of the fusebit.io website itself (github.com/fivequarters/fusebit.io, archived).
+  what_is_gone:
+    - The API (every region host).
+    - The developer documentation (developer.fusebit.io and fusebit.io/docs) — the GitHub Pages mirror
+      keeps release notes only; /introduction/, /reference/, /integrator-guide/ and /authoring-guide/
+      on that mirror are meta-refresh stubs pointing back at the dead fusebit.io.
+    - The management portal (manage.fusebit.io) and the asset CDN (cdn.fusebit.io).
+    - Pricing, sign-up, terms of service, privacy policy and support channels.

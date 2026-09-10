@@ -1,0 +1,74 @@
+generated: '2026-09-10'
+method: searched
+source: >-
+  https://registry.npmjs.org/ per-package metadata for @fusebit/react-marketplace,
+  @fusebit/monaco-jsonforms, @fusebit/objectmap-jsonforms;
+  https://raw.githubusercontent.com/fivequarters/q5/HEAD/docs/downloads.md (Fusebit Editor CDN URL);
+  https://github.com/fusebit/marketplace and https://github.com/fusebit/monaco-jsonforms
+provider: Fusebit
+providerId: fusebit
+status: discontinued
+note: >-
+  Fusebit shipped embeddable, customer-facing UI surfaces distinct from its SDKs: a React marketplace
+  that renders the integration catalog inside the host SaaS product, a JSONForms-based configuration
+  editor, and a browser IDE (the Fusebit Editor) delivered as a CDN script rather than an npm package.
+  All four are frozen; the Editor's distribution host (cdn.fusebit.io) no longer resolves in DNS.
+families:
+  - family: Marketplace
+    description: >-
+      Drop-in React components that surface a Fusebit integration catalog inside the host
+      application, so end customers can browse, install and configure integrations in-product.
+    components:
+      - name: Fusebit React Marketplace
+        package: '@fusebit/react-marketplace'
+        registry: npm
+        version: 2.6.0
+        published: '2022-08-23'
+        kind: react-component-library
+        url: https://www.npmjs.com/package/@fusebit/react-marketplace
+        source: https://github.com/fusebit/marketplace
+  - family: Configuration forms
+    description: >-
+      JSONForms.io renderers Fusebit used to turn an integration's JSON Schema into a configuration
+      UI, including a Monaco-backed code field and an object-map (key/value) renderer.
+    components:
+      - name: Monaco JSONForms renderer
+        package: '@fusebit/monaco-jsonforms'
+        registry: npm
+        version: 1.0.9
+        published: '2022-09-12'
+        kind: react-component
+        url: https://www.npmjs.com/package/@fusebit/monaco-jsonforms
+        source: https://github.com/fusebit/monaco-jsonforms
+      - name: Object-map JSONForms renderer
+        package: '@fusebit/objectmap-jsonforms'
+        registry: npm
+        version: 1.4.3
+        published: '2022-10-18'
+        kind: react-component
+        url: https://www.npmjs.com/package/@fusebit/objectmap-jsonforms
+        source: https://github.com/fusebit/objectmap-jsonforms
+      - name: Object-map utilities
+        package: '@fusebit/objectmap-utils'
+        registry: npm
+        version: 1.4.3
+        published: '2022-10-18'
+        kind: library
+        url: https://www.npmjs.com/package/@fusebit/objectmap-utils
+  - family: Embedded editor
+    description: >-
+      The Fusebit Editor: a browser-based IDE embedded into the host application with a script tag,
+      used by end customers to author and edit Fusebit Functions without leaving the product.
+    loaders:
+      - name: Fusebit Editor
+        registry: cdn
+        url: https://cdn.fusebit.io/fusebit/js/fusebit-editor/latest/fusebit-editor.min.js
+        version: null
+        published: null
+        pinned: false
+        note: >-
+          Unpinned CDN distribution — the published URL floats to `latest`, so a consumer could not
+          tell which build they were loading either. The last documented Editor release is 2.4.0
+          (2022-02-08, per https://fivequarters.github.io/q5/release-notes/fusebit-editor/), but the
+          URL itself carries no version. Probed 2026-09-10: cdn.fusebit.io returns NXDOMAIN, so the
+          script is no longer retrievable and no CDN metadata endpoint (jsDelivr/unpkg) covers it.
