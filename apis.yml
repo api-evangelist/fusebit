@@ -54,6 +54,7 @@ tags:
 - Serverless
 - Authentication
 - Acquired
+- Defunct
 tags_raw:
 - Developer Tools
 - Embedded iPaaS
@@ -61,9 +62,10 @@ tags_raw:
 - Serverless
 - OAuth
 - Acquired
+- Defunct
 url: https://raw.githubusercontent.com/api-evangelist/fusebit/refs/heads/main/apis.yml
 created: '2026-03-27'
-modified: '2026-09-15'
+modified: '2026-09-16'
 specificationVersion: '0.23'
 apis:
 - aid: fusebit:apis
