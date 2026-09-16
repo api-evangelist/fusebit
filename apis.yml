@@ -68,33 +68,390 @@ created: '2026-03-27'
 modified: '2026-09-16'
 specificationVersion: '0.23'
 apis:
-- aid: fusebit:apis
-  name: Fusebit HTTP API
-  description: The Fusebit HTTP API managed and executed everything on the platform across two concurrent
-    major versions on one host. v1 (Core, 49 operations) covered accounts, subscriptions, boundaries,
-    serverless functions, users, machine clients, trusted JWT issuers, subscription storage and a private
-    npm registry. v2 (Integrations, 40 operations) covered integrations, third-party credential connectors,
-    per-customer installs and identities, configuration sessions and entity tags. Authentication was a
-    bearer JWT minted against an issuer registered on the account, with authorization expressed as explicit
-    {action, resource} grants rather than OAuth scopes. The API is retired — api.us-west-1.on.fusebit.io
-    no longer resolves in DNS.
+- aid: fusebit:fusebit-accounts-api
+  name: Fusebit Accounts API
+  description: Account management operations
   humanURL: https://github.com/fusebit
   baseURL: https://api.us-west-1.on.fusebit.io
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/fusebit.png
   tags:
-  - Developer Tools
-  - Embedded iPaaS
-  - Integration
-  - Serverless
+  - Accounts
   properties:
   - type: OpenAPI
-    url: openapi/fusebit-http-api-core-openapi.yml
+    url: openapi/fusebit-accounts-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-boundaries-api
+  name: Fusebit Boundaries API
+  description: Boundary management operations
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Boundaries
+  properties:
   - type: OpenAPI
-    url: openapi/fusebit-http-api-integrations-openapi.yml
-  - type: Overlay
-    url: overlays/fusebit-core-overlay.yaml
-  - type: Overlay
-    url: overlays/fusebit-integrations-overlay.yaml
+    url: openapi/fusebit-boundaries-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-clients-api
+  name: Fusebit Clients API
+  description: Client management operations
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Clients
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-clients-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-connector-api
+  name: Fusebit Connector API
+  description: Management for external credentials
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Connector
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-connector-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-connector-tags-api
+  name: Fusebit Connector/Tags API
+  description: The Connector/Tags API from Fusebit — 3 operation(s) for connector/tags.
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Connector/Tags
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-connector-tags-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-functions-api
+  name: Fusebit Functions API
+  description: Function management operations
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Functions
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-functions-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-identity-api
+  name: Fusebit Identity API
+  description: A managed credential for a remote service, on behalf of a customer
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Identity
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-identity-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-identity-tags-api
+  name: Fusebit Identity/Tags API
+  description: The Identity/Tags API from Fusebit — 3 operation(s) for identity/tags.
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Identity/Tags
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-identity-tags-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-install-api
+  name: Fusebit Install API
+  description: A fully configured integration for a customer
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Install
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-install-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-install-tags-api
+  name: Fusebit Install/Tags API
+  description: The Install/Tags API from Fusebit — 4 operation(s) for install/tags.
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Install/Tags
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-install-tags-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-integration-api
+  name: Fusebit Integration API
+  description: The logic necessary to integrate between two services
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Integration
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-integration-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-integration-tags-api
+  name: Fusebit Integration/Tags API
+  description: The Integration/Tags API from Fusebit — 3 operation(s) for integration/tags.
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Integration/Tags
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-integration-tags-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-issuers-api
+  name: Fusebit Issuers API
+  description: Issuer management operations
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Issuers
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-issuers-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-registry-api
+  name: Fusebit Registry API
+  description: The Registry API from Fusebit — 1 operation(s) for registry.
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Registry
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-registry-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-session-api
+  name: Fusebit Session API
+  description: An active configuration phase for a customer
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Session
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-session-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-storage-api
+  name: Fusebit Storage API
+  description: The Storage API from Fusebit — 3 operation(s) for storage.
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Storage
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-storage-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-subscriptions-api
+  name: Fusebit Subscriptions API
+  description: Subscription management operations
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Subscriptions
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-subscriptions-api-openapi.yml
+  - type: Authentication
+    url: authentication/fusebit-authentication.yml
+  - type: Conventions
+    url: conventions/fusebit-conventions.yml
+  - type: ErrorCatalog
+    url: errors/fusebit-problem-types.yml
+  - type: DataModel
+    url: data-model/fusebit-data-model.yml
+  - type: RateLimits
+    url: rate-limits/fusebit-rate-limits.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+- aid: fusebit:fusebit-users-api
+  name: Fusebit Users API
+  description: User management operations
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-users-api-openapi.yml
   - type: Authentication
     url: authentication/fusebit-authentication.yml
   - type: Conventions
@@ -108,6 +465,12 @@ apis:
   - type: SourceCode
     url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
 common:
+- type: Website
+  url: https://fusebit.io
+- type: Overlay
+  url: overlays/fusebit-core-overlay.yaml
+- type: Overlay
+  url: overlays/fusebit-integrations-overlay.yaml
 - type: GitHubOrganization
   url: https://github.com/fusebit
 - type: LinkedIn
