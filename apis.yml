@@ -1,16 +1,15 @@
 aid: fusebit
 name: Fusebit
-description: >-
-  Fusebit was a code-first, developer-facing embedded integration platform (embedded iPaaS) founded
-  in Seattle in 2019, letting SaaS teams build, deploy and run third-party integrations inside their
-  own products using serverless functions, managed OAuth connectors and an embeddable browser IDE.
-  The company was acquired and the platform is retired: as of 2026-09-10 the domain fusebit.io is
-  still registered but publishes no DNS A record, so the API, the developer documentation, the
-  management portal and the asset CDN all fail to resolve. What survives is substantial and
-  first-party — two published OpenAPI 3.0 contracts covering 89 operations, four dated release-note
-  streams served from Fusebit's own GitHub Pages, 101 npm packages under the @fusebit and
-  @fusebit-int scopes, and 35 public repositories across the fusebit and fivequarters GitHub
-  organizations. This profile is a historical record of a retired API, not a callable surface.
+description: 'Fusebit was a code-first, developer-facing embedded integration platform (embedded iPaaS)
+  founded in Seattle in 2019, letting SaaS teams build, deploy and run third-party integrations inside
+  their own products using serverless functions, managed OAuth connectors and an embeddable browser IDE.
+  The company was acquired and the platform is retired: as of 2026-09-10 the domain fusebit.io is still
+  registered but publishes no DNS A record, so the API, the developer documentation, the management portal
+  and the asset CDN all fail to resolve. What survives is substantial and first-party — two published
+  OpenAPI 3.0 contracts covering 89 operations, four dated release-note streams served from Fusebit''s
+  own GitHub Pages, 101 npm packages under the @fusebit and @fusebit-int scopes, and 35 public repositories
+  across the fusebit and fivequarters GitHub organizations. This profile is a historical record of a retired
+  API, not a callable surface.'
 type: Index
 deliveryModel:
   model: unknown
@@ -35,86 +34,66 @@ accessModel:
   - none
   generated: '2026-09-10'
   method: probed
-  note: >-
-    Previously recorded as `freemium` on the basis of an API Evangelist plans scaffold that asserted
-    Free/Professional/Enterprise tiers Fusebit never published. That scaffold was removed on
-    2026-09-10; https://fusebit.io/pricing returns NXDOMAIN and no rate card survives anywhere.
+  note: Previously recorded as `freemium` on the basis of an API Evangelist plans scaffold that asserted
+    Free/Professional/Enterprise tiers Fusebit never published. That scaffold was removed on 2026-09-10;
+    https://fusebit.io/pricing returns NXDOMAIN and no rate card survives anywhere.
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/fusebit.png
 access: 3rd-Party
 position: Producing
 x-status: defunct
-x-status-detail: >-
-  Platform retired after acquisition. fusebit.io is still registered (NameCheap, expiry 2027-04-10)
-  but its zone publishes no A record, so the apex, www, developer.fusebit.io,
-  api.us-west-1.on.fusebit.io, manage.fusebit.io, cdn.fusebit.io, blog.fusebit.io and
-  everyauth.fusebit.io all return NXDOMAIN (probed 2026-09-10). No Website pointer is registered,
-  on purpose: the dead one was removed rather than left standing as a claim. The surviving
-  first-party surface is GitHub (github.com/fusebit, github.com/fivequarters), npm and the release
-  notes at fivequarters.github.io/q5/release-notes/, all of which are registered above.
+x-status-detail: 'Platform retired after acquisition. fusebit.io is still registered (NameCheap, expiry
+  2027-04-10) but its zone publishes no A record, so the apex, www, developer.fusebit.io, api.us-west-1.on.fusebit.io,
+  manage.fusebit.io, cdn.fusebit.io, blog.fusebit.io and everyauth.fusebit.io all return NXDOMAIN (probed
+  2026-09-10). No Website pointer is registered, on purpose: the dead one was removed rather than left
+  standing as a claim. The surviving first-party surface is GitHub (github.com/fusebit, github.com/fivequarters),
+  npm and the release notes at fivequarters.github.io/q5/release-notes/, all of which are registered above.'
 tags:
+- Developer Tools
+- Embedded iPaaS
+- Integration
+- Serverless
+- Authentication
+- Acquired
+- Defunct
+tags_raw:
+- Developer Tools
+- Embedded iPaaS
+- Integration
+- Serverless
+- OAuth
+- Acquired
+url: https://raw.githubusercontent.com/api-evangelist/fusebit/refs/heads/main/apis.yml
+created: '2026-03-27'
+modified: '2026-09-15'
+specificationVersion: '0.23'
+apis:
+- aid: fusebit:apis
+  name: Fusebit HTTP API
+  description: The Fusebit HTTP API managed and executed everything on the platform across two concurrent
+    major versions on one host. v1 (Core, 49 operations) covered accounts, subscriptions, boundaries,
+    serverless functions, users, machine clients, trusted JWT issuers, subscription storage and a private
+    npm registry. v2 (Integrations, 40 operations) covered integrations, third-party credential connectors,
+    per-customer installs and identities, configuration sessions and entity tags. Authentication was a
+    bearer JWT minted against an issuer registered on the account, with authorization expressed as explicit
+    {action, resource} grants rather than OAuth scopes. The API is retired — api.us-west-1.on.fusebit.io
+    no longer resolves in DNS.
+  humanURL: https://github.com/fusebit
+  baseURL: https://api.us-west-1.on.fusebit.io
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/fusebit.png
+  tags:
   - Developer Tools
   - Embedded iPaaS
   - Integration
   - Serverless
-  - OAuth
-  - Acquired
-url: >-
-  https://raw.githubusercontent.com/api-evangelist/fusebit/refs/heads/main/apis.yml
-created: '2026-03-27'
-modified: '2026-09-10'
-specificationVersion: '0.23'
-apis:
-  - aid: fusebit:apis
-    name: Fusebit HTTP API
-    description: >-
-      The Fusebit HTTP API managed and executed everything on the platform across two concurrent
-      major versions on one host. v1 (Core, 49 operations) covered accounts, subscriptions,
-      boundaries, serverless functions, users, machine clients, trusted JWT issuers, subscription
-      storage and a private npm registry. v2 (Integrations, 40 operations) covered integrations,
-      third-party credential connectors, per-customer installs and identities, configuration
-      sessions and entity tags. Authentication was a bearer JWT minted against an issuer registered
-      on the account, with authorization expressed as explicit {action, resource} grants rather than
-      OAuth scopes. The API is retired — api.us-west-1.on.fusebit.io no longer resolves in DNS.
-    humanURL: https://github.com/fusebit
-    baseURL: https://api.us-west-1.on.fusebit.io
-    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/fusebit.png
-    tags:
-      - Developer Tools
-      - Embedded iPaaS
-      - Integration
-      - Serverless
-    properties:
-      - type: OpenAPI
-        url: openapi/fusebit-http-api-core-openapi.yml
-      - type: OpenAPI
-        url: openapi/fusebit-http-api-integrations-openapi.yml
-      - type: Overlay
-        url: overlays/fusebit-core-overlay.yaml
-      - type: Overlay
-        url: overlays/fusebit-integrations-overlay.yaml
-      - type: Authentication
-        url: authentication/fusebit-authentication.yml
-      - type: Conventions
-        url: conventions/fusebit-conventions.yml
-      - type: ErrorCatalog
-        url: errors/fusebit-problem-types.yml
-      - type: DataModel
-        url: data-model/fusebit-data-model.yml
-      - type: RateLimits
-        url: rate-limits/fusebit-rate-limits.yml
-      - type: SourceCode
-        url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
-common:
-  - type: GitHubOrganization
-    url: https://github.com/fusebit
-  - type: LinkedIn
-    url: https://www.linkedin.com/company/fusebit
-  - type: ChangeLog
-    url: https://fivequarters.github.io/q5/release-notes/
-  - type: ChangeLog
-    url: changelog/fusebit-changelog.yml
-  - type: SourceCode
-    url: https://github.com/fivequarters/q5
+  properties:
+  - type: OpenAPI
+    url: openapi/fusebit-http-api-core-openapi.yml
+  - type: OpenAPI
+    url: openapi/fusebit-http-api-integrations-openapi.yml
+  - type: Overlay
+    url: overlays/fusebit-core-overlay.yaml
+  - type: Overlay
+    url: overlays/fusebit-integrations-overlay.yaml
   - type: Authentication
     url: authentication/fusebit-authentication.yml
   - type: Conventions
@@ -123,29 +102,52 @@ common:
     url: errors/fusebit-problem-types.yml
   - type: DataModel
     url: data-model/fusebit-data-model.yml
-  - type: Lifecycle
-    url: lifecycle/fusebit-lifecycle.yml
-  - type: Conformance
-    url: conformance/fusebit-conformance.yml
-  - type: Packages
-    url: packages/fusebit-packages.yml
-  - type: SDKs
-    url: packages/fusebit-packages.yml
-  - type: CLI
-    url: cli/fusebit-cli.yml
-  - type: Components
-    url: components/fusebit-components.yml
-  - type: LLMsTxt
-    url: llms/fusebit-llms.txt
   - type: RateLimits
     url: rate-limits/fusebit-rate-limits.yml
-  - type: Plans
-    url: plans/fusebit-plans-pricing.yml
-  - type: DomainSecurity
-    url: security/fusebit-domain-security.yml
+  - type: SourceCode
+    url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
+common:
+- type: GitHubOrganization
+  url: https://github.com/fusebit
+- type: LinkedIn
+  url: https://www.linkedin.com/company/fusebit
+- type: ChangeLog
+  url: https://fivequarters.github.io/q5/release-notes/
+- type: ChangeLog
+  url: changelog/fusebit-changelog.yml
+- type: SourceCode
+  url: https://github.com/fivequarters/q5
+- type: Authentication
+  url: authentication/fusebit-authentication.yml
+- type: Conventions
+  url: conventions/fusebit-conventions.yml
+- type: ErrorCatalog
+  url: errors/fusebit-problem-types.yml
+- type: DataModel
+  url: data-model/fusebit-data-model.yml
+- type: Lifecycle
+  url: lifecycle/fusebit-lifecycle.yml
+- type: Conformance
+  url: conformance/fusebit-conformance.yml
+- type: Packages
+  url: packages/fusebit-packages.yml
+- type: SDKs
+  url: packages/fusebit-packages.yml
+- type: CLI
+  url: cli/fusebit-cli.yml
+- type: Components
+  url: components/fusebit-components.yml
+- type: LLMsTxt
+  url: llms/fusebit-llms.txt
+- type: RateLimits
+  url: rate-limits/fusebit-rate-limits.yml
+- type: Plans
+  url: plans/fusebit-plans-pricing.yml
+- type: DomainSecurity
+  url: security/fusebit-domain-security.yml
 maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+- FN: Kin Lane
+  email: kin@apievangelist.com
 x-enrichment:
   date: '2026-09-10'
   status: enriched
