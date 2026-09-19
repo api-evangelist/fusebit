@@ -74,6 +74,8 @@ apis:
   humanURL: https://github.com/fusebit
   baseURL: https://api.us-west-1.on.fusebit.io
   tags:
+  - Account
+  tags_raw:
   - Accounts
   properties:
   - type: OpenAPI
@@ -382,6 +384,8 @@ apis:
   humanURL: https://github.com/fusebit
   baseURL: https://api.us-west-1.on.fusebit.io
   tags:
+  - Sessions
+  tags_raw:
   - Session
   properties:
   - type: OpenAPI
@@ -426,6 +430,8 @@ apis:
   humanURL: https://github.com/fusebit
   baseURL: https://api.us-west-1.on.fusebit.io
   tags:
+  - Subscription
+  tags_raw:
   - Subscriptions
   properties:
   - type: OpenAPI
@@ -448,6 +454,8 @@ apis:
   humanURL: https://github.com/fusebit
   baseURL: https://api.us-west-1.on.fusebit.io
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
