@@ -1,0 +1,333 @@
+openapi: 3.2.0
+info:
+  description: Fusebit HTTP API for the management and execution of Fusebit accounts, users, functions and more
+  version: 1.0.0
+  title: Fusebit HTTP API - Core Issuers API
+  contact:
+    email: contact@fusebit.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+- url: https://api.{region}.on.fusebit.io
+  description: Production
+  variables:
+    region:
+      description: The region where the API is deployed, for example `'us-west-1'`
+      default: us-west-1
+security:
+- AccessToken: []
+tags:
+- name: Issuers
+  description: Issuer management operations
+paths:
+  /v1/account/{accountId}/issuer:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    get:
+      tags:
+      - Issuers
+      summary: Get issuers of an account
+      operationId: getAccountIssuerList
+      description: 'Returns a list of issuers associated with the given account.
+
+
+        Use query string parameters to filter the list of issuers.
+
+        All query filters are combined with a logical AND operator.'
+      parameters:
+      - in: query
+        name: name
+        required: false
+        description: 'Optional identifier to match against the `displayName` field of the issuer.
+
+          Matching is case-sensitive. Partial matches are supported.
+
+          '
+        schema:
+          type: string
+      - in: query
+        name: next
+        required: false
+        description: Opaque token to start returning results from
+        schema:
+          type: string
+      - in: query
+        name: count
+        required: false
+        description: Optional number of results to return
+        schema:
+          type: number
+          minimum: 1
+          maximum: 100
+      responses:
+        200:
+          description: A list of issuers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssuerList'
+        400:
+          description: Malformed account id or invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - issuer:get
+  /v1/account/{accountId}/issuer/{issuerId}:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - in: path
+      name: issuerId
+      required: true
+      description: Issuer id
+      schema:
+        $ref: '#/components/schemas/IssuerId'
+    get:
+      tags:
+      - Issuers
+      summary: Get an issuer of an account
+      operationId: getAccountIssuer
+      description: Returns an issuer associated with the given account.
+      responses:
+        200:
+          description: The issuer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issuer'
+        400:
+          description: Malformed account or issuer id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Issuer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - issuer:get
+    post:
+      tags:
+      - Issuers
+      summary: Add a new issuer to an account
+      operationId: postAccountIssuer
+      description: Adds a new issuer to be associated with the given account.
+      requestBody:
+        description: The issuer to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewIssuer'
+      responses:
+        200:
+          description: The issuer that was added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issuer'
+        400:
+          description: Malformed account id, invalid issuer or issuer already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - issuer:add
+    patch:
+      tags:
+      - Issuers
+      summary: Update an existing issuer of an account
+      operationId: putAccountIssuer
+      description: Updates an existing issuer associated with the given account.
+      requestBody:
+        description: The issuer to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewIssuer'
+      responses:
+        200:
+          description: The issuer that was updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issuer'
+        400:
+          description: Malformed account or issuer id, or invalid issuer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Issuer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - issuer:update
+    delete:
+      tags:
+      - Issuers
+      summary: Delete an issuer of an account
+      description: Deletes an issuer that was previously associated with the given account.
+      operationId: deleteIssuer
+      responses:
+        204:
+          description: Issuer was deleted
+        400:
+          description: Malformed account or issuer id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Issuer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - issuer:delete
+components:
+  schemas:
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    Error:
+      type: object
+      required:
+      - status
+      - statusCode
+      - message
+      properties:
+        status:
+          type: number
+          description: The HTTP status code
+          example: 404
+        statusCode:
+          type: number
+          description: The HTTP status code
+          example: 404
+        message:
+          type: string
+          description: A message with details regarding the error
+          example: The user 'usr-5555555555555555' does not exist
+    Issuer:
+      allOf:
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            $ref: '#/components/schemas/IssuerId'
+      - $ref: '#/components/schemas/NewIssuer'
+    PublicKey:
+      type: object
+      description: A key id and the public key for a public/private key pair
+      required:
+      - keyId
+      - publicKey
+      properties:
+        keyId:
+          type: string
+          description: The key id for the public key
+        publicKey:
+          type: string
+          description: The public key of a public/private key pair
+    IssuerList:
+      type: object
+      required:
+      - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of issuers
+          items:
+            $ref: '#/components/schemas/Issuer'
+    IssuerId:
+      type: string
+      description: Issuer id
+      example: https://auth-server.company-abc.com
+    NewIssuer:
+      type: object
+      description: An issuer of access tokens that should be accepted
+      properties:
+        displayName:
+          type: string
+          description: Issuer display name
+          example: Company ABC Authorization Server
+        publicKeys:
+          type: array
+          description: 'The public keys of the key pairs used to sign access tokens from the issuer. Either the `publicKeys` or the `jsonKeysUrl` must be provided.
+
+            '
+          items:
+            $ref: '#/components/schemas/PublicKey'
+        jsonKeysUrl:
+          type: string
+          description: 'The uri key of json key file that contains the public key of the key pair used to sign access tokens from the issuer. Either the `publicKey` or the `jsonKeysUrl` must be provided.
+
+            '
+  securitySchemes:
+    AccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: For a description of the access token format, see [this doc](../../integrator-guide/authz-model).

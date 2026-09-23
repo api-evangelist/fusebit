@@ -1,0 +1,293 @@
+openapi: 3.2.0
+info:
+  description: Fusebit HTTP API for the management and execution of Fusebit accounts, users, functions and more
+  version: 1.0.0
+  title: Fusebit HTTP API - Integrations Identity API
+  contact:
+    email: contact@fusebit.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+- url: https://api.{region}.on.fusebit.io
+  description: Production
+  variables:
+    region:
+      description: 'The region where the API is deployed, for example `''us-west-1''`
+
+        '
+      default: us-west-1
+security:
+- AccessToken: []
+tags:
+- name: Identity
+  description: A managed credential for a remote service, on behalf of a customer
+paths:
+  /v2/account/{accountId}/subscription/{subscriptionId}/identity/:
+    parameters:
+    - $ref: '#/components/parameters/Account'
+    - $ref: '#/components/parameters/Subscription'
+    get:
+      tags:
+      - Identity
+      summary: Search for and retrieve entities of the specified type across all Connectors
+      operationId: searchIdentities
+      parameters:
+      - $ref: '#/components/parameters/SearchCount'
+      - $ref: '#/components/parameters/SearchNext'
+      - $ref: '#/components/parameters/SearchSort'
+      - $ref: '#/components/parameters/SearchTag'
+      responses:
+        200:
+          description: A list of the entities found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityList'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - identity:get
+  /v2/account/{accountId}/subscription/{subscriptionId}/connector/{connectorId}/identity/:
+    parameters:
+    - $ref: '#/components/parameters/Account'
+    - $ref: '#/components/parameters/Subscription'
+    - name: connectorId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/EntityId'
+    get:
+      tags:
+      - Identity
+      summary: Search for and retrieve entities of the specified type
+      operationId: listIdentities
+      parameters:
+      - $ref: '#/components/parameters/SearchCount'
+      - $ref: '#/components/parameters/SearchNext'
+      - $ref: '#/components/parameters/SearchSort'
+      - $ref: '#/components/parameters/SearchTag'
+      responses:
+        200:
+          description: A list of the entities found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityList'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - identity:get
+  /v2/account/{accountId}/subscription/{subscriptionId}/connector/{connectorId}/identity/{identityId}:
+    parameters:
+    - $ref: '#/components/parameters/Account'
+    - $ref: '#/components/parameters/Subscription'
+    - name: connectorId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/EntityId'
+    - name: identityId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/IdentityId'
+    get:
+      tags:
+      - Identity
+      summary: Get an identity
+      operationId: getIdentity
+      responses:
+        200:
+          description: The requested entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityEntity'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - identity:get
+    put:
+      tags:
+      - Identity
+      summary: Update an identity
+      operationId: putIdentity
+      requestBody:
+        $ref: '#/components/requestBodies/PostIdentityBody'
+      responses:
+        200:
+          description: The requested entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityEntity'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - identity:update
+    delete:
+      tags:
+      - Identity
+      summary: Delete an identity
+      operationId: deleteIdentity
+      responses:
+        204:
+          description: The entity deletion succeeded
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - identity:delete
+components:
+  schemas:
+    EntityExpires:
+      type: string
+      description: The time that the entity expires and is automatically removed from the system.
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    IdentityId:
+      type: string
+      description: Identity id
+      example: ins-01234567890123456789012345678912
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    DateModified:
+      type: string
+      format: date-time
+    DateAdded:
+      type: string
+      format: date-time
+    IdentityList:
+      type: object
+      properties:
+        items:
+          type: array
+          description: An array of the matching entities of this component type
+          items:
+            $ref: '#/components/schemas/IdentityEntity'
+        next:
+          type: string
+          description: The key to use when accessing the next block of entries
+        total:
+          type: number
+          description: The total number of entities of this type.
+    ParentId:
+      type: string
+      description: 'The name of the parent entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
+
+        '
+    EntityTags:
+      type: object
+      description: A hash containing tags set on this entity
+      example:
+        tenant: tenant-525
+        customer: Sonicity
+    EntityVersion:
+      type: string
+      format: uuid
+    IdentityEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/IdentityId'
+        parentId:
+          $ref: '#/components/schemas/ParentId'
+        data:
+          type: object
+          description: The data used by the creating connector to establish a relationship with the remote service on behalf of a user.
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        version:
+          $ref: '#/components/schemas/EntityVersion'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+    EntityId:
+      type: string
+      description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
+
+        '
+  parameters:
+    Subscription:
+      name: subscriptionId
+      in: path
+      required: true
+      description: Subscription id
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    SearchNext:
+      name: next
+      in: query
+      description: The key to use to retrieve the next set of results
+      schema:
+        type: string
+    SearchSort:
+      name: sort
+      in: query
+      description: Sort the results by `dateModified`, `dateAdded`, or the default value of `entityId`.  If `sort` is prepended with a `-` character, the order direction is reversed.
+      schema:
+        type: string
+    Account:
+      name: accountId
+      in: path
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    SearchTag:
+      name: tag
+      in: query
+      description: A `tagName` or `tagName=tagValue` to search for. Can be specified multiple times in a query parameter to indicate multiple tag values to require in the results.
+      schema:
+        type: string
+    SearchCount:
+      name: count
+      in: query
+      description: The maximum number of entries to return
+      schema:
+        type: number
+  requestBodies:
+    PostIdentityBody:
+      description: Upload a new entity
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IdentityEntity'
+  securitySchemes:
+    AccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: For a description of the access token format, see [this doc](https://developer.fusebit.io/docs/connecting-fusebit-with-your-application).

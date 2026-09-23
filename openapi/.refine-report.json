@@ -1,0 +1,69 @@
+{
+  "provider": "fusebit",
+  "sources": [
+    "_original/fusebit-api-v1.yaml",
+    "_original/fusebit-api-v2.yaml"
+  ],
+  "outputs": [
+    "fusebit-accounts-api-openapi.yml",
+    "fusebit-boundaries-api-openapi.yml",
+    "fusebit-clients-api-openapi.yml",
+    "fusebit-functions-api-openapi.yml",
+    "fusebit-issuers-api-openapi.yml",
+    "fusebit-registry-api-openapi.yml",
+    "fusebit-storage-api-openapi.yml",
+    "fusebit-subscriptions-api-openapi.yml",
+    "fusebit-users-api-openapi.yml",
+    "fusebit-connector-api-openapi.yml",
+    "fusebit-connector-tags-api-openapi.yml",
+    "fusebit-identity-api-openapi.yml",
+    "fusebit-identity-tags-api-openapi.yml",
+    "fusebit-install-api-openapi.yml",
+    "fusebit-install-tags-api-openapi.yml",
+    "fusebit-integration-api-openapi.yml",
+    "fusebit-integration-tags-api-openapi.yml",
+    "fusebit-session-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [
+    "fusebit-api-v2.yaml: dangling $ref: #/components/responses/400",
+    "fusebit-api-v2.yaml: dangling $ref: #/components/responses/403",
+    "fusebit-api-v2.yaml: dangling $ref: #/components/responses/404"
+  ],
+  "warnings": [],
+  "notes": [
+    "2 archived document(s) dropped as subsets of other archived documents",
+    "sourced from openapi/_original/ (2 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "fusebit-api-v1.yaml: upgraded openapi 3.0.0 -> OpenAPI 3.2.0",
+    "fusebit-api-v1.yaml: declared missing tag: Registry",
+    "fusebit-api-v1.yaml: declared missing tag: Storage",
+    "fusebit-api-v2.yaml: upgraded openapi 3.0.0 -> OpenAPI 3.2.0",
+    "fusebit-api-v2.yaml: declared missing tag: Connector/Tags",
+    "fusebit-api-v2.yaml: declared missing tag: Identity/Tags",
+    "fusebit-api-v2.yaml: declared missing tag: Install/Tags",
+    "fusebit-api-v2.yaml: declared missing tag: Integration/Tags",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "_original/fusebit-http-api-integrations-openapi.yml: archived document superseded by a larger archived document",
+    "_original/fusebit-http-api-core-openapi.yml: archived document superseded by a larger archived document",
+    "fusebit-accounts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-boundaries-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-clients-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-connector-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-connector-tags-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-functions-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-identity-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-identity-tags-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-install-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-install-tags-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-integration-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-integration-tags-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-issuers-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-registry-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-session-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-storage-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-subscriptions-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "fusebit-users-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}

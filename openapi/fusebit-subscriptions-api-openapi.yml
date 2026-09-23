@@ -1,0 +1,210 @@
+openapi: 3.2.0
+info:
+  description: Fusebit HTTP API for the management and execution of Fusebit accounts, users, functions and more
+  version: 1.0.0
+  title: Fusebit HTTP API - Core Subscriptions API
+  contact:
+    email: contact@fusebit.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+- url: https://api.{region}.on.fusebit.io
+  description: Production
+  variables:
+    region:
+      description: The region where the API is deployed, for example `'us-west-1'`
+      default: us-west-1
+security:
+- AccessToken: []
+tags:
+- name: Subscriptions
+  description: Subscription management operations
+paths:
+  /v1/account/{accountId}/subscription/{subscriptionId}/logs:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - in: path
+      name: subscriptionId
+      required: true
+      description: Subscription id
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    post:
+      tags:
+      - Subscriptions
+      summary: Start new subscription-level log query
+      operationId: newSubscriptionLogQuery
+      description: Starts a new log query scoped to subscription logs.
+      requestBody:
+        description: Log query parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewLogQuery'
+      responses:
+        200:
+          description: New query initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewLogQueryResponse'
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - log:get
+  /v1/account/{accountId}/subscription/{subscriptionId}/logs/{queryId}:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - in: path
+      name: subscriptionId
+      required: true
+      description: Subscription id
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    - in: path
+      name: queryId
+      required: true
+      description: Query id
+      schema:
+        $ref: '#/components/schemas/QueryId'
+    get:
+      tags:
+      - Subscriptions
+      summary: Get subscription-level log query results
+      operationId: getSubscriptionLogQueryResults
+      description: Get the status and results of a previously started subscripton-level log query.
+      responses:
+        200:
+          description: Query status and results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogQueryResult'
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - log:get
+components:
+  schemas:
+    NewLogQuery:
+      type: object
+      properties:
+        filter:
+          type: string
+          description: A filter expression in the AWS Cloud Watch Logs Insights format.
+          example: response.statusCode = 500
+        stats:
+          type: string
+          description: An aggregation expression in the AWS Cloud Watch Logs Insights format.
+          example: count(*) by bin(15s)
+        from:
+          type: string
+          description: Start time of the logging window specified as an absolute date time in ISO format or a relative time in seconds.
+          example: 2021-10-21T00:00:00.361Z or -1800
+        to:
+          type: string
+          description: End time of the logging window specified as an absolute date time in ISO format or a relative time in seconds.
+          example: 2021-10-21T00:00:00.361Z or +900
+        limit:
+          type: number
+          description: Maximum number of records to return.
+          example: 20
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    Error:
+      type: object
+      required:
+      - status
+      - statusCode
+      - message
+      properties:
+        status:
+          type: number
+          description: The HTTP status code
+          example: 404
+        statusCode:
+          type: number
+          description: The HTTP status code
+          example: 404
+        message:
+          type: string
+          description: A message with details regarding the error
+          example: The user 'usr-5555555555555555' does not exist
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    NewLogQueryResponse:
+      type: object
+      properties:
+        queryId:
+          type: string
+          description: A unique log query id to use when polling for query completion
+    LogQueryResult:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - scheduled
+          - running
+          - complete
+          - failed
+          - timeout
+          - unknown
+          description: Status of the query.
+        recordsMatched:
+          type: number
+          description: The number of log records matched by the query. The number of records returned in the result may be smaller, subject to the limit.
+        results:
+          type: array
+          description: Array of records representing the query result.
+          items:
+            type: object
+            description: For log aggregation queries, one record of aggregation results. For log queries, one record representing an HTTP request.
+    QueryId:
+      type: string
+      description: Log Query id
+      example: ffd9b69e-d323-4722-bad8-d57f3b4a28f4
+  securitySchemes:
+    AccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: For a description of the access token format, see [this doc](../../integrator-guide/authz-model).

@@ -1,0 +1,144 @@
+openapi: 3.2.0
+info:
+  description: Fusebit HTTP API for the management and execution of Fusebit accounts, users, functions and more
+  version: 1.0.0
+  title: Fusebit HTTP API - Core Registry API
+  contact:
+    email: contact@fusebit.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+- url: https://api.{region}.on.fusebit.io
+  description: Production
+  variables:
+    region:
+      description: The region where the API is deployed, for example `'us-west-1'`
+      default: us-west-1
+security:
+- AccessToken: []
+tags:
+- name: Registry
+paths:
+  /v1/account/{accountId}/registry/default:
+    parameters:
+    - name: accountId
+      in: path
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    get:
+      tags:
+      - Registry
+      summary: Get the registry configuration
+      description: Returns the configuration for the specified registry
+      operationId: getRegistry
+      responses:
+        200:
+          description: Configuration details for the registry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistryGet'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Registry was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - registry:get
+    put:
+      tags:
+      - Registry
+      summary: Updates the registry configuration
+      description: Updates the registry, with the supplied configuration.
+      operationId: putRegistry
+      requestBody:
+        description: The registry to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistryPut'
+      responses:
+        200:
+          description: Registry successfully updated
+        400:
+          description: Malformed registry specification
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - registry-config:put
+components:
+  schemas:
+    RegistryGet:
+      type: object
+      properties:
+        scopes:
+          type: array
+          description: A list of the npm package scopes reserved in this registry
+          items:
+            type: string
+            description: An npm package scope, such as '@internal'
+            example: '@internal'
+        url:
+          type: string
+          description: The URL for the npm endpoint for this registry
+          example: https://api.{region}.fusebit.io/v1/account/{accountId}/registry/default/npm
+    RegistryPut:
+      type: object
+      properties:
+        scopes:
+          type: array
+          description: A list of the npm package scopes reserved in this registry
+          items:
+            type: string
+            description: An npm package scope, such as '@internal'
+            example: '@internal'
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    Error:
+      type: object
+      required:
+      - status
+      - statusCode
+      - message
+      properties:
+        status:
+          type: number
+          description: The HTTP status code
+          example: 404
+        statusCode:
+          type: number
+          description: The HTTP status code
+          example: 404
+        message:
+          type: string
+          description: A message with details regarding the error
+          example: The user 'usr-5555555555555555' does not exist
+  securitySchemes:
+    AccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: For a description of the access token format, see [this doc](../../integrator-guide/authz-model).

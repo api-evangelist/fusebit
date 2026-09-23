@@ -1,0 +1,530 @@
+openapi: 3.2.0
+info:
+  description: Fusebit HTTP API for the management and execution of Fusebit accounts, users, functions and more
+  version: 1.0.0
+  title: Fusebit HTTP API - Core Users API
+  contact:
+    email: contact@fusebit.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+- url: https://api.{region}.on.fusebit.io
+  description: Production
+  variables:
+    region:
+      description: The region where the API is deployed, for example `'us-west-1'`
+      default: us-west-1
+security:
+- AccessToken: []
+tags:
+- name: Users
+  description: User management operations
+paths:
+  /v1/account/{accountId}/user:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    get:
+      tags:
+      - Users
+      summary: Get users
+      operationId: getUserList
+      description: 'Returns a list of users associated with the given account.
+
+
+        Use query string parameters to filter the list of users. All query filters are combined with a logical AND operator.'
+      parameters:
+      - in: query
+        name: include
+        required: false
+        description: 'Optional switch to include all properties of the users in the response.
+
+          If this switch is not provided only the `id` and `firstName`, `lastName` and `primaryEmail` fields of each user are returned in the response.
+
+          '
+        schema:
+          type: string
+          enum:
+          - all
+      - in: query
+        name: name
+        required: false
+        description: 'Optional identifier to match against the `firstName` or `lastName` fields of the users.
+
+          Matching is case-sensitive. Partial matches are supported.
+
+          '
+        schema:
+          type: string
+      - in: query
+        name: email
+        required: false
+        description: 'Optional identifier to match against the `primaryEmail` field of the users.
+
+          Matching is case-sensitive. Partial matches are supported.
+
+          '
+        schema:
+          type: string
+      - in: query
+        name: issuerId
+        required: false
+        description: 'Optional identifier to match against the `issuerId` field of the identities of the users.
+
+          Matching is case-sensitive. The full issuer id must be provided as partial matches are not supported.
+
+          '
+        schema:
+          $ref: '#/components/schemas/IssuerId'
+      - in: query
+        name: subject
+        required: false
+        description: 'Optional identifier to match against the `subject` field of the identities of the users.
+
+          Only valid if the `issuerId` query filter is also provided. Matching is case-sensitive.
+
+          The full subject must be provided as partial matches are not supported.
+
+          '
+        schema:
+          type: string
+      - in: query
+        name: next
+        required: false
+        description: Opaque token to start returning results from
+        schema:
+          type: string
+      - in: query
+        name: count
+        required: false
+        description: Optional number of results to return
+        schema:
+          type: number
+          minimum: 1
+          maximum: 100
+      responses:
+        200:
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+        400:
+          description: Malformed account id or invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - user:get
+    post:
+      tags:
+      - Users
+      summary: Add a user
+      operationId: postUser
+      description: Adds a user to the platform.
+      requestBody:
+        description: The new user to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+      responses:
+        200:
+          description: The user that was added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Malformed account id or invalid user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - user:add
+  /v1/account/{accountId}/user/{userId}:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - in: path
+      name: userId
+      required: true
+      description: User id
+      schema:
+        $ref: '#/components/schemas/UserId'
+    get:
+      tags:
+      - Users
+      summary: Get a user
+      operationId: getUser
+      description: Returns details of a user.
+      responses:
+        200:
+          description: The user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Malformed account or user id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - user:get
+    patch:
+      tags:
+      - Users
+      summary: Update an existing user
+      operationId: patchUser
+      description: Updates the details of a user.
+      requestBody:
+        description: The details of the user to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        200:
+          description: The user that was updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Malformed account or user id, or invalid user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - user:update
+    delete:
+      tags:
+      - Users
+      summary: Delete a User
+      description: Removes the user and all of their access and identities
+      operationId: deleteUser
+      responses:
+        204:
+          description: User was deleted
+        400:
+          description: Malformed account or user id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - user:delete
+  /v1/account/{accountId}/user/{userId}/init:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - in: path
+      name: userId
+      required: true
+      description: User id
+      schema:
+        $ref: '#/components/schemas/UserId'
+    post:
+      tags:
+      - Users
+      summary: Create an initialization token for an existing user
+      operationId: initUser
+      description: 'Create an initialization token for an existing user.
+
+        The initialization token is a single-use bearer credential that allows the caller to add a new identity for the users.
+
+        If unused, the initialization token expires after eight hours.'
+      requestBody:
+        description: The parameters for the initialization token
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitRequest'
+      responses:
+        200:
+          description: The initialization token was generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InitResponse'
+        400:
+          description: Malformed initialization token parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - user:init
+components:
+  schemas:
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    Error:
+      type: object
+      required:
+      - status
+      - statusCode
+      - message
+      properties:
+        status:
+          type: number
+          description: The HTTP status code
+          example: 404
+        statusCode:
+          type: number
+          description: The HTTP status code
+          example: 404
+        message:
+          type: string
+          description: A message with details regarding the error
+          example: The user 'usr-5555555555555555' does not exist
+    InitProtocol:
+      type: string
+      enum:
+      - pki
+      - oauth
+      description: "The initialization token protocol that determines the type of the source of trust for validating access tokens the user or client will present when making HTTP API calls:\n  * `pki` - when adding an indentity to the user or client, the caller must present a public key that can be used to validate signatures of access tokens\n  * `oauth` - when adding an indentity to the user or client, the caller must indicate a trusted issuer of access tokens that is already pre-configured in the system\n"
+    AccessStatement:
+      type: object
+      required:
+      - action
+      - resource
+      properties:
+        action:
+          type: string
+          description: The action to perform
+          example: function:*
+        resource:
+          type: string
+          description: The resource to perform the action on
+          example: /account/acc-5555555555555555/subscription/sub-5555555555555555/boundary/my-boundary-1/function/my-function-17
+    FunctionId:
+      type: string
+      description: Function id
+      example: my-function-abc
+    InitResponse:
+      type: string
+      description: 'A single-use initialization token in JWT format. If unused, the token expires in eight hours. The `profile`
+
+        parameter of the JWT payload contains the information specified in the `profile` parameter of the request
+
+        as well as additional information for consumption by the intended recipient of the token.
+
+        '
+    BoundaryId:
+      type: string
+      description: Boundary id
+      example: my-boundary-xyz
+    UserList:
+      type: object
+      required:
+      - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of users
+          items:
+            $ref: '#/components/schemas/User'
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    IssuerId:
+      type: string
+      description: Issuer id
+      example: https://auth-server.company-abc.com
+    InitRequest:
+      type: object
+      required:
+      - protocol
+      - profile
+      properties:
+        protocol:
+          $ref: '#/components/schemas/InitProtocol'
+        profile:
+          type: object
+          description: 'Additional information to be included in the initialization token for consumption by the intended recipient of the token.
+
+            For example, this information can be used to include default parameters of the CLI profile or OAuth parameters that indicate the identity provider to use.
+
+            '
+          properties:
+            subscription:
+              description: The default subscription id the caller should use
+              $ref: '#/components/schemas/SubscriptionId'
+            boundary:
+              description: The default boundary id the caller should use
+              $ref: '#/components/schemas/BoundaryId'
+            function:
+              description: The default function id the caller should use
+              $ref: '#/components/schemas/FunctionId'
+            oauth:
+              type: object
+              description: Parameters the caller should use when obtaining an access token from an OAuth identity provider
+              properties:
+                webAuthorizationUrl:
+                  type: string
+                  description: The authorization URL to initiate OAuth implicit flow
+                webClientId:
+                  type: string
+                  description: The OAuth client id to use when initializing OAuth implicit flow
+                webLogoutUrl:
+                  type: string
+                  description: The URL to navigate to to log a browser client out from the OAuth identity provider
+                deviceAuthorizationUrl:
+                  type: string
+                  description: The authorization URL to initiate OAuth device flow
+                deviceClientId:
+                  type: string
+                  description: The OAuth client id to use when initializing OAuth device flow
+                tokenUrl:
+                  type: string
+                  description: The OAuth URL to use to exchange refresh tokens for access tokens
+    Identity:
+      type: object
+      required:
+      - issuerId
+      - subject
+      properties:
+        issuerId:
+          $ref: '#/components/schemas/IssuerId'
+        subject:
+          type: string
+          description: The `sub` claim value in access tokens
+    UserId:
+      type: string
+      description: User id
+      example: usr-5555555555555555
+    NewUser:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: The user's first name
+          example: John
+        lastName:
+          type: string
+          description: The user's last name
+          example: Doe
+        primaryEmail:
+          type: string
+          description: The user's primary email
+          example: john.doe@abc-compnay.com
+        identities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identity'
+        access:
+          type: object
+          properties:
+            allow:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccessStatement'
+    User:
+      allOf:
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            $ref: '#/components/schemas/UserId'
+      - $ref: '#/components/schemas/NewUser'
+  securitySchemes:
+    AccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: For a description of the access token format, see [this doc](../../integrator-guide/authz-model).

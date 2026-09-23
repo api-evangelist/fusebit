@@ -1,0 +1,285 @@
+openapi: 3.2.0
+info:
+  description: Fusebit HTTP API for the management and execution of Fusebit accounts, users, functions and more
+  version: 1.0.0
+  title: Fusebit HTTP API - Integrations Session API
+  contact:
+    email: contact@fusebit.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+- url: https://api.{region}.on.fusebit.io
+  description: Production
+  variables:
+    region:
+      description: 'The region where the API is deployed, for example `''us-west-1''`
+
+        '
+      default: us-west-1
+security:
+- AccessToken: []
+tags:
+- name: Session
+  description: An active configuration phase for a customer
+paths:
+  /v2/account/{accountId}/subscription/{subscriptionId}/{entityType}/{entityId}/session:
+    parameters:
+    - $ref: '#/components/parameters/Account'
+    - $ref: '#/components/parameters/Subscription'
+    - $ref: '#/components/parameters/EntityType'
+    - $ref: '#/components/parameters/EntityId'
+    post:
+      tags:
+      - Session
+      summary: Create a new session
+      description: Create a new session on behalf of a new user, or to allow an existing user to reconfigure their integration.
+      operationId: createSession
+      requestBody:
+        $ref: '#/components/requestBodies/PostSessionBody'
+      responses:
+        200:
+          description: The created session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - session:add
+  /v2/account/{accountId}/subscription/{subscriptionId}/{entityType}/{entityId}/session/{sessionId}:
+    parameters:
+    - $ref: '#/components/parameters/Account'
+    - $ref: '#/components/parameters/Subscription'
+    - $ref: '#/components/parameters/EntityType'
+    - $ref: '#/components/parameters/EntityId'
+    - $ref: '#/components/parameters/SessionId'
+    get:
+      tags:
+      - Session
+      summary: Get a session
+      description: Get the inputs and outputs of an existing session.
+      operationId: getSession
+      responses:
+        200:
+          description: The session entity with results from any operations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResult'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - session:get
+    put:
+      tags:
+      - Session
+      summary: Update a session's output
+      description: Write the outputs of an configuration to a session. Primarily used in on configuration form submission in an integration, or in a connector.
+      operationId: putSession
+      requestBody:
+        $ref: '#/components/requestBodies/PutSessionBody'
+      responses:
+        200:
+          description: The created session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResult'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - session:update
+  /v2/account/{accountId}/subscription/{subscriptionId}/{entityType}/{entityId}/session/{sessionId}/commit:
+    parameters:
+    - $ref: '#/components/parameters/Account'
+    - $ref: '#/components/parameters/Subscription'
+    - $ref: '#/components/parameters/EntityType'
+    - $ref: '#/components/parameters/EntityId'
+    - $ref: '#/components/parameters/SessionId'
+    post:
+      tags:
+      - Session
+      summary: Commit a session
+      description: Commit the session, creating the necessary install and identity entities, or updating the configuration of existing entities as necessary.
+      operationId: postSession
+      responses:
+        202:
+          $ref: '#/components/responses/Session202'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - session:commit
+components:
+  schemas:
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    SessionId:
+      type: string
+      description: Session id
+      example: sid-01234567890123456789012345678912
+    EntityTags:
+      type: object
+      description: A hash containing tags set on this entity
+      example:
+        tenant: tenant-525
+        customer: Sonicity
+    EntityType:
+      type: string
+      enum:
+      - connector
+      - integration
+      - identity
+      - install
+      example: connector
+    Session:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/SessionId'
+        targetUrl:
+          type: string
+          description: The URL that the browser should be redirected to for the user to start configuring the session.
+          example: https://api.us-west-1.on.fusebit.io/v2/account/acc-123/subscription/sub-123/integration/my-integ-123/session/ses-123/start
+    SessionInput:
+      type: object
+      example:
+        slack-integration:
+          useDemo: true
+      description: A collection of input variables to make available to components as they are configured. Each key must correspond with an entry in the component array, and carries configuration that will only be available to that component.
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    EntityId:
+      type: string
+      description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
+
+        '
+    SessionResult:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/SessionId'
+        input:
+          type: object
+        output:
+          type: object
+        dependsOn:
+          type: object
+  responses:
+    Session202:
+      description: 'The install creation is in progress. To check its status, use the `targetUrl` endpoint returned by this call. While the `operationState.status` value of the install is `processing`, the entity is still being created. Once the `operationState.status` value is `success`, the entity becomes available for use.
+
+        On failure, `operationState.status` will be set to `failed` and `state` will be `invalid`.'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - targetUrl
+            properties:
+              targetUrl:
+                type: string
+                description: The endpoint where you can find the install being created
+  parameters:
+    EntityType:
+      name: entityType
+      required: true
+      in: path
+      description: The type of the entity
+      schema:
+        $ref: '#/components/schemas/EntityType'
+    EntityId:
+      name: entityId
+      in: path
+      required: true
+      description: The id of the entity
+      schema:
+        $ref: '#/components/schemas/EntityId'
+    SessionId:
+      name: sessionId
+      in: path
+      required: true
+      description: The id of the session
+      schema:
+        $ref: '#/components/schemas/SessionId'
+    Subscription:
+      name: subscriptionId
+      in: path
+      required: true
+      description: Subscription id
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    Account:
+      name: accountId
+      in: path
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+  requestBodies:
+    PutSessionBody:
+      description: The results of a configuration action, such as a form.
+      content:
+        application/json:
+          schema:
+            type: object
+    PostSessionBody:
+      description: Create a new session on an integration
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - redirectUrl
+            properties:
+              components:
+                type: array
+                description: A list of the desired components to configure. If not present, then all components specified in the integration are configured in this session.
+                items:
+                  type: string
+              tags:
+                description: A collection of tags that will be added to install entities created during this session.
+                allOf:
+                - $ref: '#/components/schemas/EntityTags'
+              extendTags:
+                description: If set to `true`, add the tags present on the integration in the `data.componentTags` field to any installs created during this session. If set to `false`, only use the tags specified on the session directly.
+                default: false
+              input:
+                $ref: '#/components/schemas/SessionInput'
+              redirectUrl:
+                type: string
+                description: The URL in your infrastructure that the user should return to after completing the session. Must be a full url, including scheme and hostname.
+              installId:
+                type: string
+                description: Used when reconfiguring an existing user. Specifies the install associated with that user.
+  securitySchemes:
+    AccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: For a description of the access token format, see [this doc](https://developer.fusebit.io/docs/connecting-fusebit-with-your-application).

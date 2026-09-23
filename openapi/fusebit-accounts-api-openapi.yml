@@ -1,0 +1,793 @@
+openapi: 3.2.0
+info:
+  description: Fusebit HTTP API for the management and execution of Fusebit accounts, users, functions and more
+  version: 1.0.0
+  title: Fusebit HTTP API - Core Accounts API
+  contact:
+    email: contact@fusebit.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+- url: https://api.{region}.on.fusebit.io
+  description: Production
+  variables:
+    region:
+      description: The region where the API is deployed, for example `'us-west-1'`
+      default: us-west-1
+security:
+- AccessToken: []
+tags:
+- name: Accounts
+  description: Account management operations
+paths:
+  /v1/account/{accountId}/logs:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    post:
+      tags:
+      - Accounts
+      summary: Start new account-level log query
+      operationId: newAccountLogQuery
+      description: Starts a new log query scoped to account logs.
+      requestBody:
+        description: Log query parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewLogQuery'
+      responses:
+        200:
+          description: New query initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewLogQueryResponse'
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - log:get
+  /v1/account/{accountId}/logs/{queryId}:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - in: path
+      name: queryId
+      required: true
+      description: Query id
+      schema:
+        $ref: '#/components/schemas/QueryId'
+    get:
+      tags:
+      - Accounts
+      summary: Get account-level log query results
+      operationId: getAccountLogQueryResults
+      description: Get the status and results of a previously started account-level log query.
+      responses:
+        200:
+          description: Query status and results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogQueryResult'
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - log:get
+  /v1/account/{accountId}:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    get:
+      tags:
+      - Accounts
+      summary: Get an account
+      operationId: getAccount
+      description: Returns details about the given account.
+      responses:
+        200:
+          description: The account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        400:
+          description: Malformed account id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - account:get
+    patch:
+      tags:
+      - Accounts
+      summary: Patches an account
+      operationId: patchAccount
+      description: Updates the display name of the given account.
+      requestBody:
+        description: An object with the new display name of the account
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountPatch'
+      responses:
+        200:
+          description: The account that was patched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        400:
+          description: Malformed request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - account:patch
+  /v1/account/{accountId}/subscription:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    get:
+      tags:
+      - Accounts
+      summary: Get subscriptions of an account
+      operationId: getAccountSubscriptionList
+      description: 'Returns a list of the subscriptions of the given account.
+
+
+        Use query string parameters to filter the list of subscriptions.
+
+
+        All query filters are combined with a logical AND operator.'
+      parameters:
+      - in: query
+        name: next
+        required: false
+        description: Opaque token to start returning results from
+        schema:
+          type: string
+      - in: query
+        name: count
+        required: false
+        description: Optional number of results to return
+        schema:
+          type: number
+          minimum: 1
+          maximum: 100
+      responses:
+        200:
+          description: List of subscriptions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionList'
+        400:
+          description: Malformed account id or invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - subscription:get
+  /v1/account/{accountId}/subscription/{subscriptionId}:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - in: path
+      name: subscriptionId
+      required: true
+      description: Subscription id
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    get:
+      tags:
+      - Accounts
+      summary: Get a subscription of an account
+      operationId: getSubscription
+      description: Returns the details of the given subscription of the given account.
+      responses:
+        200:
+          description: A subscription
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        400:
+          description: Malformed account or subscription id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - subscription:get
+  /v1/account/{accountId}/audit:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - in: query
+      name: resource
+      required: false
+      description: "Optional identifier to match against the `resource` field of audit entries. Matching is case-sensitive. The resource in the audit entry must begin with the identifier to be considered a match.\n\nGiven an audit entry with a resource of `'/account/acc-5555555555555555/subscription/sub-5555555555555555/'`, the\nfollowing queries would result in a match:\n\n  - `resource=/account/acc-`\n  - `resource=/account/acc-5555555555555555/subscription/`\n  - `resource=/account/acc-5555555555555555/subscription/sub-5555555555555555/`\n\nGiven the same audit entry, the following queries would not result in a match:\n\n  - `resource=acc-`\n  - `resource=account/acc-5555555555555555`\n  - `resource=subscription/sub-5555555555555555/`\n"
+      schema:
+        type: string
+    - in: query
+      name: action
+      required: false
+      description: "Optional identifier to match against the `action` field of audit entries. Matching is case-sensitive.\nBoth fully-qualified actions and wildcard actions are supported.\nExamples of fully-qualified actions include: `'user:get'`, `'function:put'`.\nExamples of wildcard actions include: `'user:*'`, `'function:*'`.\n\nGiven an audit entry with an action of `'function:put'`, the\nfollowing queries would result in a match:\n\n  - `action=function:*`\n  - `action=function:put`\n\nGiven the same audit entry, the following query would not result in a match:\n\n  - `action=function:get`\n"
+      schema:
+        type: string
+    - in: query
+      name: issuerId
+      required: false
+      description: 'Optional identifier to match against the `issuerId` field of audit entries.
+
+        Matching is case-sensitive. The full issuer id must be provided as partial matches are not supported.
+
+        '
+      schema:
+        $ref: '#/components/schemas/IssuerId'
+    - in: query
+      name: subject
+      required: false
+      description: 'Optional identifier to match against the `subject` field of audit entries.
+
+        Only valid if the `issuerId` query filter is also provided.
+
+        Matching is case-sensitive. The full subject must be provided as partial matches are not supported.
+
+        '
+      schema:
+        type: string
+    - in: query
+      name: from
+      required: false
+      description: 'Optional time from which to return audit entries. Can be any format accepted by the JavaScript Date constructor
+
+        or a relative date of the format `''-{integer}{s | m | h | d}''`, where `''s''` is seconds, `''m''` is minutes, `''h''` is hours and `''d''` is days.
+
+
+        All of the following are valid queries:
+
+        - `from=1559605282105` (absolute time in milliseconds since 1 January 1970 UTC)
+
+        - `from=2019-06-03T23:42:16.976Z`
+
+        - `from=Mon, 03 Jun 2019 23:42:30 GMT`
+
+        - `from=-30s` (30 seconds prior to now)
+
+        - `from=-5m` (5 minutes prior to now)
+
+        - `from=-2h` (2 hours prior to now)
+
+        - `from=-1d` (1 day prior to now)
+
+        '
+      schema:
+        type: string
+    - in: query
+      name: to
+      required: false
+      description: 'Optional time up to which to return audit entries. Can be any format accepted by the JavaScript Date constructor
+
+        or a relative date of the format `''-{integer}{s | m | h | d}''`, where `''s''` is seconds, `''m''` is minutes, `''h''` is hours and `''d''` is days.
+
+
+        All of the following are valid queries:
+
+        - `from=1559605282105` (absolute time in milliseconds since 1 January 1970 UTC)
+
+        - `from=2019-06-03T23:42:16.976Z`
+
+        - `from=Mon, 03 Jun 2019 23:42:30 GMT`
+
+        - `from=-30s` (30 seconds prior to now)
+
+        - `from=-5m` (5 minutes prior to now)
+
+        - `from=-2h` (2 hours prior to now)
+
+        - `from=-1d` (1 day prior to now)
+
+        '
+      schema:
+        type: string
+    - in: query
+      name: next
+      required: false
+      description: Opaque token to start returning results from
+      schema:
+        type: string
+    - in: query
+      name: count
+      required: false
+      description: Optional number of results to return
+      schema:
+        type: number
+        minimum: 1
+        maximum: 100
+    get:
+      tags:
+      - Accounts
+      summary: Get audit trail
+      operationId: getAccountAudit
+      description: 'Returns the audit trail of calls to the HTTP APIs related to resources that belong to the account id.
+
+        Each entry of the audit trail contains the timestamp of the call, resource, action, and the identity of the caller represented as the (issuer, subject) pair.
+
+        Use query string parameters to filter the entries.
+
+
+        All query filters are combined with a logical AND operator.
+
+
+        By default, only the most recent 15 minutes of audit logs are returned. You can change this with the `from` query parameter.'
+      responses:
+        200:
+          description: Entries of the audit trail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountAudit'
+        400:
+          description: Malformed account id or invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - audit:get
+  /v1/account/{accountId}/init:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    post:
+      tags:
+      - Accounts
+      summary: Resolve an initialization token
+      operationId: resolveInit
+      description: 'Add an identity to an existing user or client using a previously obtained single-use initialization token.
+
+        This API requires the initialization token to be presented as an access token.'
+      requestBody:
+        description: The parameters for the initialization token resolution
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitResolveRequest'
+      responses:
+        200:
+          description: Identity successfully added to the user or client
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/User'
+                - $ref: '#/components/schemas/Client'
+        400:
+          description: Malformed request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken: []
+components:
+  schemas:
+    ClientId:
+      type: string
+      description: Client id
+      example: clt-5555555555555555
+    InitResolveRequest:
+      type: object
+      required:
+      - protocol
+      - accessToken
+      properties:
+        protocol:
+          $ref: '#/components/schemas/InitProtocol'
+        accessToken:
+          type: string
+          description: 'A valid access token in JWT format.
+
+            If `protocol` is `pki`, the access token must be signed with a private key associated with the `publicKey` in this request.
+
+            The value of the `iss` and `sub` claims must match the values of the `profile.issuerId` and `profile.subject` fields of the initialization token, respectively.
+
+            If `protocol` is `oauth`, the token must have been obtained from an OAuth identity provider that is already trusted by the system.
+
+            '
+        publicKey:
+          type: string
+          description: 'The public key that can be used to validate the signature of the `accessToken` in PEM format. Required if `protocol` is `pki`.
+
+            '
+    Subscription:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: '#/components/schemas/SubscriptionId'
+        displayName:
+          type: string
+          description: Subscription display name
+          example: Production Subscription
+    NewClient:
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: The client's display name
+          example: production-service
+        identities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identity'
+        access:
+          type: object
+          properties:
+            allow:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccessStatement'
+    AccountAudit:
+      type: object
+      required:
+      - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountAuditEntry'
+    Account:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: '#/components/schemas/AccountId'
+        displayName:
+          type: string
+          description: Account display name
+          example: ABC Company
+        primaryEmail:
+          type: string
+          description: Account owner primary email
+          example: john.doe@abc-compnay.com
+    Identity:
+      type: object
+      required:
+      - issuerId
+      - subject
+      properties:
+        issuerId:
+          $ref: '#/components/schemas/IssuerId'
+        subject:
+          type: string
+          description: The `sub` claim value in access tokens
+    QueryId:
+      type: string
+      description: Log Query id
+      example: ffd9b69e-d323-4722-bad8-d57f3b4a28f4
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    Client:
+      allOf:
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            $ref: '#/components/schemas/ClientId'
+      - $ref: '#/components/schemas/NewClient'
+    AccountPatch:
+      type: object
+      required:
+      - displayName
+      properties:
+        displayName:
+          type: string
+          description: Account display name
+          example: ABC Company
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    IssuerId:
+      type: string
+      description: Issuer id
+      example: https://auth-server.company-abc.com
+    AccessStatement:
+      type: object
+      required:
+      - action
+      - resource
+      properties:
+        action:
+          type: string
+          description: The action to perform
+          example: function:*
+        resource:
+          type: string
+          description: The resource to perform the action on
+          example: /account/acc-5555555555555555/subscription/sub-5555555555555555/boundary/my-boundary-1/function/my-function-17
+    SubscriptionList:
+      type: object
+      required:
+      - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of subscriptions
+          items:
+            $ref: '#/components/schemas/Subscription'
+    UserId:
+      type: string
+      description: User id
+      example: usr-5555555555555555
+    NewUser:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: The user's first name
+          example: John
+        lastName:
+          type: string
+          description: The user's last name
+          example: Doe
+        primaryEmail:
+          type: string
+          description: The user's primary email
+          example: john.doe@abc-compnay.com
+        identities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identity'
+        access:
+          type: object
+          properties:
+            allow:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccessStatement'
+    User:
+      allOf:
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            $ref: '#/components/schemas/UserId'
+      - $ref: '#/components/schemas/NewUser'
+    NewLogQuery:
+      type: object
+      properties:
+        filter:
+          type: string
+          description: A filter expression in the AWS Cloud Watch Logs Insights format.
+          example: response.statusCode = 500
+        stats:
+          type: string
+          description: An aggregation expression in the AWS Cloud Watch Logs Insights format.
+          example: count(*) by bin(15s)
+        from:
+          type: string
+          description: Start time of the logging window specified as an absolute date time in ISO format or a relative time in seconds.
+          example: 2021-10-21T00:00:00.361Z or -1800
+        to:
+          type: string
+          description: End time of the logging window specified as an absolute date time in ISO format or a relative time in seconds.
+          example: 2021-10-21T00:00:00.361Z or +900
+        limit:
+          type: number
+          description: Maximum number of records to return.
+          example: 20
+    Error:
+      type: object
+      required:
+      - status
+      - statusCode
+      - message
+      properties:
+        status:
+          type: number
+          description: The HTTP status code
+          example: 404
+        statusCode:
+          type: number
+          description: The HTTP status code
+          example: 404
+        message:
+          type: string
+          description: A message with details regarding the error
+          example: The user 'usr-5555555555555555' does not exist
+    InitProtocol:
+      type: string
+      enum:
+      - pki
+      - oauth
+      description: "The initialization token protocol that determines the type of the source of trust for validating access tokens the user or client will present when making HTTP API calls:\n  * `pki` - when adding an indentity to the user or client, the caller must present a public key that can be used to validate signatures of access tokens\n  * `oauth` - when adding an indentity to the user or client, the caller must indicate a trusted issuer of access tokens that is already pre-configured in the system\n"
+    NewLogQueryResponse:
+      type: object
+      properties:
+        queryId:
+          type: string
+          description: A unique log query id to use when polling for query completion
+    AccountAuditEntry:
+      type: object
+      required:
+      - timestamp
+      - action
+      - resource
+      - accountId
+      - issuerId
+      - subject
+      - authorized
+      properties:
+        accountId:
+          $ref: '#/components/schemas/AccountId'
+        timestamp:
+          type: string
+          description: Timestamp of the audit entry in ISO format
+          example: 2019-03-21 03:48:36.408000+00:00
+        action:
+          type: string
+          description: Name of the action performed
+          example: function:put
+        resource:
+          type: string
+          description: Name of the resource on which the action was performed
+          example: /account/acc-5555555555555555/subscription/sub-5555555555555555/boundary/boundary-1/function/function-17
+        issuerId:
+          type: string
+          description: Identifier of the issuer that authenticated the user
+          example: https://sales-anchor.auth0.com/
+        subject:
+          type: string
+          description: Identifier of the user, unique within the issuer
+          example: google-oauth2|skjdhfsadhfalkajsdhf
+        authorized:
+          type: boolean
+          description: If `'true'` the action was authorized; if `'false'` the action was not authorized and was not allowed to continue
+    LogQueryResult:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - scheduled
+          - running
+          - complete
+          - failed
+          - timeout
+          - unknown
+          description: Status of the query.
+        recordsMatched:
+          type: number
+          description: The number of log records matched by the query. The number of records returned in the result may be smaller, subject to the limit.
+        results:
+          type: array
+          description: Array of records representing the query result.
+          items:
+            type: object
+            description: For log aggregation queries, one record of aggregation results. For log queries, one record representing an HTTP request.
+  securitySchemes:
+    AccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: For a description of the access token format, see [this doc](../../integrator-guide/authz-model).

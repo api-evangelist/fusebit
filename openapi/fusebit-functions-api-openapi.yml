@@ -1,0 +1,1147 @@
+openapi: 3.2.0
+info:
+  description: Fusebit HTTP API for the management and execution of Fusebit accounts, users, functions and more
+  version: 1.0.0
+  title: Fusebit HTTP API - Core Functions API
+  contact:
+    email: contact@fusebit.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+- url: https://api.{region}.on.fusebit.io
+  description: Production
+  variables:
+    region:
+      description: The region where the API is deployed, for example `'us-west-1'`
+      default: us-west-1
+security:
+- AccessToken: []
+tags:
+- name: Functions
+  description: Function management operations
+paths:
+  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/function/{functionId}/logs/{queryId}:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - in: path
+      name: subscriptionId
+      required: true
+      description: Subscription id
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    - in: path
+      name: boundaryId
+      required: true
+      description: Boundary id
+      schema:
+        $ref: '#/components/schemas/BoundaryId'
+    - in: path
+      name: functionId
+      required: true
+      description: Function id
+      schema:
+        $ref: '#/components/schemas/FunctionId'
+    - in: path
+      name: queryId
+      required: true
+      description: Query id
+      schema:
+        $ref: '#/components/schemas/QueryId'
+    get:
+      tags:
+      - Functions
+      summary: Get function-level log query results
+      operationId: getFunctionLogQueryResults
+      description: Get the status and results of a previously started function-level log query.
+      responses:
+        200:
+          description: Query status and results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogQueryResult'
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - log:get
+  /v1/account/{accountId}/subscription/{subscriptionId}/function:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - name: subscriptionId
+      in: path
+      description: Subscription id
+      required: true
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    get:
+      tags:
+      - Functions
+      summary: Get the functions of a subscription
+      description: 'Returns the list of functions of a given subscription.
+
+
+        Use query string parameters to filter the list of functions. All query filters are combined with a logical AND operator.'
+      operationId: getSubscriptionFunctionList
+      parameters:
+      - in: query
+        name: include
+        required: false
+        description: 'Optional switch to include all tags of the functions in the response.
+
+          '
+        schema:
+          type: string
+          enum:
+          - all
+      - in: query
+        name: next
+        required: false
+        description: Opaque token to start returning results from
+        schema:
+          type: string
+      - in: query
+        name: count
+        required: false
+        description: Maximum number of results to return. Each query will return between 1 and `count` entries.
+        schema:
+          type: number
+          minimum: 1
+          maximum: 100
+      - in: query
+        name: cron
+        required: false
+        description: 'Optional switch that determines whether to include or exclude functions that have cron enabled.
+
+          If `''true''` only functions with cron enabled will be returned.
+
+          If `''false''` only functions without cron enabled will be returned.
+
+          If not specified, all functions will be returned.
+
+          '
+        schema:
+          type: boolean
+      - in: query
+        name: search
+        required: false
+        description: 'Search the metadata for functions that match this criteria.
+
+          Each method has several different scopes that can be searched within, including `''compute''`, `''dependency''`, and `''tag''`.
+
+          They correspond to values in the `compute` dependencies in the `package.json` and `metadata.tags` sections of the function specification.
+
+
+          Search supports a single filtering criteria, in the form of `search=key` for any function possessing a key matching that value, or `search=key=value` for functions that specifically match a value.
+
+          If the key or value contains an `=`, encode them to the URI specification first.
+
+
+          Examples include `?search=compute.timeout=30`, `?search=dependency.ms=2.1.2`, `?search=tag.enabled`.
+
+
+          Specifying `search` multiple times acts as a logical AND between the criteria, returning only functions that match all of the requested elements.
+
+          '
+        schema:
+          type: string
+      responses:
+        200:
+          description: A list of functions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunctionList'
+        400:
+          description: Malformed account or subscription id, invalid next or invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - function:get
+  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/function/{functionId}:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - name: subscriptionId
+      in: path
+      description: Subscription id
+      required: true
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    - name: boundaryId
+      in: path
+      description: The boundary id, unique within the subscription.
+      required: true
+      schema:
+        $ref: '#/components/schemas/BoundaryId'
+    - name: functionId
+      in: path
+      description: The function id, unique within the boundary.
+      required: true
+      schema:
+        $ref: '#/components/schemas/FunctionId'
+    - in: query
+      name: include
+      required: false
+      description: 'Optional switch to control what information about the function is returned.
+
+
+        If `all` is specified, the result will contain the serialized form of the ''compute'', ''schedule'' and ''configuration'' properties in addition to the parsed form.
+
+
+        If `task` is specified, the result will only contain the specification of the task scheduling routes along with the basic statistics for each route.
+
+        '
+      schema:
+        type: string
+        enum:
+        - all
+        - task
+    get:
+      tags:
+      - Functions
+      summary: Get the definition of a deployed function
+      description: Returns the specification of a previously deployed function
+      operationId: getFunction
+      responses:
+        200:
+          description: The function specification
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Function'
+        400:
+          description: Malformed account, subscription, boundary or function id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription, boundary or function not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - function:get
+    put:
+      tags:
+      - Functions
+      summary: Initiate a new build and deployment of a function
+      description: 'Initiates a build and deployment of the function within the isolation boundary.
+
+        This may complete synchronously with a status code of 200, or asynchronously with a status code of 201.
+
+        If it completes asynchronously, it returns immediately with a response that includes a `buildId` representing the function build process.
+
+        This `buildId` can be used to poll for completion by calling `''GET /build/{buildId}''`.
+
+
+        Supply additional options in the `metadata.tags` object to provide additional properties on a function that are searchable.
+
+
+        The URL for executing the function will be provided as the `location` property of the response.
+
+
+        The maximum payload size is 500KB.'
+      operationId: putFunction
+      requestBody:
+        description: The function to build and deploy
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewFunction'
+      responses:
+        200:
+          description: Function build complete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Build'
+        201:
+          description: Function build in progress
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Build'
+        204:
+          description: No change to function
+        400:
+          description: Malformed account, subscription, boundary or function id, or invalid function
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription, boundary or function not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          description: Module dependency failed to build
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - function:put
+    delete:
+      tags:
+      - Functions
+      summary: Delete a function
+      description: Deletes a previously deployed function.
+      operationId: deleteFunction
+      responses:
+        204:
+          description: Function was deleted
+        400:
+          description: Malformed account, subscription, boundary or function id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription, boundary or function not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - function:delete
+  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/function/{functionId}/build:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - name: subscriptionId
+      in: path
+      description: Subscription id
+      required: true
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    - name: boundaryId
+      in: path
+      description: The boundary id, unique within the subscription.
+      required: true
+      schema:
+        $ref: '#/components/schemas/BoundaryId'
+    - name: functionId
+      in: path
+      description: The function id, unique within the boundary.
+      required: true
+      schema:
+        $ref: '#/components/schemas/FunctionId'
+    post:
+      tags:
+      - Functions
+      summary: Evaluate and rebuild a function
+      description: 'Evaulate each of a functions dependencies using `semver` and rebuild using
+
+        the latest packages that satisfy the versioning requirements.'
+      operationId: postFunctionBuild
+      responses:
+        200:
+          description: Function build complete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Build'
+        201:
+          description: Function build in progress
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Build'
+        204:
+          description: No change to function
+        400:
+          description: Malformed account, subscription, boundary or function id, or invalid function
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription, boundary or function not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          description: Module dependency failed to build
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - function:get
+  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/function/{functionId}/log:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - name: subscriptionId
+      in: path
+      description: Subscription id
+      required: true
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    - name: boundaryId
+      in: path
+      description: The boundary id, unique within the subscription.
+      required: true
+      schema:
+        $ref: '#/components/schemas/BoundaryId'
+    - name: functionId
+      in: path
+      description: The function id, unique within the boundary.
+      required: true
+      schema:
+        $ref: '#/components/schemas/FunctionId'
+    get:
+      tags:
+      - Functions
+      summary: Get real-time logs of a function
+      description: Returns a text/event-stream response with streaming real-time logs generated by the function.
+      operationId: getFunctionLog
+      responses:
+        200:
+          description: Stream of text/event-stream log data
+        400:
+          description: Malformed account, subscription, boundary or function id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription, boundary or function not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - function:get-log
+    post:
+      tags:
+      - Functions
+      summary: Start new function-level log query
+      operationId: newFunctionLogQuery
+      description: Starts a new log query scoped to function logs.
+      requestBody:
+        description: Log query parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewLogQuery'
+      responses:
+        200:
+          description: New query initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewLogQueryResponse'
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - log:get
+  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/function/{functionId}/location:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - name: subscriptionId
+      in: path
+      description: Subscription id
+      required: true
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    - name: boundaryId
+      in: path
+      description: The boundary id, unique within the subscription.
+      required: true
+      schema:
+        $ref: '#/components/schemas/BoundaryId'
+    - name: functionId
+      in: path
+      description: The function id, unique within the boundary.
+      required: true
+      schema:
+        $ref: '#/components/schemas/FunctionId'
+    get:
+      tags:
+      - Functions
+      summary: Get the URL for executing the function
+      description: Returns the URL to use to execute the function.
+      operationId: getFunctionLocation
+      responses:
+        200:
+          description: The URL to use to execute the function
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunctionLocation'
+        400:
+          description: Malformed account, subscription, boundary or function id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription, boundary or function not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - function:get
+  /v1/account/{accountId}/subscription/{subscriptionId}/boundary/{boundaryId}/function/{functionId}/build/{buildId}:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - name: subscriptionId
+      in: path
+      description: Subscription id
+      required: true
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    - name: boundaryId
+      in: path
+      description: The boundary id, unique within the subscription.
+      required: true
+      schema:
+        $ref: '#/components/schemas/BoundaryId'
+    - name: functionId
+      in: path
+      description: The function id, unique within the boundary.
+      required: true
+      schema:
+        $ref: '#/components/schemas/FunctionId'
+    - name: buildId
+      in: path
+      description: The build id, unique to the function.
+      required: true
+      schema:
+        $ref: '#/components/schemas/BuildId'
+    get:
+      tags:
+      - Functions
+      summary: Get the status of a build of a function
+      description: 'Returns the status of the build of a function. This is used for polling the result of the asynchronous build process of a function.
+
+        The `status` parameter progresses from `''pending''` to `''building''` to either `''success''` or `''failure''`, which are the final states of the build process.'
+      operationId: getFunctionBuild
+      responses:
+        200:
+          description: Function build complete - success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Build'
+        201:
+          description: Function build in progress
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Build'
+        400:
+          description: Malformed account, subscription, boundary, function or build id, or invalid function
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription, boundary or function not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          description: Module dependency failed to build
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - function:get
+components:
+  schemas:
+    BuildId:
+      type: string
+      description: Build id
+      example: sb9oa2
+    FunctionRuntime:
+      type: object
+      required:
+      - tags
+      properties:
+        tags:
+          type: object
+          description: User-specified and synthetic tags of a function
+          additionalProperties: true
+    QueryId:
+      type: string
+      description: Log Query id
+      example: ffd9b69e-d323-4722-bad8-d57f3b4a28f4
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    FunctionLocation:
+      type: object
+      required:
+      - location
+      properties:
+        location:
+          type: string
+          description: The URL for executing the function
+          example: https://domain.com/function-abc
+    NewFunction:
+      type: object
+      properties:
+        compute:
+          type: object
+          properties:
+            memorySize:
+              type: number
+              default: 128
+            timeout:
+              type: number
+              default: 30
+            staticIp:
+              type: boolean
+              default: false
+            persistLogs:
+              type: boolean
+              default: false
+        computeSerialized:
+          type: string
+        configuration:
+          type: object
+        configurationSerialized:
+          type: string
+        nodejs:
+          type: object
+          properties:
+            files:
+              type: object
+              properties:
+                index.js:
+                  type: string
+                  example: 'module.exports = async (ctx) => { return {  body: ''Hello'' }; };
+
+                    '
+                package.json:
+                  type: object
+                  properties:
+                    engines:
+                      type: object
+                      properties:
+                        node:
+                          type: string
+                          example: '> 8'
+                    dependencies:
+                      type: object
+            encodedFiles:
+              type: object
+              properties:
+                binaryFileName.gif:
+                  type: object
+                  properties:
+                    data:
+                      type: string
+                    encoding:
+                      type: string
+                      example: base64
+        schedule:
+          type: object
+          properties:
+            cron:
+              type: string
+              example: '*/15 * * * *'
+            timezone:
+              type: string
+              example: US/Pacific
+        scheduleSerialized:
+          type: string
+        metadata:
+          type: object
+          properties:
+            tags:
+              type: object
+              properties:
+                key:
+                  type: string
+                value:
+                  type: string
+        runtime:
+          type: object
+          description: Ignored during function creation operations.
+          properties:
+            tags:
+              type: object
+              description: The tags generated for this function by the system
+              properties:
+                key:
+                  type: string
+                value:
+                  type: string
+        fusebitEditor:
+          type: object
+          properties:
+            runConfig:
+              type: array
+              items:
+                type: object
+                description: Optional configuration values for the Fusebit Editor
+                properties:
+                  method:
+                    type: string
+                    description: The method to use in the default api request
+                    example: get
+                    enum:
+                    - get
+                    - post
+                    - put
+                    - patch
+                    - delete
+                  url:
+                    type: string
+                    description: The endpoint of the default api request
+                    example: /api/tenant/user-1/test
+                  payload:
+                    type: object
+                    description: The payload of the default api request
+        security:
+          $ref: '#/components/schemas/FunctionSecurity'
+        routes:
+          $ref: '#/components/schemas/FunctionRoutes'
+    FunctionId:
+      type: string
+      description: Function id
+      example: my-function-abc
+    Build:
+      allOf:
+      - type: object
+        properties:
+          buildId:
+            $ref: '#/components/schemas/BuildId'
+          functionId:
+            $ref: '#/components/schemas/FunctionId'
+          boundaryId:
+            $ref: '#/components/schemas/BoundaryId'
+          subscriptionId:
+            $ref: '#/components/schemas/SubscriptionId'
+          status:
+            type: string
+            enum:
+            - pending
+            - building
+            - success
+            - failure
+          error:
+            type: object
+          version:
+            type: number
+          transitions:
+            type: object
+      - $ref: '#/components/schemas/FunctionLocation'
+    AccessStatement:
+      type: object
+      required:
+      - action
+      - resource
+      properties:
+        action:
+          type: string
+          description: The action to perform
+          example: function:*
+        resource:
+          type: string
+          description: The resource to perform the action on
+          example: /account/acc-5555555555555555/subscription/sub-5555555555555555/boundary/my-boundary-1/function/my-function-17
+    NewLogQuery:
+      type: object
+      properties:
+        filter:
+          type: string
+          description: A filter expression in the AWS Cloud Watch Logs Insights format.
+          example: response.statusCode = 500
+        stats:
+          type: string
+          description: An aggregation expression in the AWS Cloud Watch Logs Insights format.
+          example: count(*) by bin(15s)
+        from:
+          type: string
+          description: Start time of the logging window specified as an absolute date time in ISO format or a relative time in seconds.
+          example: 2021-10-21T00:00:00.361Z or -1800
+        to:
+          type: string
+          description: End time of the logging window specified as an absolute date time in ISO format or a relative time in seconds.
+          example: 2021-10-21T00:00:00.361Z or +900
+        limit:
+          type: number
+          description: Maximum number of records to return.
+          example: 20
+    Error:
+      type: object
+      required:
+      - status
+      - statusCode
+      - message
+      properties:
+        status:
+          type: number
+          description: The HTTP status code
+          example: 404
+        statusCode:
+          type: number
+          description: The HTTP status code
+          example: 404
+        message:
+          type: string
+          description: A message with details regarding the error
+          example: The user 'usr-5555555555555555' does not exist
+    FunctionShort:
+      type: object
+      required:
+      - functionId
+      - boundaryId
+      - schedule
+      - location
+      properties:
+        functionId:
+          $ref: '#/components/schemas/FunctionId'
+        boundaryId:
+          $ref: '#/components/schemas/BoundaryId'
+        schedule:
+          type: string
+          example: '*/15 * * * *'
+        location:
+          type: string
+          description: The URL for executing the function
+          example: https://domain.com/function-abc
+        runtime:
+          $ref: '#/components/schemas/FunctionRuntime'
+    FunctionSecurity:
+      type: object
+      description: Properties that impact the runtime security of the function.
+      properties:
+        authorization:
+          type: array
+          description: 'Use this property in conjunction with the `authentication` property. This property should not be used
+
+            when `authentication` is `none` or undefined, because in those cases all callers will be allowed.
+
+
+            If the caller is authenticated, you can use this property to only allow callers with specific
+
+            permissions to invoke this function. You can also leave it undefined, which will allow all authenticated
+
+            callers to invoke the function, without checking what permissions they have.
+
+
+            The following example will only allow callers who have `function:execute` permission to the given subscription:
+
+            `[{ action: "function:execute", resource: "/account/acc-5555555555555555/subscription/sub-5555555555555555/" }]`
+
+
+            When the caller has been authorized, the `ctx.caller.permissions` property is set to the validated
+
+            permissions of the caller. Otherwise, the property will be undefined.
+
+            '
+          items:
+            $ref: '#/components/schemas/AccessStatement'
+        authentication:
+          description: 'Controls the authentication of the caller of the function, based on the bearer token supplied in the
+
+            `Authorization` header of the HTTP request.
+
+
+            If the value is `none` or the property is undefined, then the `Authorization` header is not
+
+            evaluated and the function is executed.
+
+
+            If the value is `required`, the caller must supply a valid JWT trusted by Fusebit. If the token is
+
+            present and valid, a check will be performed as described in the `authorization` property. If the
+
+            check succeeds, the function will execute, the `ctx.fusebit.callerAccessToken` property
+
+            will contain the supplied JWT, and the `ctx.caller.permission` property will contain the set of
+
+            authorized permissions associated with the caller. If the check fails, a 403 Forbidden error response
+
+            will be returned.
+
+
+            If the value is `optional`, then the caller may supply a valid JWT trusted by Fusebit. If the token is
+
+            present and valid, an authorization check will be performed as described in the `required` property
+
+            description. If a token is not present, not valid, or fails the authorization check, the function executes
+
+            as an unauthenticated user. This authentication option allows you to use Fusebit authorization for certain
+
+            paths in your function, while implementing your own authorization for other paths.
+
+            '
+          type: string
+          enum:
+          - none
+          - optional
+          - required
+          default: none
+        functionPermissions:
+          type: object
+          description: 'In case a function needs to call Fusebit management APIs, the system can provide the necessary
+
+            JWT via the `ctx.fusebit.functionAccessToken` property. The permissions of that token can be set using this
+
+            property. For example, the following object will result in a token that has full control of all storage
+
+            objects under the given subscription:
+
+            `{ "allow": [{ "action": "storage:*", resource: "/account/acc-5555555555555555/subscription/sub-5555555555555555/" }] }`
+
+
+            The function creator (the caller of this API) must have the same or broader permissions as what''s being
+
+            assigned here, as well as `function:put` for this function, otherwise the function creation will be rejected.
+
+            '
+          properties:
+            allow:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccessStatement'
+    FunctionList:
+      type: object
+      required:
+      - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of functions
+          items:
+            $ref: '#/components/schemas/FunctionShort'
+    BoundaryId:
+      type: string
+      description: Boundary id
+      example: my-boundary-xyz
+    NewLogQueryResponse:
+      type: object
+      properties:
+        queryId:
+          type: string
+          description: A unique log query id to use when polling for query completion
+    Function:
+      allOf:
+      - type: object
+        required:
+        - id
+        - boundaryId
+        - subscriptionId
+        properties:
+          id:
+            $ref: '#/components/schemas/FunctionId'
+          boundaryId:
+            $ref: '#/components/schemas/BoundaryId'
+          subscriptionId:
+            $ref: '#/components/schemas/SubscriptionId'
+      - $ref: '#/components/schemas/NewFunction'
+      - $ref: '#/components/schemas/FunctionLocation'
+    FunctionRoutes:
+      type: array
+      description: Properties that control route-specific behaviors of the function
+      items:
+        type: object
+        description: 'Overrides security settings and controls task scheduling settings
+
+          on per-route basis. Given a request, the first route, if any, prefix-matching
+
+          the path of the request URL is used.
+
+          '
+        required:
+        - path
+        properties:
+          path:
+            type: string
+            description: A prefix of the request path
+            example: /task/sendEmail
+          security:
+            $ref: '#/components/schemas/FunctionSecurity'
+          task:
+            type: object
+            description: "If present, HTTP POST requests prefix-matching this route are scheduled\nfor asynchronous execution as tasks, and an immediate HTTP 202 response is sent\nwith the `location` HTTP response header containing the URL at which the \nstatus of the task execution can be queried. \n\nIf the number of requests pending execution exceeds `maxPending`, \nan HTTP 429 response is sent and the request is not scheduled for execution.\n\nUnless an explicit `security` element is specified for this route, the HTTP POST\nrequests that schedule task execution must be authorized with an access token that \ngrants the `function:schedule` action for the function resource.\n"
+            properties:
+              maxPending:
+                type: number
+                description: 'The maximum number of tasks that can be scheduled for execution before
+
+                  subsequent requests are rejected with an HTTP 429 response. Specify 0
+
+                  to allow any number of pending requests.
+
+                  '
+                default: 1024
+              maxRunning:
+                type: number
+                description: 'The maximum number of tasks that can be running concurrently. Specify 0
+
+                  to not limit the maximum number of running tasks.
+
+                  '
+                default: 10
+    LogQueryResult:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - scheduled
+          - running
+          - complete
+          - failed
+          - timeout
+          - unknown
+          description: Status of the query.
+        recordsMatched:
+          type: number
+          description: The number of log records matched by the query. The number of records returned in the result may be smaller, subject to the limit.
+        results:
+          type: array
+          description: Array of records representing the query result.
+          items:
+            type: object
+            description: For log aggregation queries, one record of aggregation results. For log queries, one record representing an HTTP request.
+  securitySchemes:
+    AccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: For a description of the access token format, see [this doc](../../integrator-guide/authz-model).

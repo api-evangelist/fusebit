@@ -1,0 +1,439 @@
+openapi: 3.2.0
+info:
+  description: Fusebit HTTP API for the management and execution of Fusebit accounts, users, functions and more
+  version: 1.0.0
+  title: Fusebit HTTP API - Core Storage API
+  contact:
+    email: contact@fusebit.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+- url: https://api.{region}.on.fusebit.io
+  description: Production
+  variables:
+    region:
+      description: The region where the API is deployed, for example `'us-west-1'`
+      default: us-west-1
+security:
+- AccessToken: []
+tags:
+- name: Storage
+paths:
+  /v1/account/{accountId}/subscription/{subscriptionId}/storage:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - name: subscriptionId
+      in: path
+      description: Subscription id
+      required: true
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    - in: query
+      name: next
+      required: false
+      description: Opaque token to start returning results from
+      schema:
+        type: string
+    - in: query
+      name: count
+      required: false
+      description: Optional number of results to return
+      schema:
+        type: number
+        minimum: 1
+        maximum: 100
+    get:
+      tags:
+      - Storage
+      summary: List all storage ids for the given subscription
+      operationId: getStorageList
+      responses:
+        200:
+          description: A list of all storage ids
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageList'
+        400:
+          description: Malformed account or subscription id, or invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - storage:get
+  /v1/account/{accountId}/subscription/{subscriptionId}/storage/{storageId}:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - name: subscriptionId
+      in: path
+      description: Subscription id
+      required: true
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    - name: storageId
+      in: path
+      description: The unique path to the storage location, containing all URL path segments after /storage/
+      required: true
+      schema:
+        $ref: '#/components/schemas/StorageId'
+    get:
+      tags:
+      - Storage
+      summary: Get the stored data for the given storage id
+      description: Returns the JSON of the stored data for the given storage id
+      operationId: getStorage
+      responses:
+        200:
+          description: The stored data object
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: 'An opaque token that represents the state of the stored data
+
+                '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageData'
+        400:
+          description: Malformed account, subscription or storage id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Storage not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - storage:get
+    put:
+      parameters:
+      - in: header
+        name: If-Match
+        required: false
+        description: 'An opaque token indicates the state of the stored data when it was last retrieved; the operation should only succeed if the stored data state still matches the opaque token
+
+          '
+        schema:
+          type: string
+      tags:
+      - Storage
+      summary: Sets the stored data for the given storage id
+      description: Sets the JSON of the stored data for the given storage id
+      operationId: putStorage
+      requestBody:
+        description: The JSON to set as the stored data for the given storage id
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StorageData'
+      responses:
+        200:
+          description: The data was stored
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: 'An opaque token that represents the state of the stored data
+
+                '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageData'
+        400:
+          description: Malformed account, subscription or storage id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription or storage not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        409:
+          description: Etag Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - storage:put
+    delete:
+      parameters:
+      - in: header
+        name: If-Match
+        required: false
+        description: 'An opaque token indicates the state of the stored data when it was last retrieved; the operation should only succeed if the stored data state still matches the opaque token
+
+          '
+        schema:
+          type: string
+      tags:
+      - Storage
+      summary: Deletes the stored data for the given storage id
+      description: Deletes the JSON of the stored data for the given storage id
+      operationId: deleteStorage
+      responses:
+        204:
+          description: The data was deleted
+        400:
+          description: Malformed account, subscription or storage id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription or storage not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        409:
+          description: Etag Conflict
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: 'An opaque token that represents the state of the stored data
+
+                '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageData'
+      security:
+      - AccessToken:
+        - storage:delete
+  /v1/account/{accountId}/subscription/{subscriptionId}/storage/{storageId}/*:
+    parameters:
+    - in: path
+      name: accountId
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    - name: subscriptionId
+      in: path
+      description: Subscription id
+      required: true
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    - name: storageId
+      in: path
+      description: The hierarchical storage id which is a sequence of segments separated with a '/'
+      required: true
+      schema:
+        $ref: '#/components/schemas/StorageId'
+    get:
+      parameters:
+      - in: query
+        name: next
+        required: false
+        description: Opaque token to start returning results from
+        schema:
+          type: string
+      - in: query
+        name: count
+        required: false
+        description: Optional number of results to return
+        schema:
+          type: number
+          minimum: 1
+          maximum: 100
+      tags:
+      - Storage
+      summary: List all subordinate storage ids, excluding the storage id itself
+      operationId: getStorageListRecursive
+      responses:
+        200:
+          description: A list of storage ids
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageList'
+        400:
+          description: Malformed account, subscription id, storage id, or invalid query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - storage:get
+    delete:
+      tags:
+      - Storage
+      summary: Deletes the stored data recursively
+      description: Deletes the JSON of the stored data for all subordinate storage ids in the storage hierarchy, excluding the storage id itself
+      operationId: deleteStorageRecusive
+      responses:
+        204:
+          description: The data was deleted
+        400:
+          description: Malformed account, subscription or storage id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Subscription or storage not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - AccessToken:
+        - storage:delete
+components:
+  schemas:
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    StorageShort:
+      type: object
+      required:
+      - storageId
+      properties:
+        storageId:
+          $ref: '#/components/schemas/StorageId'
+        tags:
+          type: object
+          description: The tags associated with this object
+        etag:
+          type: string
+          description: An opaque token that represents the state of the stored data
+        expires:
+          type: string
+          description: The expiration time of this object
+    Error:
+      type: object
+      required:
+      - status
+      - statusCode
+      - message
+      properties:
+        status:
+          type: number
+          description: The HTTP status code
+          example: 404
+        statusCode:
+          type: number
+          description: The HTTP status code
+          example: 404
+        message:
+          type: string
+          description: A message with details regarding the error
+          example: The user 'usr-5555555555555555' does not exist
+    StorageId:
+      type: string
+      description: Storage id
+      example: my-storage-id
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    StorageList:
+      type: object
+      required:
+      - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of storage ids
+          items:
+            $ref: '#/components/schemas/StorageShort'
+    StorageData:
+      type: object
+      properties:
+        etag:
+          type: string
+          description: An opaque token that represents the state of the stored data
+        tags:
+          type: object
+          description: The tags associated with this object
+        expires:
+          type: string
+          description: The expiration time of this object
+        data:
+          description: A JSON value of stored data
+  securitySchemes:
+    AccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: For a description of the access token format, see [this doc](../../integrator-guide/authz-model).

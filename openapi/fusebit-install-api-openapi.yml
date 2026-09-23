@@ -1,0 +1,303 @@
+openapi: 3.2.0
+info:
+  description: Fusebit HTTP API for the management and execution of Fusebit accounts, users, functions and more
+  version: 1.0.0
+  title: Fusebit HTTP API - Integrations Install API
+  contact:
+    email: contact@fusebit.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+- url: https://api.{region}.on.fusebit.io
+  description: Production
+  variables:
+    region:
+      description: 'The region where the API is deployed, for example `''us-west-1''`
+
+        '
+      default: us-west-1
+security:
+- AccessToken: []
+tags:
+- name: Install
+  description: A fully configured integration for a customer
+paths:
+  /v2/account/{accountId}/subscription/{subscriptionId}/install/:
+    parameters:
+    - $ref: '#/components/parameters/Account'
+    - $ref: '#/components/parameters/Subscription'
+    get:
+      tags:
+      - Install
+      summary: Search for and retrieve entities of the specified type across all Integrations
+      operationId: searchInstalls
+      parameters:
+      - $ref: '#/components/parameters/SearchCount'
+      - $ref: '#/components/parameters/SearchNext'
+      - $ref: '#/components/parameters/SearchSort'
+      - $ref: '#/components/parameters/SearchTag'
+      responses:
+        200:
+          description: A list of the entities found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstallList'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - instance:get
+  /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}/install/:
+    parameters:
+    - $ref: '#/components/parameters/Account'
+    - $ref: '#/components/parameters/Subscription'
+    - name: integrationId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/EntityId'
+    get:
+      tags:
+      - Install
+      summary: Search for and retrieve entities of the specified type
+      operationId: listInstalls
+      parameters:
+      - $ref: '#/components/parameters/SearchCount'
+      - $ref: '#/components/parameters/SearchNext'
+      - $ref: '#/components/parameters/SearchSort'
+      - $ref: '#/components/parameters/SearchTag'
+      responses:
+        200:
+          description: A list of the entities found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstallList'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - instance:get
+  /v2/account/{accountId}/subscription/{subscriptionId}/integration/{integrationId}/install/{installId}:
+    parameters:
+    - $ref: '#/components/parameters/Account'
+    - $ref: '#/components/parameters/Subscription'
+    - name: integrationId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/EntityId'
+    - name: installId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/InstallId'
+    get:
+      tags:
+      - Install
+      summary: Get an install
+      operationId: getInstall
+      responses:
+        200:
+          description: The requested entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstallEntity'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - instance:get
+    put:
+      tags:
+      - Install
+      summary: Update an install
+      operationId: putInstall
+      requestBody:
+        $ref: '#/components/requestBodies/PostInstallBody'
+      responses:
+        200:
+          description: The requested entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstallEntity'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - instance:update
+    delete:
+      tags:
+      - Install
+      summary: Delete an install
+      operationId: deleteInstall
+      responses:
+        204:
+          description: The entity deletion succeeded
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+      security:
+      - AccessToken:
+        - instance:delete
+components:
+  schemas:
+    InstallId:
+      type: string
+      description: Install id
+      example: ins-01234567890123456789012345678912
+    EntityExpires:
+      type: string
+      description: The time that the entity expires and is automatically removed from the system.
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    DateModified:
+      type: string
+      format: date-time
+    DateAdded:
+      type: string
+      format: date-time
+    InstallList:
+      type: object
+      properties:
+        items:
+          type: array
+          description: An array of the matching entities of this component type
+          items:
+            $ref: '#/components/schemas/InstallEntity'
+        next:
+          type: string
+          description: The key to use when accessing the next block of entries
+        total:
+          type: number
+          description: The total number of entities of this type.
+    ParentId:
+      type: string
+      description: 'The name of the parent entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
+
+        '
+    EntityTags:
+      type: object
+      description: A hash containing tags set on this entity
+      example:
+        tenant: tenant-525
+        customer: Sonicity
+    EntityVersion:
+      type: string
+      format: uuid
+    InstallEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/InstallId'
+        parentId:
+          $ref: '#/components/schemas/ParentId'
+        data:
+          type: object
+          description: A hash of configuration objects key'ed by the `name` in the `data.components` object under the integration. A configuration object that refers to an integration form will contain the configured value, whereas a configuration object that refers to a connector will refer to the identity entity used by this install.
+          example:
+            slack:
+              tags:
+                tenantId: client-15251
+              entityId: idn-012345678901234567890123456789012
+              accountId: acc-12de369f2f0c4982
+              entityType: identity
+              parentEntityId: slack-connector
+              subscriptionId: sub-a477d980e09c1cfe
+              parentEntityType: connector
+            channelSelectForm:
+              channel: \#random
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        version:
+          $ref: '#/components/schemas/EntityVersion'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+    EntityId:
+      type: string
+      description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
+
+        '
+  parameters:
+    Subscription:
+      name: subscriptionId
+      in: path
+      required: true
+      description: Subscription id
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    SearchNext:
+      name: next
+      in: query
+      description: The key to use to retrieve the next set of results
+      schema:
+        type: string
+    SearchSort:
+      name: sort
+      in: query
+      description: Sort the results by `dateModified`, `dateAdded`, or the default value of `entityId`.  If `sort` is prepended with a `-` character, the order direction is reversed.
+      schema:
+        type: string
+    Account:
+      name: accountId
+      in: path
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    SearchCount:
+      name: count
+      in: query
+      description: The maximum number of entries to return
+      schema:
+        type: number
+    SearchTag:
+      name: tag
+      in: query
+      description: A `tagName` or `tagName=tagValue` to search for. Can be specified multiple times in a query parameter to indicate multiple tag values to require in the results.
+      schema:
+        type: string
+  requestBodies:
+    PostInstallBody:
+      description: Upload a new entity
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InstallEntity'
+  securitySchemes:
+    AccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: For a description of the access token format, see [this doc](https://developer.fusebit.io/docs/connecting-fusebit-with-your-application).

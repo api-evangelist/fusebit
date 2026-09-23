@@ -1,0 +1,432 @@
+openapi: 3.2.0
+info:
+  description: Fusebit HTTP API for the management and execution of Fusebit accounts, users, functions and more
+  version: 1.0.0
+  title: Fusebit HTTP API - Integrations Connector API
+  contact:
+    email: contact@fusebit.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+- url: https://api.{region}.on.fusebit.io
+  description: Production
+  variables:
+    region:
+      description: 'The region where the API is deployed, for example `''us-west-1''`
+
+        '
+      default: us-west-1
+security:
+- AccessToken: []
+tags:
+- name: Connector
+  description: Management for external credentials
+paths:
+  /v2/account/{accountId}/subscription/{subscriptionId}/connector:
+    parameters:
+    - $ref: '#/components/parameters/Account'
+    - $ref: '#/components/parameters/Subscription'
+    get:
+      tags:
+      - Connector
+      summary: Search for and retrieve entities of the specified type
+      operationId: listConnectors
+      parameters:
+      - $ref: '#/components/parameters/SearchIdPrefix'
+      - $ref: '#/components/parameters/SearchCount'
+      - $ref: '#/components/parameters/SearchNext'
+      - $ref: '#/components/parameters/SearchSort'
+      - $ref: '#/components/parameters/SearchTag'
+      - $ref: '#/components/parameters/SearchStatus'
+      responses:
+        200:
+          description: A list of the entities found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorList'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - connector:get
+  /v2/account/{accountId}/subscription/{subscriptionId}/connector/{connectorId}:
+    parameters:
+    - $ref: '#/components/parameters/Account'
+    - $ref: '#/components/parameters/Subscription'
+    - name: connectorId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/EntityId'
+    post:
+      tags:
+      - Connector
+      summary: Create a new entity of the specified type
+      operationId: postConnector
+      requestBody:
+        $ref: '#/components/requestBodies/PostConnectorBody'
+      responses:
+        202:
+          $ref: '#/components/responses/Connector202'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - connector:add
+    get:
+      tags:
+      - Connector
+      summary: Get a connector
+      operationId: getConnector
+      responses:
+        200:
+          description: The requested entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorEntity'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - connector:get
+    put:
+      tags:
+      - Connector
+      summary: Update a connector
+      operationId: putConnector
+      requestBody:
+        $ref: '#/components/requestBodies/PostConnectorBody'
+      responses:
+        202:
+          $ref: '#/components/responses/Connector202'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+      security:
+      - AccessToken:
+        - connector:update
+    delete:
+      tags:
+      - Connector
+      summary: Delete a connector
+      operationId: deleteConnector
+      responses:
+        202:
+          $ref: '#/components/responses/Connector202'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+      security:
+      - AccessToken:
+        - connector:delete
+components:
+  schemas:
+    ConnectorConfiguration:
+      type: object
+      description: The open collection of configuration values used by this entity.
+      properties:
+        defaultEventHandler:
+          type: string
+          description: A default integration target to handle anonymous events
+          example: my-integration-123
+    EntitySecurity:
+      type: object
+      description: Additional security configuration variables for this entity.
+      properties:
+        permissions:
+          type: array
+          items:
+            type: object
+            description: 'A pair of an action and a resource, indicating that the entity has
+
+              permissions to perform API calls requiring that action on that, or
+
+              derived, resources.
+
+              '
+            properties:
+              action:
+                type: string
+              resource:
+                type: string
+    OperationStatus:
+      type: string
+      enum:
+      - success
+      - failed
+      - processing
+      example: processing
+    ConnectorEntityData:
+      type: object
+      properties:
+        handler:
+          type: string
+          description: The npm package name used by this connector.
+          example: '@fusebit-int/oauth-connector'
+        configuration:
+          $ref: '#/components/schemas/ConnectorConfiguration'
+        files:
+          $ref: '#/components/schemas/EntityFiles'
+        encodedFiles:
+          $ref: '#/components/schemas/EntityEncodedFiles'
+        security:
+          $ref: '#/components/schemas/EntitySecurity'
+    EntityEncodedFiles:
+      type: object
+      description: The collection of filename and encoded content pairs that are packaged with this entity.
+      properties:
+        encodedFileName:
+          description: A file encoded in a particular transport-safe encoding, such as 'base64'
+          type: object
+          properties:
+            data:
+              description: The file payload, encoded in a JSON-safe format.
+              type: string
+            encoding:
+              description: The file encoding, such as 'base64'.
+              type: string
+              example: base64
+    OperationType:
+      type: string
+      enum:
+      - creating
+      - updating
+      - deleting
+      example: updating
+    EntityExpires:
+      type: string
+      description: The time that the entity expires and is automatically removed from the system.
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    EntityState:
+      type: string
+      enum:
+      - creating
+      - invalid
+      - active
+      example: active
+    ConnectorEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/EntityId'
+        data:
+          $ref: '#/components/schemas/ConnectorEntityData'
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        version:
+          $ref: '#/components/schemas/EntityVersion'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+        state:
+          $ref: '#/components/schemas/EntityState'
+        operationState:
+          $ref: '#/components/schemas/OperationStatusObject'
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    ConnectorPostEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/EntityId'
+        data:
+          $ref: '#/components/schemas/ConnectorEntityData'
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+        state:
+          $ref: '#/components/schemas/EntityState'
+        operationState:
+          $ref: '#/components/schemas/OperationStatusObject'
+    DateModified:
+      type: string
+      format: date-time
+    OperationErrorCode:
+      type: string
+      enum:
+      - OK
+      - InvalidParameterValue
+      - UnauthorizedOperation
+      - VersionConflict
+      - InternalError
+      - RequestLimitExceeded
+      example: OK
+    EntityFiles:
+      type: object
+      description: The collection of filename and content pairs that are packaged with this entity.
+    DateAdded:
+      type: string
+      format: date-time
+    OperationStatusObject:
+      type: object
+      description: Contains the status of the last action taken on this entity
+      properties:
+        operation:
+          $ref: '#/components/schemas/OperationType'
+        status:
+          $ref: '#/components/schemas/OperationStatus'
+        message:
+          type: string
+        errorCode:
+          $ref: '#/components/schemas/OperationErrorCode'
+        errorDetails:
+          type: string
+    ConnectorListEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/EntityId'
+        data:
+          type: object
+          properties:
+            handler:
+              type: string
+              description: The npm package name used by this connector.
+              example: '@fusebit-int/oauth-connector'
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        version:
+          $ref: '#/components/schemas/EntityVersion'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+        state:
+          $ref: '#/components/schemas/EntityState'
+        operationState:
+          $ref: '#/components/schemas/OperationStatusObject'
+    ConnectorList:
+      type: object
+      properties:
+        items:
+          type: array
+          description: An array of the matching entities of this component type
+          items:
+            $ref: '#/components/schemas/ConnectorListEntity'
+        next:
+          type: string
+          description: The key to use when accessing the next block of entries
+        total:
+          type: number
+          description: The total number of entities of this type.
+    EntityTags:
+      type: object
+      description: A hash containing tags set on this entity
+      example:
+        tenant: tenant-525
+        customer: Sonicity
+    EntityVersion:
+      type: string
+      format: uuid
+    EntityId:
+      type: string
+      description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
+
+        '
+  parameters:
+    SearchIdPrefix:
+      name: idPrefix
+      in: query
+      description: A prefix to use when searching for a particular entity by id. For example, to search for all integrations that start with a particular service name.
+      schema:
+        type: string
+    Subscription:
+      name: subscriptionId
+      in: path
+      required: true
+      description: Subscription id
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    SearchNext:
+      name: next
+      in: query
+      description: The key to use to retrieve the next set of results
+      schema:
+        type: string
+    SearchSort:
+      name: sort
+      in: query
+      description: Sort the results by `dateModified`, `dateAdded`, or the default value of `entityId`.  If `sort` is prepended with a `-` character, the order direction is reversed.
+      schema:
+        type: string
+    SearchStatus:
+      name: status
+      in: query
+      description: Search for entities matching a particular status, `creating`, `invalid`, or `active.
+      schema:
+        $ref: '#/components/schemas/EntityState'
+    Account:
+      name: accountId
+      in: path
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    SearchTag:
+      name: tag
+      in: query
+      description: A `tagName` or `tagName=tagValue` to search for. Can be specified multiple times in a query parameter to indicate multiple tag values to require in the results.
+      schema:
+        type: string
+    SearchCount:
+      name: count
+      in: query
+      description: The maximum number of entries to return
+      schema:
+        type: number
+  requestBodies:
+    PostConnectorBody:
+      description: Upload a new entity
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ConnectorPostEntity'
+  responses:
+    Connector202:
+      description: 'The entity creation is in progress. While the `operationState.status` value is `processing`, the entity is still being created. Once the `operationState.status` value is `success`, the entity is available for use.
+
+        On failure, `operationState.status` will be set to `failed` and `state` will be `invalid`.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ConnectorEntity'
+  securitySchemes:
+    AccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: For a description of the access token format, see [this doc](https://developer.fusebit.io/docs/connecting-fusebit-with-your-application).
