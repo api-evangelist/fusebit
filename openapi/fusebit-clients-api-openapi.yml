@@ -336,14 +336,24 @@ paths:
         - client:init
 components:
   schemas:
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
-    ClientId:
-      type: string
-      description: Client id
-      example: clt-5555555555555555
+    NewClient:
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: The client's display name
+          example: production-service
+        identities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identity'
+        access:
+          type: object
+          properties:
+            allow:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccessStatement'
     Error:
       type: object
       required:
@@ -363,19 +373,10 @@ components:
           type: string
           description: A message with details regarding the error
           example: The user 'usr-5555555555555555' does not exist
-    ClientList:
-      type: object
-      required:
-      - items
-      properties:
-        next:
-          type: string
-          description: Opaque token to continue getting results from
-        items:
-          type: array
-          description: A list of clients
-          items:
-            $ref: '#/components/schemas/Client'
+    ClientId:
+      type: string
+      description: Client id
+      example: clt-5555555555555555
     AccessStatement:
       type: object
       required:
@@ -390,6 +391,20 @@ components:
           type: string
           description: The resource to perform the action on
           example: /account/acc-5555555555555555/subscription/sub-5555555555555555/boundary/my-boundary-1/function/my-function-17
+    InitProtocol:
+      type: string
+      enum:
+      - pki
+      - oauth
+      description: "The initialization token protocol that determines the type of the source of trust for validating access tokens the user or client will present when making HTTP API calls:\n  * `pki` - when adding an indentity to the user or client, the caller must present a public key that can be used to validate signatures of access tokens\n  * `oauth` - when adding an indentity to the user or client, the caller must indicate a trusted issuer of access tokens that is already pre-configured in the system\n"
+    FunctionId:
+      type: string
+      description: Function id
+      example: my-function-abc
+    BoundaryId:
+      type: string
+      description: Boundary id
+      example: my-boundary-xyz
     InitResponse:
       type: string
       description: 'A single-use initialization token in JWT format. If unused, the token expires in eight hours. The `profile`
@@ -399,56 +414,6 @@ components:
         as well as additional information for consumption by the intended recipient of the token.
 
         '
-    Client:
-      allOf:
-      - type: object
-        required:
-        - id
-        properties:
-          id:
-            $ref: '#/components/schemas/ClientId'
-      - $ref: '#/components/schemas/NewClient'
-    NewClient:
-      type: object
-      properties:
-        displayName:
-          type: string
-          description: The client's display name
-          example: production-service
-        identities:
-          type: array
-          items:
-            $ref: '#/components/schemas/Identity'
-        access:
-          type: object
-          properties:
-            allow:
-              type: array
-              items:
-                $ref: '#/components/schemas/AccessStatement'
-    BoundaryId:
-      type: string
-      description: Boundary id
-      example: my-boundary-xyz
-    Identity:
-      type: object
-      required:
-      - issuerId
-      - subject
-      properties:
-        issuerId:
-          $ref: '#/components/schemas/IssuerId'
-        subject:
-          type: string
-          description: The `sub` claim value in access tokens
-    SubscriptionId:
-      type: string
-      description: Subscription id
-      example: sub-5555555555555555
-    IssuerId:
-      type: string
-      description: Issuer id
-      example: https://auth-server.company-abc.com
     InitRequest:
       type: object
       required:
@@ -496,16 +461,51 @@ components:
                 tokenUrl:
                   type: string
                   description: The OAuth URL to use to exchange refresh tokens for access tokens
-    InitProtocol:
+    SubscriptionId:
       type: string
-      enum:
-      - pki
-      - oauth
-      description: "The initialization token protocol that determines the type of the source of trust for validating access tokens the user or client will present when making HTTP API calls:\n  * `pki` - when adding an indentity to the user or client, the caller must present a public key that can be used to validate signatures of access tokens\n  * `oauth` - when adding an indentity to the user or client, the caller must indicate a trusted issuer of access tokens that is already pre-configured in the system\n"
-    FunctionId:
+      description: Subscription id
+      example: sub-5555555555555555
+    IssuerId:
       type: string
-      description: Function id
-      example: my-function-abc
+      description: Issuer id
+      example: https://auth-server.company-abc.com
+    Client:
+      allOf:
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            $ref: '#/components/schemas/ClientId'
+      - $ref: '#/components/schemas/NewClient'
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    ClientList:
+      type: object
+      required:
+      - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of clients
+          items:
+            $ref: '#/components/schemas/Client'
+    Identity:
+      type: object
+      required:
+      - issuerId
+      - subject
+      properties:
+        issuerId:
+          $ref: '#/components/schemas/IssuerId'
+        subject:
+          type: string
+          description: The `sub` claim value in access tokens
   securitySchemes:
     AccessToken:
       type: http

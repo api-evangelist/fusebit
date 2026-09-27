@@ -482,6 +482,63 @@ components:
       type: string
       description: Client id
       example: clt-5555555555555555
+    NewLogQuery:
+      type: object
+      properties:
+        filter:
+          type: string
+          description: A filter expression in the AWS Cloud Watch Logs Insights format.
+          example: response.statusCode = 500
+        stats:
+          type: string
+          description: An aggregation expression in the AWS Cloud Watch Logs Insights format.
+          example: count(*) by bin(15s)
+        from:
+          type: string
+          description: Start time of the logging window specified as an absolute date time in ISO format or a relative time in seconds.
+          example: 2021-10-21T00:00:00.361Z or -1800
+        to:
+          type: string
+          description: End time of the logging window specified as an absolute date time in ISO format or a relative time in seconds.
+          example: 2021-10-21T00:00:00.361Z or +900
+        limit:
+          type: number
+          description: Maximum number of records to return.
+          example: 20
+    InitProtocol:
+      type: string
+      enum:
+      - pki
+      - oauth
+      description: "The initialization token protocol that determines the type of the source of trust for validating access tokens the user or client will present when making HTTP API calls:\n  * `pki` - when adding an indentity to the user or client, the caller must present a public key that can be used to validate signatures of access tokens\n  * `oauth` - when adding an indentity to the user or client, the caller must indicate a trusted issuer of access tokens that is already pre-configured in the system\n"
+    NewLogQueryResponse:
+      type: object
+      properties:
+        queryId:
+          type: string
+          description: A unique log query id to use when polling for query completion
+    LogQueryResult:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - scheduled
+          - running
+          - complete
+          - failed
+          - timeout
+          - unknown
+          description: Status of the query.
+        recordsMatched:
+          type: number
+          description: The number of log records matched by the query. The number of records returned in the result may be smaller, subject to the limit.
+        results:
+          type: array
+          description: Array of records representing the query result.
+          items:
+            type: object
+            description: For log aggregation queries, one record of aggregation results. For log queries, one record representing an HTTP request.
     InitResolveRequest:
       type: object
       required:
@@ -506,35 +563,6 @@ components:
           description: 'The public key that can be used to validate the signature of the `accessToken` in PEM format. Required if `protocol` is `pki`.
 
             '
-    Subscription:
-      type: object
-      required:
-      - id
-      properties:
-        id:
-          $ref: '#/components/schemas/SubscriptionId'
-        displayName:
-          type: string
-          description: Subscription display name
-          example: Production Subscription
-    NewClient:
-      type: object
-      properties:
-        displayName:
-          type: string
-          description: The client's display name
-          example: production-service
-        identities:
-          type: array
-          items:
-            $ref: '#/components/schemas/Identity'
-        access:
-          type: object
-          properties:
-            allow:
-              type: array
-              items:
-                $ref: '#/components/schemas/AccessStatement'
     AccountAudit:
       type: object
       required:
@@ -547,186 +575,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AccountAuditEntry'
-    Account:
-      type: object
-      required:
-      - id
-      properties:
-        id:
-          $ref: '#/components/schemas/AccountId'
-        displayName:
-          type: string
-          description: Account display name
-          example: ABC Company
-        primaryEmail:
-          type: string
-          description: Account owner primary email
-          example: john.doe@abc-compnay.com
-    Identity:
-      type: object
-      required:
-      - issuerId
-      - subject
-      properties:
-        issuerId:
-          $ref: '#/components/schemas/IssuerId'
-        subject:
-          type: string
-          description: The `sub` claim value in access tokens
-    QueryId:
-      type: string
-      description: Log Query id
-      example: ffd9b69e-d323-4722-bad8-d57f3b4a28f4
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
-    Client:
-      allOf:
-      - type: object
-        required:
-        - id
-        properties:
-          id:
-            $ref: '#/components/schemas/ClientId'
-      - $ref: '#/components/schemas/NewClient'
-    AccountPatch:
-      type: object
-      required:
-      - displayName
-      properties:
-        displayName:
-          type: string
-          description: Account display name
-          example: ABC Company
-    SubscriptionId:
-      type: string
-      description: Subscription id
-      example: sub-5555555555555555
-    IssuerId:
-      type: string
-      description: Issuer id
-      example: https://auth-server.company-abc.com
-    AccessStatement:
-      type: object
-      required:
-      - action
-      - resource
-      properties:
-        action:
-          type: string
-          description: The action to perform
-          example: function:*
-        resource:
-          type: string
-          description: The resource to perform the action on
-          example: /account/acc-5555555555555555/subscription/sub-5555555555555555/boundary/my-boundary-1/function/my-function-17
-    SubscriptionList:
-      type: object
-      required:
-      - items
-      properties:
-        next:
-          type: string
-          description: Opaque token to continue getting results from
-        items:
-          type: array
-          description: A list of subscriptions
-          items:
-            $ref: '#/components/schemas/Subscription'
-    UserId:
-      type: string
-      description: User id
-      example: usr-5555555555555555
-    NewUser:
-      type: object
-      properties:
-        firstName:
-          type: string
-          description: The user's first name
-          example: John
-        lastName:
-          type: string
-          description: The user's last name
-          example: Doe
-        primaryEmail:
-          type: string
-          description: The user's primary email
-          example: john.doe@abc-compnay.com
-        identities:
-          type: array
-          items:
-            $ref: '#/components/schemas/Identity'
-        access:
-          type: object
-          properties:
-            allow:
-              type: array
-              items:
-                $ref: '#/components/schemas/AccessStatement'
-    User:
-      allOf:
-      - type: object
-        required:
-        - id
-        properties:
-          id:
-            $ref: '#/components/schemas/UserId'
-      - $ref: '#/components/schemas/NewUser'
-    NewLogQuery:
-      type: object
-      properties:
-        filter:
-          type: string
-          description: A filter expression in the AWS Cloud Watch Logs Insights format.
-          example: response.statusCode = 500
-        stats:
-          type: string
-          description: An aggregation expression in the AWS Cloud Watch Logs Insights format.
-          example: count(*) by bin(15s)
-        from:
-          type: string
-          description: Start time of the logging window specified as an absolute date time in ISO format or a relative time in seconds.
-          example: 2021-10-21T00:00:00.361Z or -1800
-        to:
-          type: string
-          description: End time of the logging window specified as an absolute date time in ISO format or a relative time in seconds.
-          example: 2021-10-21T00:00:00.361Z or +900
-        limit:
-          type: number
-          description: Maximum number of records to return.
-          example: 20
-    Error:
-      type: object
-      required:
-      - status
-      - statusCode
-      - message
-      properties:
-        status:
-          type: number
-          description: The HTTP status code
-          example: 404
-        statusCode:
-          type: number
-          description: The HTTP status code
-          example: 404
-        message:
-          type: string
-          description: A message with details regarding the error
-          example: The user 'usr-5555555555555555' does not exist
-    InitProtocol:
-      type: string
-      enum:
-      - pki
-      - oauth
-      description: "The initialization token protocol that determines the type of the source of trust for validating access tokens the user or client will present when making HTTP API calls:\n  * `pki` - when adding an indentity to the user or client, the caller must present a public key that can be used to validate signatures of access tokens\n  * `oauth` - when adding an indentity to the user or client, the caller must indicate a trusted issuer of access tokens that is already pre-configured in the system\n"
-    NewLogQueryResponse:
-      type: object
-      properties:
-        queryId:
-          type: string
-          description: A unique log query id to use when polling for query completion
     AccountAuditEntry:
       type: object
       required:
@@ -763,28 +611,180 @@ components:
         authorized:
           type: boolean
           description: If `'true'` the action was authorized; if `'false'` the action was not authorized and was not allowed to continue
-    LogQueryResult:
+    SubscriptionList:
+      type: object
+      required:
+      - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of subscriptions
+          items:
+            $ref: '#/components/schemas/Subscription'
+    Identity:
+      type: object
+      required:
+      - issuerId
+      - subject
+      properties:
+        issuerId:
+          $ref: '#/components/schemas/IssuerId'
+        subject:
+          type: string
+          description: The `sub` claim value in access tokens
+    NewClient:
       type: object
       properties:
-        status:
+        displayName:
           type: string
-          enum:
-          - scheduled
-          - running
-          - complete
-          - failed
-          - timeout
-          - unknown
-          description: Status of the query.
-        recordsMatched:
-          type: number
-          description: The number of log records matched by the query. The number of records returned in the result may be smaller, subject to the limit.
-        results:
+          description: The client's display name
+          example: production-service
+        identities:
           type: array
-          description: Array of records representing the query result.
           items:
-            type: object
-            description: For log aggregation queries, one record of aggregation results. For log queries, one record representing an HTTP request.
+            $ref: '#/components/schemas/Identity'
+        access:
+          type: object
+          properties:
+            allow:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccessStatement'
+    Error:
+      type: object
+      required:
+      - status
+      - statusCode
+      - message
+      properties:
+        status:
+          type: number
+          description: The HTTP status code
+          example: 404
+        statusCode:
+          type: number
+          description: The HTTP status code
+          example: 404
+        message:
+          type: string
+          description: A message with details regarding the error
+          example: The user 'usr-5555555555555555' does not exist
+    User:
+      allOf:
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            $ref: '#/components/schemas/UserId'
+      - $ref: '#/components/schemas/NewUser'
+    AccessStatement:
+      type: object
+      required:
+      - action
+      - resource
+      properties:
+        action:
+          type: string
+          description: The action to perform
+          example: function:*
+        resource:
+          type: string
+          description: The resource to perform the action on
+          example: /account/acc-5555555555555555/subscription/sub-5555555555555555/boundary/my-boundary-1/function/my-function-17
+    Account:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: '#/components/schemas/AccountId'
+        displayName:
+          type: string
+          description: Account display name
+          example: ABC Company
+        primaryEmail:
+          type: string
+          description: Account owner primary email
+          example: john.doe@abc-compnay.com
+    Client:
+      allOf:
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            $ref: '#/components/schemas/ClientId'
+      - $ref: '#/components/schemas/NewClient'
+    QueryId:
+      type: string
+      description: Log Query id
+      example: ffd9b69e-d323-4722-bad8-d57f3b4a28f4
+    NewUser:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: The user's first name
+          example: John
+        lastName:
+          type: string
+          description: The user's last name
+          example: Doe
+        primaryEmail:
+          type: string
+          description: The user's primary email
+          example: john.doe@abc-compnay.com
+        identities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identity'
+        access:
+          type: object
+          properties:
+            allow:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccessStatement'
+    AccountPatch:
+      type: object
+      required:
+      - displayName
+      properties:
+        displayName:
+          type: string
+          description: Account display name
+          example: ABC Company
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    IssuerId:
+      type: string
+      description: Issuer id
+      example: https://auth-server.company-abc.com
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    Subscription:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: '#/components/schemas/SubscriptionId'
+        displayName:
+          type: string
+          description: Subscription display name
+          example: Production Subscription
+    UserId:
+      type: string
+      description: User id
+      example: usr-5555555555555555
   securitySchemes:
     AccessToken:
       type: http

@@ -305,6 +305,25 @@ paths:
         - log:get
 components:
   schemas:
+    Error:
+      type: object
+      required:
+      - status
+      - statusCode
+      - message
+      properties:
+        status:
+          type: number
+          description: The HTTP status code
+          example: 404
+        statusCode:
+          type: number
+          description: The HTTP status code
+          example: 404
+        message:
+          type: string
+          description: A message with details regarding the error
+          example: The user 'usr-5555555555555555' does not exist
     NewLogQuery:
       type: object
       properties:
@@ -328,29 +347,27 @@ components:
           type: number
           description: Maximum number of records to return.
           example: 20
-    AccountId:
+    FunctionId:
       type: string
-      description: Account id
-      example: acc-5555555555555555
-    Error:
+      description: Function id
+      example: my-function-abc
+    QueryId:
+      type: string
+      description: Log Query id
+      example: ffd9b69e-d323-4722-bad8-d57f3b4a28f4
+    BoundaryId:
+      type: string
+      description: Boundary id
+      example: my-boundary-xyz
+    FunctionRuntime:
       type: object
       required:
-      - status
-      - statusCode
-      - message
+      - tags
       properties:
-        status:
-          type: number
-          description: The HTTP status code
-          example: 404
-        statusCode:
-          type: number
-          description: The HTTP status code
-          example: 404
-        message:
-          type: string
-          description: A message with details regarding the error
-          example: The user 'usr-5555555555555555' does not exist
+        tags:
+          type: object
+          description: User-specified and synthetic tags of a function
+          additionalProperties: true
     FunctionShort:
       type: object
       required:
@@ -385,14 +402,6 @@ components:
           description: A list of functions
           items:
             $ref: '#/components/schemas/FunctionShort'
-    FunctionId:
-      type: string
-      description: Function id
-      example: my-function-abc
-    BoundaryId:
-      type: string
-      description: Boundary id
-      example: my-boundary-xyz
     SubscriptionId:
       type: string
       description: Subscription id
@@ -403,15 +412,10 @@ components:
         queryId:
           type: string
           description: A unique log query id to use when polling for query completion
-    FunctionRuntime:
-      type: object
-      required:
-      - tags
-      properties:
-        tags:
-          type: object
-          description: User-specified and synthetic tags of a function
-          additionalProperties: true
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
     LogQueryResult:
       type: object
       properties:
@@ -434,10 +438,6 @@ components:
           items:
             type: object
             description: For log aggregation queries, one record of aggregation results. For log queries, one record representing an HTTP request.
-    QueryId:
-      type: string
-      description: Log Query id
-      example: ffd9b69e-d323-4722-bad8-d57f3b4a28f4
   securitySchemes:
     AccessToken:
       type: http

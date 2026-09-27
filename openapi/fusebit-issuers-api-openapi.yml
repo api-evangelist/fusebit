@@ -243,10 +243,6 @@ paths:
         - issuer:delete
 components:
   schemas:
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
     Error:
       type: object
       required:
@@ -266,15 +262,6 @@ components:
           type: string
           description: A message with details regarding the error
           example: The user 'usr-5555555555555555' does not exist
-    Issuer:
-      allOf:
-      - type: object
-        required:
-        - id
-        properties:
-          id:
-            $ref: '#/components/schemas/IssuerId'
-      - $ref: '#/components/schemas/NewIssuer'
     PublicKey:
       type: object
       description: A key id and the public key for a public/private key pair
@@ -288,23 +275,6 @@ components:
         publicKey:
           type: string
           description: The public key of a public/private key pair
-    IssuerList:
-      type: object
-      required:
-      - items
-      properties:
-        next:
-          type: string
-          description: Opaque token to continue getting results from
-        items:
-          type: array
-          description: A list of issuers
-          items:
-            $ref: '#/components/schemas/Issuer'
-    IssuerId:
-      type: string
-      description: Issuer id
-      example: https://auth-server.company-abc.com
     NewIssuer:
       type: object
       description: An issuer of access tokens that should be accepted
@@ -325,6 +295,36 @@ components:
           description: 'The uri key of json key file that contains the public key of the key pair used to sign access tokens from the issuer. Either the `publicKey` or the `jsonKeysUrl` must be provided.
 
             '
+    IssuerList:
+      type: object
+      required:
+      - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of issuers
+          items:
+            $ref: '#/components/schemas/Issuer'
+    IssuerId:
+      type: string
+      description: Issuer id
+      example: https://auth-server.company-abc.com
+    Issuer:
+      allOf:
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            $ref: '#/components/schemas/IssuerId'
+      - $ref: '#/components/schemas/NewIssuer'
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
   securitySchemes:
     AccessToken:
       type: http

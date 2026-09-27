@@ -680,40 +680,113 @@ paths:
         - function:get
 components:
   schemas:
-    BuildId:
-      type: string
-      description: Build id
-      example: sb9oa2
-    FunctionRuntime:
+    NewLogQuery:
       type: object
-      required:
-      - tags
       properties:
-        tags:
-          type: object
-          description: User-specified and synthetic tags of a function
-          additionalProperties: true
-    QueryId:
-      type: string
-      description: Log Query id
-      example: ffd9b69e-d323-4722-bad8-d57f3b4a28f4
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
-    SubscriptionId:
-      type: string
-      description: Subscription id
-      example: sub-5555555555555555
-    FunctionLocation:
-      type: object
-      required:
-      - location
-      properties:
-        location:
+        filter:
           type: string
-          description: The URL for executing the function
-          example: https://domain.com/function-abc
+          description: A filter expression in the AWS Cloud Watch Logs Insights format.
+          example: response.statusCode = 500
+        stats:
+          type: string
+          description: An aggregation expression in the AWS Cloud Watch Logs Insights format.
+          example: count(*) by bin(15s)
+        from:
+          type: string
+          description: Start time of the logging window specified as an absolute date time in ISO format or a relative time in seconds.
+          example: 2021-10-21T00:00:00.361Z or -1800
+        to:
+          type: string
+          description: End time of the logging window specified as an absolute date time in ISO format or a relative time in seconds.
+          example: 2021-10-21T00:00:00.361Z or +900
+        limit:
+          type: number
+          description: Maximum number of records to return.
+          example: 20
+    FunctionRoutes:
+      type: array
+      description: Properties that control route-specific behaviors of the function
+      items:
+        type: object
+        description: 'Overrides security settings and controls task scheduling settings
+
+          on per-route basis. Given a request, the first route, if any, prefix-matching
+
+          the path of the request URL is used.
+
+          '
+        required:
+        - path
+        properties:
+          path:
+            type: string
+            description: A prefix of the request path
+            example: /task/sendEmail
+          security:
+            $ref: '#/components/schemas/FunctionSecurity'
+          task:
+            type: object
+            description: "If present, HTTP POST requests prefix-matching this route are scheduled\nfor asynchronous execution as tasks, and an immediate HTTP 202 response is sent\nwith the `location` HTTP response header containing the URL at which the \nstatus of the task execution can be queried. \n\nIf the number of requests pending execution exceeds `maxPending`, \nan HTTP 429 response is sent and the request is not scheduled for execution.\n\nUnless an explicit `security` element is specified for this route, the HTTP POST\nrequests that schedule task execution must be authorized with an access token that \ngrants the `function:schedule` action for the function resource.\n"
+            properties:
+              maxPending:
+                type: number
+                description: 'The maximum number of tasks that can be scheduled for execution before
+
+                  subsequent requests are rejected with an HTTP 429 response. Specify 0
+
+                  to allow any number of pending requests.
+
+                  '
+                default: 1024
+              maxRunning:
+                type: number
+                description: 'The maximum number of tasks that can be running concurrently. Specify 0
+
+                  to not limit the maximum number of running tasks.
+
+                  '
+                default: 10
+    FunctionList:
+      type: object
+      required:
+      - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of functions
+          items:
+            $ref: '#/components/schemas/FunctionShort'
+    NewLogQueryResponse:
+      type: object
+      properties:
+        queryId:
+          type: string
+          description: A unique log query id to use when polling for query completion
+    LogQueryResult:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - scheduled
+          - running
+          - complete
+          - failed
+          - timeout
+          - unknown
+          description: Status of the query.
+        recordsMatched:
+          type: number
+          description: The number of log records matched by the query. The number of records returned in the result may be smaller, subject to the limit.
+        results:
+          type: array
+          description: Array of records representing the query result.
+          items:
+            type: object
+            description: For log aggregation queries, one record of aggregation results. For log queries, one record representing an HTTP request.
     NewFunction:
       type: object
       properties:
@@ -834,73 +907,14 @@ components:
           $ref: '#/components/schemas/FunctionSecurity'
         routes:
           $ref: '#/components/schemas/FunctionRoutes'
-    FunctionId:
+    BoundaryId:
       type: string
-      description: Function id
-      example: my-function-abc
-    Build:
-      allOf:
-      - type: object
-        properties:
-          buildId:
-            $ref: '#/components/schemas/BuildId'
-          functionId:
-            $ref: '#/components/schemas/FunctionId'
-          boundaryId:
-            $ref: '#/components/schemas/BoundaryId'
-          subscriptionId:
-            $ref: '#/components/schemas/SubscriptionId'
-          status:
-            type: string
-            enum:
-            - pending
-            - building
-            - success
-            - failure
-          error:
-            type: object
-          version:
-            type: number
-          transitions:
-            type: object
-      - $ref: '#/components/schemas/FunctionLocation'
-    AccessStatement:
-      type: object
-      required:
-      - action
-      - resource
-      properties:
-        action:
-          type: string
-          description: The action to perform
-          example: function:*
-        resource:
-          type: string
-          description: The resource to perform the action on
-          example: /account/acc-5555555555555555/subscription/sub-5555555555555555/boundary/my-boundary-1/function/my-function-17
-    NewLogQuery:
-      type: object
-      properties:
-        filter:
-          type: string
-          description: A filter expression in the AWS Cloud Watch Logs Insights format.
-          example: response.statusCode = 500
-        stats:
-          type: string
-          description: An aggregation expression in the AWS Cloud Watch Logs Insights format.
-          example: count(*) by bin(15s)
-        from:
-          type: string
-          description: Start time of the logging window specified as an absolute date time in ISO format or a relative time in seconds.
-          example: 2021-10-21T00:00:00.361Z or -1800
-        to:
-          type: string
-          description: End time of the logging window specified as an absolute date time in ISO format or a relative time in seconds.
-          example: 2021-10-21T00:00:00.361Z or +900
-        limit:
-          type: number
-          description: Maximum number of records to return.
-          example: 20
+      description: Boundary id
+      example: my-boundary-xyz
+    BuildId:
+      type: string
+      description: Build id
+      example: sb9oa2
     Error:
       type: object
       required:
@@ -920,6 +934,24 @@ components:
           type: string
           description: A message with details regarding the error
           example: The user 'usr-5555555555555555' does not exist
+    AccessStatement:
+      type: object
+      required:
+      - action
+      - resource
+      properties:
+        action:
+          type: string
+          description: The action to perform
+          example: function:*
+        resource:
+          type: string
+          description: The resource to perform the action on
+          example: /account/acc-5555555555555555/subscription/sub-5555555555555555/boundary/my-boundary-1/function/my-function-17
+    FunctionId:
+      type: string
+      description: Function id
+      example: my-function-abc
     FunctionShort:
       type: object
       required:
@@ -1035,29 +1067,58 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/AccessStatement'
-    FunctionList:
+    FunctionLocation:
       type: object
       required:
-      - items
+      - location
       properties:
-        next:
+        location:
           type: string
-          description: Opaque token to continue getting results from
-        items:
-          type: array
-          description: A list of functions
-          items:
-            $ref: '#/components/schemas/FunctionShort'
-    BoundaryId:
+          description: The URL for executing the function
+          example: https://domain.com/function-abc
+    QueryId:
       type: string
-      description: Boundary id
-      example: my-boundary-xyz
-    NewLogQueryResponse:
+      description: Log Query id
+      example: ffd9b69e-d323-4722-bad8-d57f3b4a28f4
+    FunctionRuntime:
       type: object
+      required:
+      - tags
       properties:
-        queryId:
-          type: string
-          description: A unique log query id to use when polling for query completion
+        tags:
+          type: object
+          description: User-specified and synthetic tags of a function
+          additionalProperties: true
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    Build:
+      allOf:
+      - type: object
+        properties:
+          buildId:
+            $ref: '#/components/schemas/BuildId'
+          functionId:
+            $ref: '#/components/schemas/FunctionId'
+          boundaryId:
+            $ref: '#/components/schemas/BoundaryId'
+          subscriptionId:
+            $ref: '#/components/schemas/SubscriptionId'
+          status:
+            type: string
+            enum:
+            - pending
+            - building
+            - success
+            - failure
+          error:
+            type: object
+          version:
+            type: number
+          transitions:
+            type: object
+      - $ref: '#/components/schemas/FunctionLocation'
     Function:
       allOf:
       - type: object
@@ -1074,71 +1135,10 @@ components:
             $ref: '#/components/schemas/SubscriptionId'
       - $ref: '#/components/schemas/NewFunction'
       - $ref: '#/components/schemas/FunctionLocation'
-    FunctionRoutes:
-      type: array
-      description: Properties that control route-specific behaviors of the function
-      items:
-        type: object
-        description: 'Overrides security settings and controls task scheduling settings
-
-          on per-route basis. Given a request, the first route, if any, prefix-matching
-
-          the path of the request URL is used.
-
-          '
-        required:
-        - path
-        properties:
-          path:
-            type: string
-            description: A prefix of the request path
-            example: /task/sendEmail
-          security:
-            $ref: '#/components/schemas/FunctionSecurity'
-          task:
-            type: object
-            description: "If present, HTTP POST requests prefix-matching this route are scheduled\nfor asynchronous execution as tasks, and an immediate HTTP 202 response is sent\nwith the `location` HTTP response header containing the URL at which the \nstatus of the task execution can be queried. \n\nIf the number of requests pending execution exceeds `maxPending`, \nan HTTP 429 response is sent and the request is not scheduled for execution.\n\nUnless an explicit `security` element is specified for this route, the HTTP POST\nrequests that schedule task execution must be authorized with an access token that \ngrants the `function:schedule` action for the function resource.\n"
-            properties:
-              maxPending:
-                type: number
-                description: 'The maximum number of tasks that can be scheduled for execution before
-
-                  subsequent requests are rejected with an HTTP 429 response. Specify 0
-
-                  to allow any number of pending requests.
-
-                  '
-                default: 1024
-              maxRunning:
-                type: number
-                description: 'The maximum number of tasks that can be running concurrently. Specify 0
-
-                  to not limit the maximum number of running tasks.
-
-                  '
-                default: 10
-    LogQueryResult:
-      type: object
-      properties:
-        status:
-          type: string
-          enum:
-          - scheduled
-          - running
-          - complete
-          - failed
-          - timeout
-          - unknown
-          description: Status of the query.
-        recordsMatched:
-          type: number
-          description: The number of log records matched by the query. The number of records returned in the result may be smaller, subject to the limit.
-        results:
-          type: array
-          description: Array of records representing the query result.
-          items:
-            type: object
-            description: For log aggregation queries, one record of aggregation results. For log queries, one record representing an HTTP request.
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
   securitySchemes:
     AccessToken:
       type: http

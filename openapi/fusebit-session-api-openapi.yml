@@ -133,52 +133,27 @@ paths:
         - session:commit
 components:
   schemas:
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
-    SessionId:
-      type: string
-      description: Session id
-      example: sid-01234567890123456789012345678912
-    EntityTags:
-      type: object
-      description: A hash containing tags set on this entity
-      example:
-        tenant: tenant-525
-        customer: Sonicity
-    EntityType:
-      type: string
-      enum:
-      - connector
-      - integration
-      - identity
-      - install
-      example: connector
-    Session:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/SessionId'
-        targetUrl:
-          type: string
-          description: The URL that the browser should be redirected to for the user to start configuring the session.
-          example: https://api.us-west-1.on.fusebit.io/v2/account/acc-123/subscription/sub-123/integration/my-integ-123/session/ses-123/start
     SessionInput:
       type: object
       example:
         slack-integration:
           useDemo: true
       description: A collection of input variables to make available to components as they are configured. Each key must correspond with an entry in the component array, and carries configuration that will only be available to that component.
-    SubscriptionId:
-      type: string
-      description: Subscription id
-      example: sub-5555555555555555
     EntityId:
       type: string
       description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
 
         '
+    EntityTags:
+      type: object
+      description: A hash containing tags set on this entity
+      example:
+        tenant: tenant-525
+        customer: Sonicity
+    SessionId:
+      type: string
+      description: Session id
+      example: sid-01234567890123456789012345678912
     SessionResult:
       type: object
       properties:
@@ -190,36 +165,32 @@ components:
           type: object
         dependsOn:
           type: object
-  responses:
-    Session202:
-      description: 'The install creation is in progress. To check its status, use the `targetUrl` endpoint returned by this call. While the `operationState.status` value of the install is `processing`, the entity is still being created. Once the `operationState.status` value is `success`, the entity becomes available for use.
-
-        On failure, `operationState.status` will be set to `failed` and `state` will be `invalid`.'
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - targetUrl
-            properties:
-              targetUrl:
-                type: string
-                description: The endpoint where you can find the install being created
-  parameters:
     EntityType:
-      name: entityType
-      required: true
-      in: path
-      description: The type of the entity
-      schema:
-        $ref: '#/components/schemas/EntityType'
-    EntityId:
-      name: entityId
-      in: path
-      required: true
-      description: The id of the entity
-      schema:
-        $ref: '#/components/schemas/EntityId'
+      type: string
+      enum:
+      - connector
+      - integration
+      - identity
+      - install
+      example: connector
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    Session:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/SessionId'
+        targetUrl:
+          type: string
+          description: The URL that the browser should be redirected to for the user to start configuring the session.
+          example: https://api.us-west-1.on.fusebit.io/v2/account/acc-123/subscription/sub-123/integration/my-integ-123/session/ses-123/start
+  parameters:
     SessionId:
       name: sessionId
       in: path
@@ -227,13 +198,6 @@ components:
       description: The id of the session
       schema:
         $ref: '#/components/schemas/SessionId'
-    Subscription:
-      name: subscriptionId
-      in: path
-      required: true
-      description: Subscription id
-      schema:
-        $ref: '#/components/schemas/SubscriptionId'
     Account:
       name: accountId
       in: path
@@ -241,6 +205,27 @@ components:
       description: Account id
       schema:
         $ref: '#/components/schemas/AccountId'
+    EntityId:
+      name: entityId
+      in: path
+      required: true
+      description: The id of the entity
+      schema:
+        $ref: '#/components/schemas/EntityId'
+    Subscription:
+      name: subscriptionId
+      in: path
+      required: true
+      description: Subscription id
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    EntityType:
+      name: entityType
+      required: true
+      in: path
+      description: The type of the entity
+      schema:
+        $ref: '#/components/schemas/EntityType'
   requestBodies:
     PutSessionBody:
       description: The results of a configuration action, such as a form.
@@ -277,6 +262,21 @@ components:
               installId:
                 type: string
                 description: Used when reconfiguring an existing user. Specifies the install associated with that user.
+  responses:
+    Session202:
+      description: 'The install creation is in progress. To check its status, use the `targetUrl` endpoint returned by this call. While the `operationState.status` value of the install is `processing`, the entity is still being created. Once the `operationState.status` value is `success`, the entity becomes available for use.
+
+        On failure, `operationState.status` will be set to `failed` and `state` will be `invalid`.'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - targetUrl
+            properties:
+              targetUrl:
+                type: string
+                description: The endpoint where you can find the install being created
   securitySchemes:
     AccessToken:
       type: http
