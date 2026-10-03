@@ -133,12 +133,22 @@ paths:
         - session:commit
 components:
   schemas:
-    SessionInput:
-      type: object
-      example:
-        slack-integration:
-          useDemo: true
-      description: A collection of input variables to make available to components as they are configured. Each key must correspond with an entry in the component array, and carries configuration that will only be available to that component.
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    EntityType:
+      type: string
+      enum:
+      - connector
+      - integration
+      - identity
+      - install
+      example: connector
     EntityId:
       type: string
       description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
@@ -154,6 +164,12 @@ components:
       type: string
       description: Session id
       example: sid-01234567890123456789012345678912
+    SessionInput:
+      type: object
+      example:
+        slack-integration:
+          useDemo: true
+      description: A collection of input variables to make available to components as they are configured. Each key must correspond with an entry in the component array, and carries configuration that will only be available to that component.
     SessionResult:
       type: object
       properties:
@@ -165,22 +181,6 @@ components:
           type: object
         dependsOn:
           type: object
-    EntityType:
-      type: string
-      enum:
-      - connector
-      - integration
-      - identity
-      - install
-      example: connector
-    SubscriptionId:
-      type: string
-      description: Subscription id
-      example: sub-5555555555555555
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
     Session:
       type: object
       properties:
@@ -205,13 +205,6 @@ components:
       description: Account id
       schema:
         $ref: '#/components/schemas/AccountId'
-    EntityId:
-      name: entityId
-      in: path
-      required: true
-      description: The id of the entity
-      schema:
-        $ref: '#/components/schemas/EntityId'
     Subscription:
       name: subscriptionId
       in: path
@@ -219,6 +212,13 @@ components:
       description: Subscription id
       schema:
         $ref: '#/components/schemas/SubscriptionId'
+    EntityId:
+      name: entityId
+      in: path
+      required: true
+      description: The id of the entity
+      schema:
+        $ref: '#/components/schemas/EntityId'
     EntityType:
       name: entityType
       required: true
@@ -226,6 +226,21 @@ components:
       description: The type of the entity
       schema:
         $ref: '#/components/schemas/EntityType'
+  responses:
+    Session202:
+      description: 'The install creation is in progress. To check its status, use the `targetUrl` endpoint returned by this call. While the `operationState.status` value of the install is `processing`, the entity is still being created. Once the `operationState.status` value is `success`, the entity becomes available for use.
+
+        On failure, `operationState.status` will be set to `failed` and `state` will be `invalid`.'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - targetUrl
+            properties:
+              targetUrl:
+                type: string
+                description: The endpoint where you can find the install being created
   requestBodies:
     PutSessionBody:
       description: The results of a configuration action, such as a form.
@@ -262,21 +277,6 @@ components:
               installId:
                 type: string
                 description: Used when reconfiguring an existing user. Specifies the install associated with that user.
-  responses:
-    Session202:
-      description: 'The install creation is in progress. To check its status, use the `targetUrl` endpoint returned by this call. While the `operationState.status` value of the install is `processing`, the entity is still being created. Once the `operationState.status` value is `success`, the entity becomes available for use.
-
-        On failure, `operationState.status` will be set to `failed` and `state` will be `invalid`.'
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - targetUrl
-            properties:
-              targetUrl:
-                type: string
-                description: The endpoint where you can find the install being created
   securitySchemes:
     AccessToken:
       type: http

@@ -164,66 +164,7 @@ paths:
       - AccessToken:
         - identity:delete
 components:
-  parameters:
-    Account:
-      name: accountId
-      in: path
-      required: true
-      description: Account id
-      schema:
-        $ref: '#/components/schemas/AccountId'
-    SearchCount:
-      name: count
-      in: query
-      description: The maximum number of entries to return
-      schema:
-        type: number
-    SearchNext:
-      name: next
-      in: query
-      description: The key to use to retrieve the next set of results
-      schema:
-        type: string
-    SearchTag:
-      name: tag
-      in: query
-      description: A `tagName` or `tagName=tagValue` to search for. Can be specified multiple times in a query parameter to indicate multiple tag values to require in the results.
-      schema:
-        type: string
-    SearchSort:
-      name: sort
-      in: query
-      description: Sort the results by `dateModified`, `dateAdded`, or the default value of `entityId`.  If `sort` is prepended with a `-` character, the order direction is reversed.
-      schema:
-        type: string
-    Subscription:
-      name: subscriptionId
-      in: path
-      required: true
-      description: Subscription id
-      schema:
-        $ref: '#/components/schemas/SubscriptionId'
   schemas:
-    IdentityEntity:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/IdentityId'
-        parentId:
-          $ref: '#/components/schemas/ParentId'
-        data:
-          type: object
-          description: The data used by the creating connector to establish a relationship with the remote service on behalf of a user.
-        tags:
-          $ref: '#/components/schemas/EntityTags'
-        version:
-          $ref: '#/components/schemas/EntityVersion'
-        expires:
-          $ref: '#/components/schemas/EntityExpires'
-        dateAdded:
-          $ref: '#/components/schemas/DateAdded'
-        dateModified:
-          $ref: '#/components/schemas/DateModified'
     ParentId:
       type: string
       description: 'The name of the parent entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
@@ -251,33 +192,53 @@ components:
     EntityVersion:
       type: string
       format: uuid
+    DateAdded:
+      type: string
+      format: date-time
     DateModified:
       type: string
       format: date-time
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
     EntityTags:
       type: object
       description: A hash containing tags set on this entity
       example:
         tenant: tenant-525
         customer: Sonicity
-    EntityExpires:
-      type: string
-      description: The time that the entity expires and is automatically removed from the system.
     IdentityId:
       type: string
       description: Identity id
       example: ins-01234567890123456789012345678912
+    IdentityEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/IdentityId'
+        parentId:
+          $ref: '#/components/schemas/ParentId'
+        data:
+          type: object
+          description: The data used by the creating connector to establish a relationship with the remote service on behalf of a user.
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        version:
+          $ref: '#/components/schemas/EntityVersion'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+    EntityExpires:
+      type: string
+      description: The time that the entity expires and is automatically removed from the system.
     SubscriptionId:
       type: string
       description: Subscription id
       example: sub-5555555555555555
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
-    DateAdded:
-      type: string
-      format: date-time
   requestBodies:
     PostIdentityBody:
       description: Upload a new entity
@@ -285,6 +246,45 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/IdentityEntity'
+  parameters:
+    Subscription:
+      name: subscriptionId
+      in: path
+      required: true
+      description: Subscription id
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    Account:
+      name: accountId
+      in: path
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    SearchSort:
+      name: sort
+      in: query
+      description: Sort the results by `dateModified`, `dateAdded`, or the default value of `entityId`.  If `sort` is prepended with a `-` character, the order direction is reversed.
+      schema:
+        type: string
+    SearchNext:
+      name: next
+      in: query
+      description: The key to use to retrieve the next set of results
+      schema:
+        type: string
+    SearchCount:
+      name: count
+      in: query
+      description: The maximum number of entries to return
+      schema:
+        type: number
+    SearchTag:
+      name: tag
+      in: query
+      description: A `tagName` or `tagName=tagValue` to search for. Can be specified multiple times in a query parameter to indicate multiple tag values to require in the results.
+      schema:
+        type: string
   securitySchemes:
     AccessToken:
       type: http

@@ -305,6 +305,54 @@ paths:
         - log:get
 components:
   schemas:
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    FunctionRuntime:
+      type: object
+      required:
+      - tags
+      properties:
+        tags:
+          type: object
+          description: User-specified and synthetic tags of a function
+          additionalProperties: true
+    FunctionId:
+      type: string
+      description: Function id
+      example: my-function-abc
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    QueryId:
+      type: string
+      description: Log Query id
+      example: ffd9b69e-d323-4722-bad8-d57f3b4a28f4
+    FunctionList:
+      type: object
+      required:
+      - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of functions
+          items:
+            $ref: '#/components/schemas/FunctionShort'
+    BoundaryId:
+      type: string
+      description: Boundary id
+      example: my-boundary-xyz
+    NewLogQueryResponse:
+      type: object
+      properties:
+        queryId:
+          type: string
+          description: A unique log query id to use when polling for query completion
     Error:
       type: object
       required:
@@ -324,6 +372,49 @@ components:
           type: string
           description: A message with details regarding the error
           example: The user 'usr-5555555555555555' does not exist
+    LogQueryResult:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - scheduled
+          - running
+          - complete
+          - failed
+          - timeout
+          - unknown
+          description: Status of the query.
+        recordsMatched:
+          type: number
+          description: The number of log records matched by the query. The number of records returned in the result may be smaller, subject to the limit.
+        results:
+          type: array
+          description: Array of records representing the query result.
+          items:
+            type: object
+            description: For log aggregation queries, one record of aggregation results. For log queries, one record representing an HTTP request.
+    FunctionShort:
+      type: object
+      required:
+      - functionId
+      - boundaryId
+      - schedule
+      - location
+      properties:
+        functionId:
+          $ref: '#/components/schemas/FunctionId'
+        boundaryId:
+          $ref: '#/components/schemas/BoundaryId'
+        schedule:
+          type: string
+          example: '*/15 * * * *'
+        location:
+          type: string
+          description: The URL for executing the function
+          example: https://domain.com/function-abc
+        runtime:
+          $ref: '#/components/schemas/FunctionRuntime'
     NewLogQuery:
       type: object
       properties:
@@ -347,97 +438,6 @@ components:
           type: number
           description: Maximum number of records to return.
           example: 20
-    FunctionId:
-      type: string
-      description: Function id
-      example: my-function-abc
-    QueryId:
-      type: string
-      description: Log Query id
-      example: ffd9b69e-d323-4722-bad8-d57f3b4a28f4
-    BoundaryId:
-      type: string
-      description: Boundary id
-      example: my-boundary-xyz
-    FunctionRuntime:
-      type: object
-      required:
-      - tags
-      properties:
-        tags:
-          type: object
-          description: User-specified and synthetic tags of a function
-          additionalProperties: true
-    FunctionShort:
-      type: object
-      required:
-      - functionId
-      - boundaryId
-      - schedule
-      - location
-      properties:
-        functionId:
-          $ref: '#/components/schemas/FunctionId'
-        boundaryId:
-          $ref: '#/components/schemas/BoundaryId'
-        schedule:
-          type: string
-          example: '*/15 * * * *'
-        location:
-          type: string
-          description: The URL for executing the function
-          example: https://domain.com/function-abc
-        runtime:
-          $ref: '#/components/schemas/FunctionRuntime'
-    FunctionList:
-      type: object
-      required:
-      - items
-      properties:
-        next:
-          type: string
-          description: Opaque token to continue getting results from
-        items:
-          type: array
-          description: A list of functions
-          items:
-            $ref: '#/components/schemas/FunctionShort'
-    SubscriptionId:
-      type: string
-      description: Subscription id
-      example: sub-5555555555555555
-    NewLogQueryResponse:
-      type: object
-      properties:
-        queryId:
-          type: string
-          description: A unique log query id to use when polling for query completion
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
-    LogQueryResult:
-      type: object
-      properties:
-        status:
-          type: string
-          enum:
-          - scheduled
-          - running
-          - complete
-          - failed
-          - timeout
-          - unknown
-          description: Status of the query.
-        recordsMatched:
-          type: number
-          description: The number of log records matched by the query. The number of records returned in the result may be smaller, subject to the limit.
-        results:
-          type: array
-          description: Array of records representing the query result.
-          items:
-            type: object
-            description: For log aggregation queries, one record of aggregation results. For log queries, one record representing an HTTP request.
   securitySchemes:
     AccessToken:
       type: http

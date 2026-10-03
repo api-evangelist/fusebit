@@ -680,6 +680,189 @@ paths:
         - function:get
 components:
   schemas:
+    FunctionRuntime:
+      type: object
+      required:
+      - tags
+      properties:
+        tags:
+          type: object
+          description: User-specified and synthetic tags of a function
+          additionalProperties: true
+    FunctionShort:
+      type: object
+      required:
+      - functionId
+      - boundaryId
+      - schedule
+      - location
+      properties:
+        functionId:
+          $ref: '#/components/schemas/FunctionId'
+        boundaryId:
+          $ref: '#/components/schemas/BoundaryId'
+        schedule:
+          type: string
+          example: '*/15 * * * *'
+        location:
+          type: string
+          description: The URL for executing the function
+          example: https://domain.com/function-abc
+        runtime:
+          $ref: '#/components/schemas/FunctionRuntime'
+    FunctionLocation:
+      type: object
+      required:
+      - location
+      properties:
+        location:
+          type: string
+          description: The URL for executing the function
+          example: https://domain.com/function-abc
+    Build:
+      allOf:
+      - type: object
+        properties:
+          buildId:
+            $ref: '#/components/schemas/BuildId'
+          functionId:
+            $ref: '#/components/schemas/FunctionId'
+          boundaryId:
+            $ref: '#/components/schemas/BoundaryId'
+          subscriptionId:
+            $ref: '#/components/schemas/SubscriptionId'
+          status:
+            type: string
+            enum:
+            - pending
+            - building
+            - success
+            - failure
+          error:
+            type: object
+          version:
+            type: number
+          transitions:
+            type: object
+      - $ref: '#/components/schemas/FunctionLocation'
+    FunctionSecurity:
+      type: object
+      description: Properties that impact the runtime security of the function.
+      properties:
+        authorization:
+          type: array
+          description: 'Use this property in conjunction with the `authentication` property. This property should not be used
+
+            when `authentication` is `none` or undefined, because in those cases all callers will be allowed.
+
+
+            If the caller is authenticated, you can use this property to only allow callers with specific
+
+            permissions to invoke this function. You can also leave it undefined, which will allow all authenticated
+
+            callers to invoke the function, without checking what permissions they have.
+
+
+            The following example will only allow callers who have `function:execute` permission to the given subscription:
+
+            `[{ action: "function:execute", resource: "/account/acc-5555555555555555/subscription/sub-5555555555555555/" }]`
+
+
+            When the caller has been authorized, the `ctx.caller.permissions` property is set to the validated
+
+            permissions of the caller. Otherwise, the property will be undefined.
+
+            '
+          items:
+            $ref: '#/components/schemas/AccessStatement'
+        authentication:
+          description: 'Controls the authentication of the caller of the function, based on the bearer token supplied in the
+
+            `Authorization` header of the HTTP request.
+
+
+            If the value is `none` or the property is undefined, then the `Authorization` header is not
+
+            evaluated and the function is executed.
+
+
+            If the value is `required`, the caller must supply a valid JWT trusted by Fusebit. If the token is
+
+            present and valid, a check will be performed as described in the `authorization` property. If the
+
+            check succeeds, the function will execute, the `ctx.fusebit.callerAccessToken` property
+
+            will contain the supplied JWT, and the `ctx.caller.permission` property will contain the set of
+
+            authorized permissions associated with the caller. If the check fails, a 403 Forbidden error response
+
+            will be returned.
+
+
+            If the value is `optional`, then the caller may supply a valid JWT trusted by Fusebit. If the token is
+
+            present and valid, an authorization check will be performed as described in the `required` property
+
+            description. If a token is not present, not valid, or fails the authorization check, the function executes
+
+            as an unauthenticated user. This authentication option allows you to use Fusebit authorization for certain
+
+            paths in your function, while implementing your own authorization for other paths.
+
+            '
+          type: string
+          enum:
+          - none
+          - optional
+          - required
+          default: none
+        functionPermissions:
+          type: object
+          description: 'In case a function needs to call Fusebit management APIs, the system can provide the necessary
+
+            JWT via the `ctx.fusebit.functionAccessToken` property. The permissions of that token can be set using this
+
+            property. For example, the following object will result in a token that has full control of all storage
+
+            objects under the given subscription:
+
+            `{ "allow": [{ "action": "storage:*", resource: "/account/acc-5555555555555555/subscription/sub-5555555555555555/" }] }`
+
+
+            The function creator (the caller of this API) must have the same or broader permissions as what''s being
+
+            assigned here, as well as `function:put` for this function, otherwise the function creation will be rejected.
+
+            '
+          properties:
+            allow:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccessStatement'
+    QueryId:
+      type: string
+      description: Log Query id
+      example: ffd9b69e-d323-4722-bad8-d57f3b4a28f4
+    BoundaryId:
+      type: string
+      description: Boundary id
+      example: my-boundary-xyz
+    Function:
+      allOf:
+      - type: object
+        required:
+        - id
+        - boundaryId
+        - subscriptionId
+        properties:
+          id:
+            $ref: '#/components/schemas/FunctionId'
+          boundaryId:
+            $ref: '#/components/schemas/BoundaryId'
+          subscriptionId:
+            $ref: '#/components/schemas/SubscriptionId'
+      - $ref: '#/components/schemas/NewFunction'
+      - $ref: '#/components/schemas/FunctionLocation'
     NewLogQuery:
       type: object
       properties:
@@ -703,6 +886,14 @@ components:
           type: number
           description: Maximum number of records to return.
           example: 20
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    FunctionId:
+      type: string
+      description: Function id
+      example: my-function-abc
     FunctionRoutes:
       type: array
       description: Properties that control route-specific behaviors of the function
@@ -759,34 +950,25 @@ components:
           description: A list of functions
           items:
             $ref: '#/components/schemas/FunctionShort'
-    NewLogQueryResponse:
+    Error:
       type: object
-      properties:
-        queryId:
-          type: string
-          description: A unique log query id to use when polling for query completion
-    LogQueryResult:
-      type: object
+      required:
+      - status
+      - statusCode
+      - message
       properties:
         status:
-          type: string
-          enum:
-          - scheduled
-          - running
-          - complete
-          - failed
-          - timeout
-          - unknown
-          description: Status of the query.
-        recordsMatched:
           type: number
-          description: The number of log records matched by the query. The number of records returned in the result may be smaller, subject to the limit.
-        results:
-          type: array
-          description: Array of records representing the query result.
-          items:
-            type: object
-            description: For log aggregation queries, one record of aggregation results. For log queries, one record representing an HTTP request.
+          description: The HTTP status code
+          example: 404
+        statusCode:
+          type: number
+          description: The HTTP status code
+          example: 404
+        message:
+          type: string
+          description: A message with details regarding the error
+          example: The user 'usr-5555555555555555' does not exist
     NewFunction:
       type: object
       properties:
@@ -907,33 +1089,10 @@ components:
           $ref: '#/components/schemas/FunctionSecurity'
         routes:
           $ref: '#/components/schemas/FunctionRoutes'
-    BoundaryId:
+    SubscriptionId:
       type: string
-      description: Boundary id
-      example: my-boundary-xyz
-    BuildId:
-      type: string
-      description: Build id
-      example: sb9oa2
-    Error:
-      type: object
-      required:
-      - status
-      - statusCode
-      - message
-      properties:
-        status:
-          type: number
-          description: The HTTP status code
-          example: 404
-        statusCode:
-          type: number
-          description: The HTTP status code
-          example: 404
-        message:
-          type: string
-          description: A message with details regarding the error
-          example: The user 'usr-5555555555555555' does not exist
+      description: Subscription id
+      example: sub-5555555555555555
     AccessStatement:
       type: object
       required:
@@ -948,197 +1107,38 @@ components:
           type: string
           description: The resource to perform the action on
           example: /account/acc-5555555555555555/subscription/sub-5555555555555555/boundary/my-boundary-1/function/my-function-17
-    FunctionId:
-      type: string
-      description: Function id
-      example: my-function-abc
-    FunctionShort:
+    NewLogQueryResponse:
       type: object
-      required:
-      - functionId
-      - boundaryId
-      - schedule
-      - location
       properties:
-        functionId:
-          $ref: '#/components/schemas/FunctionId'
-        boundaryId:
-          $ref: '#/components/schemas/BoundaryId'
-        schedule:
+        queryId:
           type: string
-          example: '*/15 * * * *'
-        location:
-          type: string
-          description: The URL for executing the function
-          example: https://domain.com/function-abc
-        runtime:
-          $ref: '#/components/schemas/FunctionRuntime'
-    FunctionSecurity:
+          description: A unique log query id to use when polling for query completion
+    LogQueryResult:
       type: object
-      description: Properties that impact the runtime security of the function.
       properties:
-        authorization:
-          type: array
-          description: 'Use this property in conjunction with the `authentication` property. This property should not be used
-
-            when `authentication` is `none` or undefined, because in those cases all callers will be allowed.
-
-
-            If the caller is authenticated, you can use this property to only allow callers with specific
-
-            permissions to invoke this function. You can also leave it undefined, which will allow all authenticated
-
-            callers to invoke the function, without checking what permissions they have.
-
-
-            The following example will only allow callers who have `function:execute` permission to the given subscription:
-
-            `[{ action: "function:execute", resource: "/account/acc-5555555555555555/subscription/sub-5555555555555555/" }]`
-
-
-            When the caller has been authorized, the `ctx.caller.permissions` property is set to the validated
-
-            permissions of the caller. Otherwise, the property will be undefined.
-
-            '
-          items:
-            $ref: '#/components/schemas/AccessStatement'
-        authentication:
-          description: 'Controls the authentication of the caller of the function, based on the bearer token supplied in the
-
-            `Authorization` header of the HTTP request.
-
-
-            If the value is `none` or the property is undefined, then the `Authorization` header is not
-
-            evaluated and the function is executed.
-
-
-            If the value is `required`, the caller must supply a valid JWT trusted by Fusebit. If the token is
-
-            present and valid, a check will be performed as described in the `authorization` property. If the
-
-            check succeeds, the function will execute, the `ctx.fusebit.callerAccessToken` property
-
-            will contain the supplied JWT, and the `ctx.caller.permission` property will contain the set of
-
-            authorized permissions associated with the caller. If the check fails, a 403 Forbidden error response
-
-            will be returned.
-
-
-            If the value is `optional`, then the caller may supply a valid JWT trusted by Fusebit. If the token is
-
-            present and valid, an authorization check will be performed as described in the `required` property
-
-            description. If a token is not present, not valid, or fails the authorization check, the function executes
-
-            as an unauthenticated user. This authentication option allows you to use Fusebit authorization for certain
-
-            paths in your function, while implementing your own authorization for other paths.
-
-            '
+        status:
           type: string
           enum:
-          - none
-          - optional
-          - required
-          default: none
-        functionPermissions:
-          type: object
-          description: 'In case a function needs to call Fusebit management APIs, the system can provide the necessary
-
-            JWT via the `ctx.fusebit.functionAccessToken` property. The permissions of that token can be set using this
-
-            property. For example, the following object will result in a token that has full control of all storage
-
-            objects under the given subscription:
-
-            `{ "allow": [{ "action": "storage:*", resource: "/account/acc-5555555555555555/subscription/sub-5555555555555555/" }] }`
-
-
-            The function creator (the caller of this API) must have the same or broader permissions as what''s being
-
-            assigned here, as well as `function:put` for this function, otherwise the function creation will be rejected.
-
-            '
-          properties:
-            allow:
-              type: array
-              items:
-                $ref: '#/components/schemas/AccessStatement'
-    FunctionLocation:
-      type: object
-      required:
-      - location
-      properties:
-        location:
-          type: string
-          description: The URL for executing the function
-          example: https://domain.com/function-abc
-    QueryId:
-      type: string
-      description: Log Query id
-      example: ffd9b69e-d323-4722-bad8-d57f3b4a28f4
-    FunctionRuntime:
-      type: object
-      required:
-      - tags
-      properties:
-        tags:
-          type: object
-          description: User-specified and synthetic tags of a function
-          additionalProperties: true
-    SubscriptionId:
-      type: string
-      description: Subscription id
-      example: sub-5555555555555555
-    Build:
-      allOf:
-      - type: object
-        properties:
-          buildId:
-            $ref: '#/components/schemas/BuildId'
-          functionId:
-            $ref: '#/components/schemas/FunctionId'
-          boundaryId:
-            $ref: '#/components/schemas/BoundaryId'
-          subscriptionId:
-            $ref: '#/components/schemas/SubscriptionId'
-          status:
-            type: string
-            enum:
-            - pending
-            - building
-            - success
-            - failure
-          error:
+          - scheduled
+          - running
+          - complete
+          - failed
+          - timeout
+          - unknown
+          description: Status of the query.
+        recordsMatched:
+          type: number
+          description: The number of log records matched by the query. The number of records returned in the result may be smaller, subject to the limit.
+        results:
+          type: array
+          description: Array of records representing the query result.
+          items:
             type: object
-          version:
-            type: number
-          transitions:
-            type: object
-      - $ref: '#/components/schemas/FunctionLocation'
-    Function:
-      allOf:
-      - type: object
-        required:
-        - id
-        - boundaryId
-        - subscriptionId
-        properties:
-          id:
-            $ref: '#/components/schemas/FunctionId'
-          boundaryId:
-            $ref: '#/components/schemas/BoundaryId'
-          subscriptionId:
-            $ref: '#/components/schemas/SubscriptionId'
-      - $ref: '#/components/schemas/NewFunction'
-      - $ref: '#/components/schemas/FunctionLocation'
-    AccountId:
+            description: For log aggregation queries, one record of aggregation results. For log queries, one record representing an HTTP request.
+    BuildId:
       type: string
-      description: Account id
-      example: acc-5555555555555555
+      description: Build id
+      example: sb9oa2
   securitySchemes:
     AccessToken:
       type: http

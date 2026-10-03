@@ -121,12 +121,39 @@ paths:
       - AccessToken:
         - integration:put
 components:
+  schemas:
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    EntityId:
+      type: string
+      description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
+
+        '
+    EntityTags:
+      type: object
+      description: A hash containing tags set on this entity
+      example:
+        tenant: tenant-525
+        customer: Sonicity
   parameters:
     TagValue:
       name: tagValue
       in: path
       required: true
       description: The value of the tag, URL encoded as necessary
+      schema:
+        type: string
+    TagKey:
+      name: tagKey
+      in: path
+      required: true
+      description: The name of the tag, URL encoded as necessary
       schema:
         type: string
     Account:
@@ -136,13 +163,6 @@ components:
       description: Account id
       schema:
         $ref: '#/components/schemas/AccountId'
-    TagKey:
-      name: tagKey
-      in: path
-      required: true
-      description: The name of the tag, URL encoded as necessary
-      schema:
-        type: string
     Subscription:
       name: subscriptionId
       in: path
@@ -174,26 +194,6 @@ components:
           example:
             tags:
               tenantId: Sonicity
-  schemas:
-    EntityTags:
-      type: object
-      description: A hash containing tags set on this entity
-      example:
-        tenant: tenant-525
-        customer: Sonicity
-    SubscriptionId:
-      type: string
-      description: Subscription id
-      example: sub-5555555555555555
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
-    EntityId:
-      type: string
-      description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
-
-        '
   securitySchemes:
     AccessToken:
       type: http

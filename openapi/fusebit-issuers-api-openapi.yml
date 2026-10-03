@@ -243,38 +243,10 @@ paths:
         - issuer:delete
 components:
   schemas:
-    Error:
-      type: object
-      required:
-      - status
-      - statusCode
-      - message
-      properties:
-        status:
-          type: number
-          description: The HTTP status code
-          example: 404
-        statusCode:
-          type: number
-          description: The HTTP status code
-          example: 404
-        message:
-          type: string
-          description: A message with details regarding the error
-          example: The user 'usr-5555555555555555' does not exist
-    PublicKey:
-      type: object
-      description: A key id and the public key for a public/private key pair
-      required:
-      - keyId
-      - publicKey
-      properties:
-        keyId:
-          type: string
-          description: The key id for the public key
-        publicKey:
-          type: string
-          description: The public key of a public/private key pair
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
     NewIssuer:
       type: object
       description: An issuer of access tokens that should be accepted
@@ -295,19 +267,25 @@ components:
           description: 'The uri key of json key file that contains the public key of the key pair used to sign access tokens from the issuer. Either the `publicKey` or the `jsonKeysUrl` must be provided.
 
             '
-    IssuerList:
+    Error:
       type: object
       required:
-      - items
+      - status
+      - statusCode
+      - message
       properties:
-        next:
+        status:
+          type: number
+          description: The HTTP status code
+          example: 404
+        statusCode:
+          type: number
+          description: The HTTP status code
+          example: 404
+        message:
           type: string
-          description: Opaque token to continue getting results from
-        items:
-          type: array
-          description: A list of issuers
-          items:
-            $ref: '#/components/schemas/Issuer'
+          description: A message with details regarding the error
+          example: The user 'usr-5555555555555555' does not exist
     IssuerId:
       type: string
       description: Issuer id
@@ -321,10 +299,32 @@ components:
           id:
             $ref: '#/components/schemas/IssuerId'
       - $ref: '#/components/schemas/NewIssuer'
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
+    PublicKey:
+      type: object
+      description: A key id and the public key for a public/private key pair
+      required:
+      - keyId
+      - publicKey
+      properties:
+        keyId:
+          type: string
+          description: The key id for the public key
+        publicKey:
+          type: string
+          description: The public key of a public/private key pair
+    IssuerList:
+      type: object
+      required:
+      - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of issuers
+          items:
+            $ref: '#/components/schemas/Issuer'
   securitySchemes:
     AccessToken:
       type: http

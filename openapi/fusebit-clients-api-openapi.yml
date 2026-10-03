@@ -336,84 +336,31 @@ paths:
         - client:init
 components:
   schemas:
-    NewClient:
-      type: object
-      properties:
-        displayName:
-          type: string
-          description: The client's display name
-          example: production-service
-        identities:
-          type: array
-          items:
-            $ref: '#/components/schemas/Identity'
-        access:
-          type: object
-          properties:
-            allow:
-              type: array
-              items:
-                $ref: '#/components/schemas/AccessStatement'
-    Error:
-      type: object
-      required:
-      - status
-      - statusCode
-      - message
-      properties:
-        status:
-          type: number
-          description: The HTTP status code
-          example: 404
-        statusCode:
-          type: number
-          description: The HTTP status code
-          example: 404
-        message:
-          type: string
-          description: A message with details regarding the error
-          example: The user 'usr-5555555555555555' does not exist
-    ClientId:
-      type: string
-      description: Client id
-      example: clt-5555555555555555
-    AccessStatement:
-      type: object
-      required:
-      - action
-      - resource
-      properties:
-        action:
-          type: string
-          description: The action to perform
-          example: function:*
-        resource:
-          type: string
-          description: The resource to perform the action on
-          example: /account/acc-5555555555555555/subscription/sub-5555555555555555/boundary/my-boundary-1/function/my-function-17
     InitProtocol:
       type: string
       enum:
       - pki
       - oauth
       description: "The initialization token protocol that determines the type of the source of trust for validating access tokens the user or client will present when making HTTP API calls:\n  * `pki` - when adding an indentity to the user or client, the caller must present a public key that can be used to validate signatures of access tokens\n  * `oauth` - when adding an indentity to the user or client, the caller must indicate a trusted issuer of access tokens that is already pre-configured in the system\n"
+    Identity:
+      type: object
+      required:
+      - issuerId
+      - subject
+      properties:
+        issuerId:
+          $ref: '#/components/schemas/IssuerId'
+        subject:
+          type: string
+          description: The `sub` claim value in access tokens
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
     FunctionId:
       type: string
       description: Function id
       example: my-function-abc
-    BoundaryId:
-      type: string
-      description: Boundary id
-      example: my-boundary-xyz
-    InitResponse:
-      type: string
-      description: 'A single-use initialization token in JWT format. If unused, the token expires in eight hours. The `profile`
-
-        parameter of the JWT payload contains the information specified in the `profile` parameter of the request
-
-        as well as additional information for consumption by the intended recipient of the token.
-
-        '
     InitRequest:
       type: object
       required:
@@ -465,23 +412,56 @@ components:
       type: string
       description: Subscription id
       example: sub-5555555555555555
+    AccessStatement:
+      type: object
+      required:
+      - action
+      - resource
+      properties:
+        action:
+          type: string
+          description: The action to perform
+          example: function:*
+        resource:
+          type: string
+          description: The resource to perform the action on
+          example: /account/acc-5555555555555555/subscription/sub-5555555555555555/boundary/my-boundary-1/function/my-function-17
+    BoundaryId:
+      type: string
+      description: Boundary id
+      example: my-boundary-xyz
+    Error:
+      type: object
+      required:
+      - status
+      - statusCode
+      - message
+      properties:
+        status:
+          type: number
+          description: The HTTP status code
+          example: 404
+        statusCode:
+          type: number
+          description: The HTTP status code
+          example: 404
+        message:
+          type: string
+          description: A message with details regarding the error
+          example: The user 'usr-5555555555555555' does not exist
     IssuerId:
       type: string
       description: Issuer id
       example: https://auth-server.company-abc.com
-    Client:
-      allOf:
-      - type: object
-        required:
-        - id
-        properties:
-          id:
-            $ref: '#/components/schemas/ClientId'
-      - $ref: '#/components/schemas/NewClient'
-    AccountId:
+    InitResponse:
       type: string
-      description: Account id
-      example: acc-5555555555555555
+      description: 'A single-use initialization token in JWT format. If unused, the token expires in eight hours. The `profile`
+
+        parameter of the JWT payload contains the information specified in the `profile` parameter of the request
+
+        as well as additional information for consumption by the intended recipient of the token.
+
+        '
     ClientList:
       type: object
       required:
@@ -495,17 +475,37 @@ components:
           description: A list of clients
           items:
             $ref: '#/components/schemas/Client'
-    Identity:
+    Client:
+      allOf:
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            $ref: '#/components/schemas/ClientId'
+      - $ref: '#/components/schemas/NewClient'
+    NewClient:
       type: object
-      required:
-      - issuerId
-      - subject
       properties:
-        issuerId:
-          $ref: '#/components/schemas/IssuerId'
-        subject:
+        displayName:
           type: string
-          description: The `sub` claim value in access tokens
+          description: The client's display name
+          example: production-service
+        identities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identity'
+        access:
+          type: object
+          properties:
+            allow:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccessStatement'
+    ClientId:
+      type: string
+      description: Client id
+      example: clt-5555555555555555
   securitySchemes:
     AccessToken:
       type: http

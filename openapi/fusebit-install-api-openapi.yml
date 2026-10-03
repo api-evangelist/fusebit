@@ -162,45 +162,6 @@ paths:
       - AccessToken:
         - instance:delete
 components:
-  parameters:
-    Account:
-      name: accountId
-      in: path
-      required: true
-      description: Account id
-      schema:
-        $ref: '#/components/schemas/AccountId'
-    SearchCount:
-      name: count
-      in: query
-      description: The maximum number of entries to return
-      schema:
-        type: number
-    SearchNext:
-      name: next
-      in: query
-      description: The key to use to retrieve the next set of results
-      schema:
-        type: string
-    SearchTag:
-      name: tag
-      in: query
-      description: A `tagName` or `tagName=tagValue` to search for. Can be specified multiple times in a query parameter to indicate multiple tag values to require in the results.
-      schema:
-        type: string
-    SearchSort:
-      name: sort
-      in: query
-      description: Sort the results by `dateModified`, `dateAdded`, or the default value of `entityId`.  If `sort` is prepended with a `-` character, the order direction is reversed.
-      schema:
-        type: string
-    Subscription:
-      name: subscriptionId
-      in: path
-      required: true
-      description: Subscription id
-      schema:
-        $ref: '#/components/schemas/SubscriptionId'
   schemas:
     ParentId:
       type: string
@@ -215,15 +176,26 @@ components:
     EntityVersion:
       type: string
       format: uuid
+    DateAdded:
+      type: string
+      format: date-time
     DateModified:
       type: string
       format: date-time
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
     EntityTags:
       type: object
       description: A hash containing tags set on this entity
       example:
         tenant: tenant-525
         customer: Sonicity
+    InstallId:
+      type: string
+      description: Install id
+      example: ins-01234567890123456789012345678912
     InstallList:
       type: object
       properties:
@@ -238,10 +210,13 @@ components:
         total:
           type: number
           description: The total number of entities of this type.
-    InstallId:
+    EntityExpires:
       type: string
-      description: Install id
-      example: ins-01234567890123456789012345678912
+      description: The time that the entity expires and is automatically removed from the system.
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
     InstallEntity:
       type: object
       properties:
@@ -274,20 +249,45 @@ components:
           $ref: '#/components/schemas/DateAdded'
         dateModified:
           $ref: '#/components/schemas/DateModified'
-    EntityExpires:
-      type: string
-      description: The time that the entity expires and is automatically removed from the system.
-    SubscriptionId:
-      type: string
+  parameters:
+    Subscription:
+      name: subscriptionId
+      in: path
+      required: true
       description: Subscription id
-      example: sub-5555555555555555
-    AccountId:
-      type: string
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    Account:
+      name: accountId
+      in: path
+      required: true
       description: Account id
-      example: acc-5555555555555555
-    DateAdded:
-      type: string
-      format: date-time
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    SearchSort:
+      name: sort
+      in: query
+      description: Sort the results by `dateModified`, `dateAdded`, or the default value of `entityId`.  If `sort` is prepended with a `-` character, the order direction is reversed.
+      schema:
+        type: string
+    SearchNext:
+      name: next
+      in: query
+      description: The key to use to retrieve the next set of results
+      schema:
+        type: string
+    SearchCount:
+      name: count
+      in: query
+      description: The maximum number of entries to return
+      schema:
+        type: number
+    SearchTag:
+      name: tag
+      in: query
+      description: A `tagName` or `tagName=tagValue` to search for. Can be specified multiple times in a query parameter to indicate multiple tag values to require in the results.
+      schema:
+        type: string
   requestBodies:
     PostInstallBody:
       description: Upload a new entity

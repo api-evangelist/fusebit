@@ -143,31 +143,6 @@ components:
     ComponentsEntityId:
       type: string
       description: "The name of an entity, matches: `/^[A-Za-z0-9\\-]{1,64}$/)` or `{{integration}}` when the current\n  entity's id should be used.\n\n  This parameter is optional. When not supplied, it defaults to the current entity's id.\n"
-    EntityFiles:
-      type: object
-      description: The collection of filename and content pairs that are packaged with this entity.
-    EntityId:
-      type: string
-      description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
-
-        '
-    OperationType:
-      type: string
-      enum:
-      - creating
-      - updating
-      - deleting
-      example: updating
-    EntityVersion:
-      type: string
-      format: uuid
-    OperationStatus:
-      type: string
-      enum:
-      - success
-      - failed
-      - processing
-      example: processing
     OperationErrorCode:
       type: string
       enum:
@@ -199,13 +174,42 @@ components:
           $ref: '#/components/schemas/EntityState'
         operationState:
           $ref: '#/components/schemas/OperationStatusObject'
-    EntityState:
+    EntityFiles:
+      type: object
+      description: The collection of filename and content pairs that are packaged with this entity.
+    OperationStatus:
       type: string
       enum:
-      - creating
-      - invalid
-      - active
-      example: active
+      - success
+      - failed
+      - processing
+      example: processing
+    IntegrationEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/EntityId'
+        data:
+          $ref: '#/components/schemas/IntegrationEntityData'
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        version:
+          $ref: '#/components/schemas/EntityVersion'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+        state:
+          $ref: '#/components/schemas/EntityState'
+        operationState:
+          $ref: '#/components/schemas/OperationStatusObject'
+    EntityId:
+      type: string
+      description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
+
+        '
     EntityEncodedFiles:
       type: object
       description: The collection of filename and encoded content pairs that are packaged with this entity.
@@ -221,77 +225,19 @@ components:
               description: The file encoding, such as 'base64'.
               type: string
               example: base64
+    DateAdded:
+      type: string
+      format: date-time
     DateModified:
       type: string
       format: date-time
-    EntityTags:
-      type: object
-      description: A hash containing tags set on this entity
-      example:
-        tenant: tenant-525
-        customer: Sonicity
-    OperationStatusObject:
-      type: object
-      description: Contains the status of the last action taken on this entity
-      properties:
-        operation:
-          $ref: '#/components/schemas/OperationType'
-        status:
-          $ref: '#/components/schemas/OperationStatus'
-        message:
-          type: string
-        errorCode:
-          $ref: '#/components/schemas/OperationErrorCode'
-        errorDetails:
-          type: string
-    EntityFusebitEditor:
-      type: object
-      properties:
-        runConfig:
-          type: array
-          items:
-            type: object
-            description: Optional configuration values for the Fusebit Editor
-            properties:
-              method:
-                type: string
-                description: The method to use in the default api request
-                example: get
-                enum:
-                - get
-                - post
-                - put
-                - patch
-                - delete
-              url:
-                type: string
-                description: The endpoint of the default api request
-                example: /api/tenant/user-1/test
-              payload:
-                type: object
-                description: The payload of the default api request
-    IntegrationPostEntity:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/EntityId'
-        data:
-          $ref: '#/components/schemas/IntegrationEntityData'
-        tags:
-          $ref: '#/components/schemas/EntityTags'
-        expires:
-          $ref: '#/components/schemas/EntityExpires'
-        dateAdded:
-          $ref: '#/components/schemas/DateAdded'
-        dateModified:
-          $ref: '#/components/schemas/DateModified'
-        state:
-          $ref: '#/components/schemas/EntityState'
-        operationState:
-          $ref: '#/components/schemas/OperationStatusObject'
-    EntityConfiguration:
-      type: object
-      description: The collection of configuration values used by this entity.
+    EntityVersion:
+      type: string
+      format: uuid
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
     IntegrationListData:
       type: object
       properties:
@@ -336,20 +282,6 @@ components:
               provider:
                 type: string
                 description: The utility package for a connector that provides a configured SDK for use by the integration.
-    IntegrationList:
-      type: object
-      properties:
-        items:
-          type: array
-          description: An array of the matching entities of this component type
-          items:
-            $ref: '#/components/schemas/IntegrationListEntity'
-        next:
-          type: string
-          description: The key to use when accessing the next block of entries
-        total:
-          type: number
-          description: The total number of entities of this type.
     EntitySecurity:
       type: object
       description: Additional security configuration variables for this entity.
@@ -370,41 +302,12 @@ components:
                 type: string
               resource:
                 type: string
-    EntityExpires:
-      type: string
-      description: The time that the entity expires and is automatically removed from the system.
-    SubscriptionId:
-      type: string
-      description: Subscription id
-      example: sub-5555555555555555
-    IntegrationEntity:
+    EntityTags:
       type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/EntityId'
-        data:
-          $ref: '#/components/schemas/IntegrationEntityData'
-        tags:
-          $ref: '#/components/schemas/EntityTags'
-        version:
-          $ref: '#/components/schemas/EntityVersion'
-        expires:
-          $ref: '#/components/schemas/EntityExpires'
-        dateAdded:
-          $ref: '#/components/schemas/DateAdded'
-        dateModified:
-          $ref: '#/components/schemas/DateModified'
-        state:
-          $ref: '#/components/schemas/EntityState'
-        operationState:
-          $ref: '#/components/schemas/OperationStatusObject'
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
-    DateAdded:
-      type: string
-      format: date-time
+      description: A hash containing tags set on this entity
+      example:
+        tenant: tenant-525
+        customer: Sonicity
     IntegrationEntityData:
       type: object
       properties:
@@ -537,6 +440,103 @@ components:
                     default: 10
         fusebitEditor:
           $ref: '#/components/schemas/EntityFusebitEditor'
+    OperationStatusObject:
+      type: object
+      description: Contains the status of the last action taken on this entity
+      properties:
+        operation:
+          $ref: '#/components/schemas/OperationType'
+        status:
+          $ref: '#/components/schemas/OperationStatus'
+        message:
+          type: string
+        errorCode:
+          $ref: '#/components/schemas/OperationErrorCode'
+        errorDetails:
+          type: string
+    EntityFusebitEditor:
+      type: object
+      properties:
+        runConfig:
+          type: array
+          items:
+            type: object
+            description: Optional configuration values for the Fusebit Editor
+            properties:
+              method:
+                type: string
+                description: The method to use in the default api request
+                example: get
+                enum:
+                - get
+                - post
+                - put
+                - patch
+                - delete
+              url:
+                type: string
+                description: The endpoint of the default api request
+                example: /api/tenant/user-1/test
+              payload:
+                type: object
+                description: The payload of the default api request
+    IntegrationList:
+      type: object
+      properties:
+        items:
+          type: array
+          description: An array of the matching entities of this component type
+          items:
+            $ref: '#/components/schemas/IntegrationListEntity'
+        next:
+          type: string
+          description: The key to use when accessing the next block of entries
+        total:
+          type: number
+          description: The total number of entities of this type.
+    EntityExpires:
+      type: string
+      description: The time that the entity expires and is automatically removed from the system.
+    IntegrationPostEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/EntityId'
+        data:
+          $ref: '#/components/schemas/IntegrationEntityData'
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+        state:
+          $ref: '#/components/schemas/EntityState'
+        operationState:
+          $ref: '#/components/schemas/OperationStatusObject'
+    OperationType:
+      type: string
+      enum:
+      - creating
+      - updating
+      - deleting
+      example: updating
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    EntityState:
+      type: string
+      enum:
+      - creating
+      - invalid
+      - active
+      example: active
+    EntityConfiguration:
+      type: object
+      description: The collection of configuration values used by this entity.
   parameters:
     Account:
       name: accountId
@@ -545,24 +545,37 @@ components:
       description: Account id
       schema:
         $ref: '#/components/schemas/AccountId'
-    SearchCount:
-      name: count
-      in: query
-      description: The maximum number of entries to return
+    Subscription:
+      name: subscriptionId
+      in: path
+      required: true
+      description: Subscription id
       schema:
-        type: number
-    SearchNext:
-      name: next
-      in: query
-      description: The key to use to retrieve the next set of results
-      schema:
-        type: string
+        $ref: '#/components/schemas/SubscriptionId'
     SearchIdPrefix:
       name: idPrefix
       in: query
       description: A prefix to use when searching for a particular entity by id. For example, to search for all integrations that start with a particular service name.
       schema:
         type: string
+    SearchSort:
+      name: sort
+      in: query
+      description: Sort the results by `dateModified`, `dateAdded`, or the default value of `entityId`.  If `sort` is prepended with a `-` character, the order direction is reversed.
+      schema:
+        type: string
+    SearchNext:
+      name: next
+      in: query
+      description: The key to use to retrieve the next set of results
+      schema:
+        type: string
+    SearchCount:
+      name: count
+      in: query
+      description: The maximum number of entries to return
+      schema:
+        type: number
     SearchStatus:
       name: status
       in: query
@@ -575,19 +588,6 @@ components:
       description: A `tagName` or `tagName=tagValue` to search for. Can be specified multiple times in a query parameter to indicate multiple tag values to require in the results.
       schema:
         type: string
-    SearchSort:
-      name: sort
-      in: query
-      description: Sort the results by `dateModified`, `dateAdded`, or the default value of `entityId`.  If `sort` is prepended with a `-` character, the order direction is reversed.
-      schema:
-        type: string
-    Subscription:
-      name: subscriptionId
-      in: path
-      required: true
-      description: Subscription id
-      schema:
-        $ref: '#/components/schemas/SubscriptionId'
   requestBodies:
     PostIntegrationBody:
       description: Upload a new entity
