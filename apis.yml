@@ -478,6 +478,9 @@ apis:
   - type: SourceCode
     url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
 common:
+- type: CapabilityMap
+  url: capabilities/fusebit-capability-edges.yml
+  name: Fusebit Business Capability Map
 - type: Website
   url: https://fusebit.io
 - type: Overlay
