@@ -121,7 +121,47 @@ paths:
       - AccessToken:
         - connector:put-tag
 components:
+  parameters:
+    Account:
+      name: accountId
+      in: path
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    TagValue:
+      name: tagValue
+      in: path
+      required: true
+      description: The value of the tag, URL encoded as necessary
+      schema:
+        type: string
+    Subscription:
+      name: subscriptionId
+      in: path
+      required: true
+      description: Subscription id
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    TagKey:
+      name: tagKey
+      in: path
+      required: true
+      description: The name of the tag, URL encoded as necessary
+      schema:
+        type: string
   schemas:
+    EntityTags:
+      type: object
+      description: A hash containing tags set on this entity
+      example:
+        tenant: tenant-525
+        customer: Sonicity
+    EntityId:
+      type: string
+      description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
+
+        '
     AccountId:
       type: string
       description: Account id
@@ -130,46 +170,6 @@ components:
       type: string
       description: Subscription id
       example: sub-5555555555555555
-    EntityId:
-      type: string
-      description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
-
-        '
-    EntityTags:
-      type: object
-      description: A hash containing tags set on this entity
-      example:
-        tenant: tenant-525
-        customer: Sonicity
-  parameters:
-    TagValue:
-      name: tagValue
-      in: path
-      required: true
-      description: The value of the tag, URL encoded as necessary
-      schema:
-        type: string
-    TagKey:
-      name: tagKey
-      in: path
-      required: true
-      description: The name of the tag, URL encoded as necessary
-      schema:
-        type: string
-    Account:
-      name: accountId
-      in: path
-      required: true
-      description: Account id
-      schema:
-        $ref: '#/components/schemas/AccountId'
-    Subscription:
-      name: subscriptionId
-      in: path
-      required: true
-      description: Subscription id
-      schema:
-        $ref: '#/components/schemas/SubscriptionId'
   responses:
     TagKey200:
       description: The requested tag value

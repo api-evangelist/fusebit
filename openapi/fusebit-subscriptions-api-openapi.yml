@@ -120,43 +120,6 @@ paths:
         - log:get
 components:
   schemas:
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
-    SubscriptionId:
-      type: string
-      description: Subscription id
-      example: sub-5555555555555555
-    QueryId:
-      type: string
-      description: Log Query id
-      example: ffd9b69e-d323-4722-bad8-d57f3b4a28f4
-    NewLogQueryResponse:
-      type: object
-      properties:
-        queryId:
-          type: string
-          description: A unique log query id to use when polling for query completion
-    Error:
-      type: object
-      required:
-      - status
-      - statusCode
-      - message
-      properties:
-        status:
-          type: number
-          description: The HTTP status code
-          example: 404
-        statusCode:
-          type: number
-          description: The HTTP status code
-          example: 404
-        message:
-          type: string
-          description: A message with details regarding the error
-          example: The user 'usr-5555555555555555' does not exist
     LogQueryResult:
       type: object
       properties:
@@ -202,6 +165,43 @@ components:
           type: number
           description: Maximum number of records to return.
           example: 20
+    Error:
+      type: object
+      required:
+      - status
+      - statusCode
+      - message
+      properties:
+        status:
+          type: number
+          description: The HTTP status code
+          example: 404
+        statusCode:
+          type: number
+          description: The HTTP status code
+          example: 404
+        message:
+          type: string
+          description: A message with details regarding the error
+          example: The user 'usr-5555555555555555' does not exist
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    NewLogQueryResponse:
+      type: object
+      properties:
+        queryId:
+          type: string
+          description: A unique log query id to use when polling for query completion
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    QueryId:
+      type: string
+      description: Log Query id
+      example: ffd9b69e-d323-4722-bad8-d57f3b4a28f4
   securitySchemes:
     AccessToken:
       type: http

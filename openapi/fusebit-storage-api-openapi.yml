@@ -357,30 +357,19 @@ paths:
         - storage:delete
 components:
   schemas:
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
-    SubscriptionId:
-      type: string
-      description: Subscription id
-      example: sub-5555555555555555
-    StorageShort:
+    StorageList:
       type: object
       required:
-      - storageId
+      - items
       properties:
-        storageId:
-          $ref: '#/components/schemas/StorageId'
-        tags:
-          type: object
-          description: The tags associated with this object
-        etag:
+        next:
           type: string
-          description: An opaque token that represents the state of the stored data
-        expires:
-          type: string
-          description: The expiration time of this object
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of storage ids
+          items:
+            $ref: '#/components/schemas/StorageShort'
     Error:
       type: object
       required:
@@ -400,6 +389,30 @@ components:
           type: string
           description: A message with details regarding the error
           example: The user 'usr-5555555555555555' does not exist
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    StorageId:
+      type: string
+      description: Storage id
+      example: my-storage-id
+    StorageShort:
+      type: object
+      required:
+      - storageId
+      properties:
+        storageId:
+          $ref: '#/components/schemas/StorageId'
+        tags:
+          type: object
+          description: The tags associated with this object
+        etag:
+          type: string
+          description: An opaque token that represents the state of the stored data
+        expires:
+          type: string
+          description: The expiration time of this object
     StorageData:
       type: object
       properties:
@@ -414,23 +427,10 @@ components:
           description: The expiration time of this object
         data:
           description: A JSON value of stored data
-    StorageList:
-      type: object
-      required:
-      - items
-      properties:
-        next:
-          type: string
-          description: Opaque token to continue getting results from
-        items:
-          type: array
-          description: A list of storage ids
-          items:
-            $ref: '#/components/schemas/StorageShort'
-    StorageId:
+    SubscriptionId:
       type: string
-      description: Storage id
-      example: my-storage-id
+      description: Subscription id
+      example: sub-5555555555555555
   securitySchemes:
     AccessToken:
       type: http

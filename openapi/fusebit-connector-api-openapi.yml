@@ -140,78 +140,13 @@ paths:
         - connector:delete
 components:
   schemas:
-    OperationErrorCode:
+    OperationType:
       type: string
       enum:
-      - OK
-      - InvalidParameterValue
-      - UnauthorizedOperation
-      - VersionConflict
-      - InternalError
-      - RequestLimitExceeded
-      example: OK
-    EntityFiles:
-      type: object
-      description: The collection of filename and content pairs that are packaged with this entity.
-    OperationStatus:
-      type: string
-      enum:
-      - success
-      - failed
-      - processing
-      example: processing
-    EntityId:
-      type: string
-      description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
-
-        '
-    ConnectorPostEntity:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/EntityId'
-        data:
-          $ref: '#/components/schemas/ConnectorEntityData'
-        tags:
-          $ref: '#/components/schemas/EntityTags'
-        expires:
-          $ref: '#/components/schemas/EntityExpires'
-        dateAdded:
-          $ref: '#/components/schemas/DateAdded'
-        dateModified:
-          $ref: '#/components/schemas/DateModified'
-        state:
-          $ref: '#/components/schemas/EntityState'
-        operationState:
-          $ref: '#/components/schemas/OperationStatusObject'
-    EntityEncodedFiles:
-      type: object
-      description: The collection of filename and encoded content pairs that are packaged with this entity.
-      properties:
-        encodedFileName:
-          description: A file encoded in a particular transport-safe encoding, such as 'base64'
-          type: object
-          properties:
-            data:
-              description: The file payload, encoded in a JSON-safe format.
-              type: string
-            encoding:
-              description: The file encoding, such as 'base64'.
-              type: string
-              example: base64
-    DateAdded:
-      type: string
-      format: date-time
-    DateModified:
-      type: string
-      format: date-time
-    EntityVersion:
-      type: string
-      format: uuid
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
+      - creating
+      - updating
+      - deleting
+      example: updating
     EntitySecurity:
       type: object
       description: Additional security configuration variables for this entity.
@@ -232,55 +167,30 @@ components:
                 type: string
               resource:
                 type: string
-    EntityTags:
+    EntityEncodedFiles:
       type: object
-      description: A hash containing tags set on this entity
-      example:
-        tenant: tenant-525
-        customer: Sonicity
-    OperationStatusObject:
-      type: object
-      description: Contains the status of the last action taken on this entity
+      description: The collection of filename and encoded content pairs that are packaged with this entity.
       properties:
-        operation:
-          $ref: '#/components/schemas/OperationType'
-        status:
-          $ref: '#/components/schemas/OperationStatus'
-        message:
-          type: string
-        errorCode:
-          $ref: '#/components/schemas/OperationErrorCode'
-        errorDetails:
-          type: string
-    EntityExpires:
+        encodedFileName:
+          description: A file encoded in a particular transport-safe encoding, such as 'base64'
+          type: object
+          properties:
+            data:
+              description: The file payload, encoded in a JSON-safe format.
+              type: string
+            encoding:
+              description: The file encoding, such as 'base64'.
+              type: string
+              example: base64
+    EntityId:
       type: string
-      description: The time that the entity expires and is automatically removed from the system.
-    OperationType:
+      description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
+
+        '
+    AccountId:
       type: string
-      enum:
-      - creating
-      - updating
-      - deleting
-      example: updating
-    SubscriptionId:
-      type: string
-      description: Subscription id
-      example: sub-5555555555555555
-    ConnectorEntityData:
-      type: object
-      properties:
-        handler:
-          type: string
-          description: The npm package name used by this connector.
-          example: '@fusebit-int/oauth-connector'
-        configuration:
-          $ref: '#/components/schemas/ConnectorConfiguration'
-        files:
-          $ref: '#/components/schemas/EntityFiles'
-        encodedFiles:
-          $ref: '#/components/schemas/EntityEncodedFiles'
-        security:
-          $ref: '#/components/schemas/EntitySecurity'
+      description: Account id
+      example: acc-5555555555555555
     EntityState:
       type: string
       enum:
@@ -288,6 +198,41 @@ components:
       - invalid
       - active
       example: active
+    EntityFiles:
+      type: object
+      description: The collection of filename and content pairs that are packaged with this entity.
+    ConnectorPostEntity:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/EntityId'
+        data:
+          $ref: '#/components/schemas/ConnectorEntityData'
+        tags:
+          $ref: '#/components/schemas/EntityTags'
+        expires:
+          $ref: '#/components/schemas/EntityExpires'
+        dateAdded:
+          $ref: '#/components/schemas/DateAdded'
+        dateModified:
+          $ref: '#/components/schemas/DateModified'
+        state:
+          $ref: '#/components/schemas/EntityState'
+        operationState:
+          $ref: '#/components/schemas/OperationStatusObject'
+    DateModified:
+      type: string
+      format: date-time
+    OperationErrorCode:
+      type: string
+      enum:
+      - OK
+      - InvalidParameterValue
+      - UnauthorizedOperation
+      - VersionConflict
+      - InternalError
+      - RequestLimitExceeded
+      example: OK
     ConnectorConfiguration:
       type: object
       description: The open collection of configuration values used by this entity.
@@ -296,20 +241,15 @@ components:
           type: string
           description: A default integration target to handle anonymous events
           example: my-integration-123
-    ConnectorList:
+    EntityVersion:
+      type: string
+      format: uuid
+    EntityTags:
       type: object
-      properties:
-        items:
-          type: array
-          description: An array of the matching entities of this component type
-          items:
-            $ref: '#/components/schemas/ConnectorListEntity'
-        next:
-          type: string
-          description: The key to use when accessing the next block of entries
-        total:
-          type: number
-          description: The total number of entities of this type.
+      description: A hash containing tags set on this entity
+      example:
+        tenant: tenant-525
+        customer: Sonicity
     ConnectorListEntity:
       type: object
       properties:
@@ -336,6 +276,30 @@ components:
           $ref: '#/components/schemas/EntityState'
         operationState:
           $ref: '#/components/schemas/OperationStatusObject'
+    OperationStatus:
+      type: string
+      enum:
+      - success
+      - failed
+      - processing
+      example: processing
+    OperationStatusObject:
+      type: object
+      description: Contains the status of the last action taken on this entity
+      properties:
+        operation:
+          $ref: '#/components/schemas/OperationType'
+        status:
+          $ref: '#/components/schemas/OperationStatus'
+        message:
+          type: string
+        errorCode:
+          $ref: '#/components/schemas/OperationErrorCode'
+        errorDetails:
+          type: string
+    DateAdded:
+      type: string
+      format: date-time
     ConnectorEntity:
       type: object
       properties:
@@ -357,6 +321,42 @@ components:
           $ref: '#/components/schemas/EntityState'
         operationState:
           $ref: '#/components/schemas/OperationStatusObject'
+    ConnectorEntityData:
+      type: object
+      properties:
+        handler:
+          type: string
+          description: The npm package name used by this connector.
+          example: '@fusebit-int/oauth-connector'
+        configuration:
+          $ref: '#/components/schemas/ConnectorConfiguration'
+        files:
+          $ref: '#/components/schemas/EntityFiles'
+        encodedFiles:
+          $ref: '#/components/schemas/EntityEncodedFiles'
+        security:
+          $ref: '#/components/schemas/EntitySecurity'
+    EntityExpires:
+      type: string
+      description: The time that the entity expires and is automatically removed from the system.
+    ConnectorList:
+      type: object
+      properties:
+        items:
+          type: array
+          description: An array of the matching entities of this component type
+          items:
+            $ref: '#/components/schemas/ConnectorListEntity'
+        next:
+          type: string
+          description: The key to use when accessing the next block of entries
+        total:
+          type: number
+          description: The total number of entities of this type.
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
   parameters:
     Account:
       name: accountId
@@ -365,29 +365,34 @@ components:
       description: Account id
       schema:
         $ref: '#/components/schemas/AccountId'
-    Subscription:
-      name: subscriptionId
-      in: path
-      required: true
-      description: Subscription id
+    SearchNext:
+      name: next
+      in: query
+      description: The key to use to retrieve the next set of results
       schema:
-        $ref: '#/components/schemas/SubscriptionId'
+        type: string
+    SearchTag:
+      name: tag
+      in: query
+      description: A `tagName` or `tagName=tagValue` to search for. Can be specified multiple times in a query parameter to indicate multiple tag values to require in the results.
+      schema:
+        type: string
     SearchIdPrefix:
       name: idPrefix
       in: query
       description: A prefix to use when searching for a particular entity by id. For example, to search for all integrations that start with a particular service name.
       schema:
         type: string
+    SearchStatus:
+      name: status
+      in: query
+      description: Search for entities matching a particular status, `creating`, `invalid`, or `active.
+      schema:
+        $ref: '#/components/schemas/EntityState'
     SearchSort:
       name: sort
       in: query
       description: Sort the results by `dateModified`, `dateAdded`, or the default value of `entityId`.  If `sort` is prepended with a `-` character, the order direction is reversed.
-      schema:
-        type: string
-    SearchNext:
-      name: next
-      in: query
-      description: The key to use to retrieve the next set of results
       schema:
         type: string
     SearchCount:
@@ -396,18 +401,20 @@ components:
       description: The maximum number of entries to return
       schema:
         type: number
-    SearchStatus:
-      name: status
-      in: query
-      description: Search for entities matching a particular status, `creating`, `invalid`, or `active.
+    Subscription:
+      name: subscriptionId
+      in: path
+      required: true
+      description: Subscription id
       schema:
-        $ref: '#/components/schemas/EntityState'
-    SearchTag:
-      name: tag
-      in: query
-      description: A `tagName` or `tagName=tagValue` to search for. Can be specified multiple times in a query parameter to indicate multiple tag values to require in the results.
-      schema:
-        type: string
+        $ref: '#/components/schemas/SubscriptionId'
+  requestBodies:
+    PostConnectorBody:
+      description: Upload a new entity
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ConnectorPostEntity'
   responses:
     Connector202:
       description: 'The entity creation is in progress. While the `operationState.status` value is `processing`, the entity is still being created. Once the `operationState.status` value is `success`, the entity is available for use.
@@ -417,13 +424,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ConnectorEntity'
-  requestBodies:
-    PostConnectorBody:
-      description: Upload a new entity
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ConnectorPostEntity'
   securitySchemes:
     AccessToken:
       type: http

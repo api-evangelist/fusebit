@@ -344,12 +344,87 @@ paths:
         - user:init
 components:
   schemas:
+    BoundaryId:
+      type: string
+      description: Boundary id
+      example: my-boundary-xyz
+    Error:
+      type: object
+      required:
+      - status
+      - statusCode
+      - message
+      properties:
+        status:
+          type: number
+          description: The HTTP status code
+          example: 404
+        statusCode:
+          type: number
+          description: The HTTP status code
+          example: 404
+        message:
+          type: string
+          description: A message with details regarding the error
+          example: The user 'usr-5555555555555555' does not exist
+    FunctionId:
+      type: string
+      description: Function id
+      example: my-function-abc
+    UserList:
+      type: object
+      required:
+      - items
+      properties:
+        next:
+          type: string
+          description: Opaque token to continue getting results from
+        items:
+          type: array
+          description: A list of users
+          items:
+            $ref: '#/components/schemas/User'
     InitProtocol:
       type: string
       enum:
       - pki
       - oauth
       description: "The initialization token protocol that determines the type of the source of trust for validating access tokens the user or client will present when making HTTP API calls:\n  * `pki` - when adding an indentity to the user or client, the caller must present a public key that can be used to validate signatures of access tokens\n  * `oauth` - when adding an indentity to the user or client, the caller must indicate a trusted issuer of access tokens that is already pre-configured in the system\n"
+    IssuerId:
+      type: string
+      description: Issuer id
+      example: https://auth-server.company-abc.com
+    User:
+      allOf:
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            $ref: '#/components/schemas/UserId'
+      - $ref: '#/components/schemas/NewUser'
+    AccessStatement:
+      type: object
+      required:
+      - action
+      - resource
+      properties:
+        action:
+          type: string
+          description: The action to perform
+          example: function:*
+        resource:
+          type: string
+          description: The resource to perform the action on
+          example: /account/acc-5555555555555555/subscription/sub-5555555555555555/boundary/my-boundary-1/function/my-function-17
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
     Identity:
       type: object
       required:
@@ -361,14 +436,32 @@ components:
         subject:
           type: string
           description: The `sub` claim value in access tokens
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
-    FunctionId:
-      type: string
-      description: Function id
-      example: my-function-abc
+    NewUser:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: The user's first name
+          example: John
+        lastName:
+          type: string
+          description: The user's last name
+          example: Doe
+        primaryEmail:
+          type: string
+          description: The user's primary email
+          example: john.doe@abc-compnay.com
+        identities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identity'
+        access:
+          type: object
+          properties:
+            allow:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccessStatement'
     InitRequest:
       type: object
       required:
@@ -416,90 +509,6 @@ components:
                 tokenUrl:
                   type: string
                   description: The OAuth URL to use to exchange refresh tokens for access tokens
-    SubscriptionId:
-      type: string
-      description: Subscription id
-      example: sub-5555555555555555
-    User:
-      allOf:
-      - type: object
-        required:
-        - id
-        properties:
-          id:
-            $ref: '#/components/schemas/UserId'
-      - $ref: '#/components/schemas/NewUser'
-    AccessStatement:
-      type: object
-      required:
-      - action
-      - resource
-      properties:
-        action:
-          type: string
-          description: The action to perform
-          example: function:*
-        resource:
-          type: string
-          description: The resource to perform the action on
-          example: /account/acc-5555555555555555/subscription/sub-5555555555555555/boundary/my-boundary-1/function/my-function-17
-    UserId:
-      type: string
-      description: User id
-      example: usr-5555555555555555
-    BoundaryId:
-      type: string
-      description: Boundary id
-      example: my-boundary-xyz
-    NewUser:
-      type: object
-      properties:
-        firstName:
-          type: string
-          description: The user's first name
-          example: John
-        lastName:
-          type: string
-          description: The user's last name
-          example: Doe
-        primaryEmail:
-          type: string
-          description: The user's primary email
-          example: john.doe@abc-compnay.com
-        identities:
-          type: array
-          items:
-            $ref: '#/components/schemas/Identity'
-        access:
-          type: object
-          properties:
-            allow:
-              type: array
-              items:
-                $ref: '#/components/schemas/AccessStatement'
-    Error:
-      type: object
-      required:
-      - status
-      - statusCode
-      - message
-      properties:
-        status:
-          type: number
-          description: The HTTP status code
-          example: 404
-        statusCode:
-          type: number
-          description: The HTTP status code
-          example: 404
-        message:
-          type: string
-          description: A message with details regarding the error
-          example: The user 'usr-5555555555555555' does not exist
-    IssuerId:
-      type: string
-      description: Issuer id
-      example: https://auth-server.company-abc.com
     InitResponse:
       type: string
       description: 'A single-use initialization token in JWT format. If unused, the token expires in eight hours. The `profile`
@@ -509,19 +518,10 @@ components:
         as well as additional information for consumption by the intended recipient of the token.
 
         '
-    UserList:
-      type: object
-      required:
-      - items
-      properties:
-        next:
-          type: string
-          description: Opaque token to continue getting results from
-        items:
-          type: array
-          description: A list of users
-          items:
-            $ref: '#/components/schemas/User'
+    UserId:
+      type: string
+      description: User id
+      example: usr-5555555555555555
   securitySchemes:
     AccessToken:
       type: http
