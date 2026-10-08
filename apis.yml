@@ -478,6 +478,8 @@ apis:
   - type: SourceCode
     url: https://github.com/fivequarters/q5/tree/HEAD/api/function-api
 common:
+- type: FinOps
+  url: finops/fusebit-finops.yml
 - type: CapabilityMap
   url: capabilities/fusebit-capability-edges.yml
   name: Fusebit Business Capability Map
