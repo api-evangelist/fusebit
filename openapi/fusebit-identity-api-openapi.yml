@@ -164,40 +164,78 @@ paths:
       - AccessToken:
         - identity:delete
 components:
+  parameters:
+    SearchSort:
+      name: sort
+      in: query
+      description: Sort the results by `dateModified`, `dateAdded`, or the default value of `entityId`.  If `sort` is prepended with a `-` character, the order direction is reversed.
+      schema:
+        type: string
+    SearchNext:
+      name: next
+      in: query
+      description: The key to use to retrieve the next set of results
+      schema:
+        type: string
+    SearchTag:
+      name: tag
+      in: query
+      description: A `tagName` or `tagName=tagValue` to search for. Can be specified multiple times in a query parameter to indicate multiple tag values to require in the results.
+      schema:
+        type: string
+    Subscription:
+      name: subscriptionId
+      in: path
+      required: true
+      description: Subscription id
+      schema:
+        $ref: '#/components/schemas/SubscriptionId'
+    Account:
+      name: accountId
+      in: path
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    SearchCount:
+      name: count
+      in: query
+      description: The maximum number of entries to return
+      schema:
+        type: number
   schemas:
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    IdentityId:
+      type: string
+      description: Identity id
+      example: ins-01234567890123456789012345678912
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    DateAdded:
+      type: string
+      format: date-time
+    DateModified:
+      type: string
+      format: date-time
     ParentId:
       type: string
       description: 'The name of the parent entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
 
         '
-    EntityId:
-      type: string
-      description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
-
-        '
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
-    IdentityId:
-      type: string
-      description: Identity id
-      example: ins-01234567890123456789012345678912
-    DateModified:
-      type: string
-      format: date-time
-    EntityVersion:
-      type: string
-      format: uuid
     EntityTags:
       type: object
       description: A hash containing tags set on this entity
       example:
         tenant: tenant-525
         customer: Sonicity
-    DateAdded:
+    EntityVersion:
       type: string
-      format: date-time
+      format: uuid
     IdentityEntity:
       type: object
       properties:
@@ -218,9 +256,6 @@ components:
           $ref: '#/components/schemas/DateAdded'
         dateModified:
           $ref: '#/components/schemas/DateModified'
-    EntityExpires:
-      type: string
-      description: The time that the entity expires and is automatically removed from the system.
     IdentityList:
       type: object
       properties:
@@ -235,49 +270,14 @@ components:
         total:
           type: number
           description: The total number of entities of this type.
-    SubscriptionId:
+    EntityId:
       type: string
-      description: Subscription id
-      example: sub-5555555555555555
-  parameters:
-    Account:
-      name: accountId
-      in: path
-      required: true
-      description: Account id
-      schema:
-        $ref: '#/components/schemas/AccountId'
-    SearchNext:
-      name: next
-      in: query
-      description: The key to use to retrieve the next set of results
-      schema:
-        type: string
-    SearchTag:
-      name: tag
-      in: query
-      description: A `tagName` or `tagName=tagValue` to search for. Can be specified multiple times in a query parameter to indicate multiple tag values to require in the results.
-      schema:
-        type: string
-    SearchSort:
-      name: sort
-      in: query
-      description: Sort the results by `dateModified`, `dateAdded`, or the default value of `entityId`.  If `sort` is prepended with a `-` character, the order direction is reversed.
-      schema:
-        type: string
-    SearchCount:
-      name: count
-      in: query
-      description: The maximum number of entries to return
-      schema:
-        type: number
-    Subscription:
-      name: subscriptionId
-      in: path
-      required: true
-      description: Subscription id
-      schema:
-        $ref: '#/components/schemas/SubscriptionId'
+      description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
+
+        '
+    EntityExpires:
+      type: string
+      description: The time that the entity expires and is automatically removed from the system.
   requestBodies:
     PostIdentityBody:
       description: Upload a new entity

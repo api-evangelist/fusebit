@@ -243,6 +243,10 @@ paths:
         - issuer:delete
 components:
   schemas:
+    IssuerId:
+      type: string
+      description: Issuer id
+      example: https://auth-server.company-abc.com
     IssuerList:
       type: object
       required:
@@ -256,6 +260,23 @@ components:
           description: A list of issuers
           items:
             $ref: '#/components/schemas/Issuer'
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    PublicKey:
+      type: object
+      description: A key id and the public key for a public/private key pair
+      required:
+      - keyId
+      - publicKey
+      properties:
+        keyId:
+          type: string
+          description: The key id for the public key
+        publicKey:
+          type: string
+          description: The public key of a public/private key pair
     Error:
       type: object
       required:
@@ -275,27 +296,6 @@ components:
           type: string
           description: A message with details regarding the error
           example: The user 'usr-5555555555555555' does not exist
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
-    IssuerId:
-      type: string
-      description: Issuer id
-      example: https://auth-server.company-abc.com
-    PublicKey:
-      type: object
-      description: A key id and the public key for a public/private key pair
-      required:
-      - keyId
-      - publicKey
-      properties:
-        keyId:
-          type: string
-          description: The key id for the public key
-        publicKey:
-          type: string
-          description: The public key of a public/private key pair
     Issuer:
       allOf:
       - type: object

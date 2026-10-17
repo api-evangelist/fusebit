@@ -195,30 +195,43 @@ components:
           $ref: '#/components/schemas/DateAdded'
         dateModified:
           $ref: '#/components/schemas/DateModified'
+    SubscriptionId:
+      type: string
+      description: Subscription id
+      example: sub-5555555555555555
+    AccountId:
+      type: string
+      description: Account id
+      example: acc-5555555555555555
+    DateAdded:
+      type: string
+      format: date-time
+    DateModified:
+      type: string
+      format: date-time
     ParentId:
       type: string
       description: 'The name of the parent entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
 
         '
+    EntityTags:
+      type: object
+      description: A hash containing tags set on this entity
+      example:
+        tenant: tenant-525
+        customer: Sonicity
+    EntityVersion:
+      type: string
+      format: uuid
+    InstallId:
+      type: string
+      description: Install id
+      example: ins-01234567890123456789012345678912
     EntityId:
       type: string
       description: 'The name of an entity, matches: `/^[A-Za-z0-9\-]{1,64}$/)`
 
         '
-    AccountId:
-      type: string
-      description: Account id
-      example: acc-5555555555555555
-    InstallId:
-      type: string
-      description: Install id
-      example: ins-01234567890123456789012345678912
-    DateModified:
-      type: string
-      format: date-time
-    EntityVersion:
-      type: string
-      format: uuid
     InstallList:
       type: object
       properties:
@@ -233,30 +246,16 @@ components:
         total:
           type: number
           description: The total number of entities of this type.
-    EntityTags:
-      type: object
-      description: A hash containing tags set on this entity
-      example:
-        tenant: tenant-525
-        customer: Sonicity
-    DateAdded:
-      type: string
-      format: date-time
     EntityExpires:
       type: string
       description: The time that the entity expires and is automatically removed from the system.
-    SubscriptionId:
-      type: string
-      description: Subscription id
-      example: sub-5555555555555555
   parameters:
-    Account:
-      name: accountId
-      in: path
-      required: true
-      description: Account id
+    SearchSort:
+      name: sort
+      in: query
+      description: Sort the results by `dateModified`, `dateAdded`, or the default value of `entityId`.  If `sort` is prepended with a `-` character, the order direction is reversed.
       schema:
-        $ref: '#/components/schemas/AccountId'
+        type: string
     SearchNext:
       name: next
       in: query
@@ -269,18 +268,6 @@ components:
       description: A `tagName` or `tagName=tagValue` to search for. Can be specified multiple times in a query parameter to indicate multiple tag values to require in the results.
       schema:
         type: string
-    SearchSort:
-      name: sort
-      in: query
-      description: Sort the results by `dateModified`, `dateAdded`, or the default value of `entityId`.  If `sort` is prepended with a `-` character, the order direction is reversed.
-      schema:
-        type: string
-    SearchCount:
-      name: count
-      in: query
-      description: The maximum number of entries to return
-      schema:
-        type: number
     Subscription:
       name: subscriptionId
       in: path
@@ -288,6 +275,19 @@ components:
       description: Subscription id
       schema:
         $ref: '#/components/schemas/SubscriptionId'
+    Account:
+      name: accountId
+      in: path
+      required: true
+      description: Account id
+      schema:
+        $ref: '#/components/schemas/AccountId'
+    SearchCount:
+      name: count
+      in: query
+      description: The maximum number of entries to return
+      schema:
+        type: number
   requestBodies:
     PostInstallBody:
       description: Upload a new entity
