@@ -1,0 +1,85 @@
+edges:
+- partner_name: npm registry
+  partner: npm
+  partner_match: register
+  type: register
+  direction: provider-built
+  category: official SDK (JavaScript/TypeScript)
+  evidence: https://www.npmjs.com/package/@fusebit/cloud-git
+  channel: package-registry
+  relationship: distribution-channel
+  contract_reference:
+    register: npm registry (public registry JSON)
+    spec_file: null
+    language: JavaScript/TypeScript
+    packages:
+    - name: '@fusebit/cloud-git'
+      version: 1.0.0
+      released: '2022-04-05'
+      released_field: modified
+      lapsed: true
+      page: https://www.npmjs.com/package/@fusebit/cloud-git
+      repo_leg: github-org:fusebit
+      publisher_leg: email:fusebit.io
+      matched_by: domain
+    - name: '@fusebit/everyauth-express'
+      version: 2.1.3
+      released: '2022-05-05'
+      released_field: modified
+      lapsed: true
+      page: https://www.npmjs.com/package/@fusebit/everyauth-express
+      repo_leg: github-org:fusebit
+      publisher_leg: email:fusebit.io
+      matched_by: domain
+    - name: '@fusebit/monaco-jsonforms'
+      version: 1.0.9
+      released: '2022-09-12'
+      released_field: modified
+      lapsed: true
+      page: https://www.npmjs.com/package/@fusebit/monaco-jsonforms
+      repo_leg: github-org:fusebit
+      publisher_leg: email:fusebit.io
+      matched_by: domain
+    - name: '@fusebit/tunnel'
+      version: 3.2.6
+      released: '2022-05-02'
+      released_field: modified
+      lapsed: true
+      page: https://www.npmjs.com/package/@fusebit/tunnel
+      repo_leg: github-org:fusebit
+      publisher_leg: email:fusebit.io
+      matched_by: domain
+    - name: '@fusebit/tunnel-server'
+      version: 1.1.0
+      released: '2022-05-02'
+      released_field: modified
+      lapsed: true
+      page: https://www.npmjs.com/package/@fusebit/tunnel-server
+      repo_leg: github-org:fusebit
+      publisher_leg: email:fusebit.io
+      matched_by: domain
+    current: false
+    signal_note: 'an official package on the registry: distribution, not an integration; lapsed = no release in
+      24 months'
+    detected_by: sweep-official-sdks.py
+    detected: '2026-10-18'
+  detected_by: sweep-official-sdks.py
+  first_seen: '2026-10-18'
+generated: '2026-10-18'
+method: searched
+source:
+- https://api.nuget.org/v3
+- https://crates.io/api/v1
+- https://proxy.golang.org
+- https://pypi.org/pypi
+- https://registry.npmjs.org
+- https://repo1.maven.org/maven2
+- https://rubygems.org/api/v1
+checked:
+- https://api.nuget.org/v3
+- https://crates.io/api/v1
+- https://proxy.golang.org
+- https://pypi.org/pypi
+- https://registry.npmjs.org
+- https://repo1.maven.org/maven2
+- https://rubygems.org/api/v1
