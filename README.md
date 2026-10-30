@@ -1,4 +1,4 @@
-# Fusebit (fusebit)
+# Fusebit
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,49 +64,99 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Fusebit is a developer-first embedded integration platform for adding third-party integrations to SaaS products. The company was acquired and the Fusebit platform and developer documentation are no longer actively maintained, but the historical API surface and SDK assets remain available via the Fusebit GitHub organization for reference.
+> **No longer operating.** This company or product has shut down, been discontinued, or been deprecated. This profile is kept as a historical record and is not maintained or rated.
 
-**URL:** [Visit APIs.json URL](https://raw.githubusercontent.com/api-evangelist/fusebit/refs/heads/main/apis.yml)
+Fusebit was a code-first, developer-facing embedded integration platform (embedded iPaaS) founded in Seattle in 2019, letting SaaS teams build, deploy and run third-party integrations inside their own products using serverless functions, managed OAuth connectors and an embeddable browser IDE. The company was acquired and the platform is retired: as of 2026-09-10 the domain fusebit.io is still registered but publishes no DNS A record, so the API, the developer documentation, the management portal and the asset CDN all fail to resolve. What survives is substantial and first-party — two published OpenAPI 3.0 contracts covering 89 operations, four dated release-note streams served from Fusebit's own GitHub Pages, 101 npm packages under the @fusebit and @fusebit-int scopes, and 35 public repositories across the fusebit and fivequarters GitHub organizations. This profile is a historical record of a retired API, not a callable surface.
 
-## Scope
+**Areas:** Developer Tools · Embedded iPaaS · Integration · Serverless · Authentication · Acquired · Defunct
 
-- **Type:** Index 
-- **Position:** Provider 
-- **Access:** 3rd-Party 
+## Fusebit on APIs.io (historical record)
 
-## Tags:
+Everything profiled for Fusebit is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/fusebit/](https://apis.io/providers/fusebit/)** — or go straight to one of the APIs or properties below.
 
- - Developer Tools, Embedded iPaaS, Integration, Acquired
+### APIs (18)
 
-## Timestamps
+- [Fusebit Accounts API](https://apis.io/apis/fusebit/fusebit-accounts-api/) — Account management operations
+- [Fusebit Boundaries API](https://apis.io/apis/fusebit/fusebit-boundaries-api/) — Boundary management operations
+- [Fusebit Clients API](https://apis.io/apis/fusebit/fusebit-clients-api/) — Client management operations
+- [Fusebit Connector API](https://apis.io/apis/fusebit/fusebit-connector-api/) — Management for external credentials
+- [Fusebit Connector/Tags API](https://apis.io/apis/fusebit/fusebit-connector-tags-api/) — The Connector/Tags API from Fusebit — 3 operation(s) for connector/tags.
+- [Fusebit Functions API](https://apis.io/apis/fusebit/fusebit-functions-api/) — Function management operations
+- [Fusebit Identity API](https://apis.io/apis/fusebit/fusebit-identity-api/) — A managed credential for a remote service, on behalf of a customer
+- [Fusebit Identity/Tags API](https://apis.io/apis/fusebit/fusebit-identity-tags-api/) — The Identity/Tags API from Fusebit — 3 operation(s) for identity/tags.
+- [Fusebit Install API](https://apis.io/apis/fusebit/fusebit-install-api/) — A fully configured integration for a customer
+- [Fusebit Install/Tags API](https://apis.io/apis/fusebit/fusebit-install-tags-api/) — The Install/Tags API from Fusebit — 4 operation(s) for install/tags.
+- [Fusebit Integration API](https://apis.io/apis/fusebit/fusebit-integration-api/) — The logic necessary to integrate between two services
+- [Fusebit Integration/Tags API](https://apis.io/apis/fusebit/fusebit-integration-tags-api/) — The Integration/Tags API from Fusebit — 3 operation(s) for integration/tags.
+- [Fusebit Issuers API](https://apis.io/apis/fusebit/fusebit-issuers-api/) — Issuer management operations
+- [Fusebit Registry API](https://apis.io/apis/fusebit/fusebit-registry-api/) — The Registry API from Fusebit — 1 operation(s) for registry.
+- [Fusebit Session API](https://apis.io/apis/fusebit/fusebit-session-api/) — An active configuration phase for a customer
+- [Fusebit Storage API](https://apis.io/apis/fusebit/fusebit-storage-api/) — The Storage API from Fusebit — 3 operation(s) for storage.
+- [Fusebit Subscriptions API](https://apis.io/apis/fusebit/fusebit-subscriptions-api/) — Subscription management operations
+- [Fusebit Users API](https://apis.io/apis/fusebit/fusebit-users-api/) — User management operations
 
-- **Created:** 2026-03-27 
-- **Modified:** 2026-04-28 
+### Published properties
 
-## APIs
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-### Fusebit API
-Fusebit provides a code-first integration platform that enables developers to build, deploy, and manage integrations within their SaaS products. The platform is no longer actively maintained following the acquisition of Fusebit.
+#### MCP servers (1)
 
-**Human URL:** [https://fusebit.io](https://fusebit.io)
+Model Context Protocol servers that expose the API to agents.
 
+- [fusebit-mcp.yml](https://apis.io/servers/fusebit/fusebit-mcp-yml/)
 
-#### Tags:
+#### Overlays (2)
 
- - Developer Tools, Embedded iPaaS, Integration
+OpenAPI overlays, including conversational phrasing for each operation.
 
-#### Properties
+- [Fusebit Core Overlay](https://apis.io/overlays/fusebit/fusebit-core-overlay/)
+- [Fusebit Integrations Overlay](https://apis.io/overlays/fusebit/fusebit-integrations-overlay/)
 
-- [Documentation](https://developer.fusebit.io)
+#### Security (2)
 
-## Common Properties
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Fusebit Authentication](https://apis.io/security/fusebit/fusebit-authentication/)
+- [Fusebit Domain Security](https://apis.io/security/fusebit/fusebit-domain-security/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Fusebit Plans Pricing](https://apis.io/plans/fusebit/fusebit-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Fusebit Rate Limits](https://apis.io/rate-limits/fusebit/fusebit-rate-limits/)
+
+#### FinOps (1)
+
+What the API costs to run, by operation.
+
+- [Fusebit Finops](https://apis.io/finops/fusebit/fusebit-finops/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
 - [Website](https://fusebit.io)
-- [Documentation](https://developer.fusebit.io)
-- [GitHub Organization](https://github.com/fusebit)
+- [Changelog](https://fivequarters.github.io/q5/release-notes/)
+- [GitHub](https://github.com/fusebit)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
+**Not rated** — this company is recorded as no longer operating, so no score is published. If it is in fact operating, say so on this repository and it will be re-profiled.
 
-**Email:** kin@apievangelist.com
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Fusebit: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/fusebit/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
